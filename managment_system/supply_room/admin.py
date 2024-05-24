@@ -1,9 +1,8 @@
 from django.contrib import admin
-from supply_room.models import *
+from .models import *
+from django.contrib.auth.admin import UserAdmin
 
 class ItemAdmin(admin.ModelAdmin):
-    pass
-class UsersAdmin(admin.ModelAdmin):
     pass
 
 class ClassAdmin(admin.ModelAdmin):
@@ -25,9 +24,9 @@ class StudentGroupsAdmin(admin.ModelAdmin):
     pass
 
 admin.site.register(Item, ItemAdmin)
-admin.site.register(Users, UsersAdmin)
+admin.site.register(Users, UserAdmin)
 admin.site.register(Class, ClassAdmin)
-admin.site.register(Groups, GroupsAdmin)
+admin.site.register(ClassGroups, GroupsAdmin)
 admin.site.register(Order, OrderAdmin)
 admin.site.register(ItemOrder, ItemOrderAdmin)
 admin.site.register(UserOrder, UserOrderAdmin)
