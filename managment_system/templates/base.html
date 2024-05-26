@@ -1,0 +1,18 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="{% static 'output.css' %}" rel="stylesheet"  />
+    <title>
+      {% block head_title %}TWE Django Integration Tutorial{% endblock %}
+    </title>
+  </head>
+  <body>
+    <div>{% block content %} {% endblock %}</div>
+    <script
+    src="{% static 'tw-elements/dist/js/tw-elements.umd.min.js' %}"
+    type="text/javascript"></script>
+  </body>
+</html>
