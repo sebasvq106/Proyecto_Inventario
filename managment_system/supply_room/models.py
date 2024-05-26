@@ -32,6 +32,9 @@ class CustomUserManager(UserManager):
 class Item(models.Model):
     name = models.CharField(max_length=200)
 
+    def __str__(self):
+        return f'{self.name}'
+
 class Users(AbstractUser):
     name = models.CharField(max_length=200)
     email = models.EmailField(unique=True)
@@ -44,7 +47,8 @@ class Users(AbstractUser):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["name", "role"]
 
-
+    def __str__(self):
+        return f'{self.email}'
 
 class Class(models.Model):
     name = models.CharField(max_length=200)
@@ -52,14 +56,21 @@ class Class(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.code})"
+
 class ClassGroups(models.Model):
     number = models.PositiveIntegerField()
     semester = models.CharField(max_length=200)
     professor = models.ForeignKey(Users, on_delete=models.CASCADE)
     class_id = models.ForeignKey(Class, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"{self.class_id} ({self.number}, {self.semester})"
+
 class Order(models.Model):
     group = models.ForeignKey(ClassGroups, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.group.id}'
 
 class ItemOrder(models.Model):
     status = models.CharField(
@@ -72,11 +83,20 @@ class ItemOrder(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"{self.order.id}, {self.item.id}"
+
 class UserOrder(models.Model):
     user = models.ForeignKey(Users, on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"{self.user.name}, {self.order.id}"
+
 class StudentGroups(models.Model):
     student = models.ForeignKey(Users, on_delete=models.CASCADE)
     group = models.ForeignKey(ClassGroups, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.student.id}, {self.group.id}"
 
