@@ -125,7 +125,7 @@ STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
   BASE_DIR / "static",
-  BASE_DIR.parent / "node_modules",
+  BASE_DIR / "node_modules",
 ]
 
 STATIC_ROOT = BASE_DIR.parent / "static"
