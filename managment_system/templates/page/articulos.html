@@ -13,6 +13,11 @@
         <li class="py-4">
             <div class="flex justify-between items-center">
                 <span class="text-gray-700">{{ object.name }}</span>
+                <!-- Delete Button -->
+                <form method="post" action="{% url 'eliminar-articulo' object.id %}" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="py-2 px-3 bg-red-500 text-white rounded hover:bg-red-400">Eliminar</button>
+                </form>
             </div>
         </li>
         {% empty %}

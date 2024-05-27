@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from django.views.generic import CreateView
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, DeleteView
 
 # Create your views here.
 from django.views.generic.list import ListView
@@ -24,6 +25,11 @@ class ItemCreate(CreateView):
 
 	# specify the fields to be displayed
 	fields = ['name']
+
+class ItemDelete(DeleteView):
+    model = Item
+    success_url = reverse_lazy('articulos')
+    template_name = 'page/confirm_delete.html'
 
 
 class ClassList(ListView):
