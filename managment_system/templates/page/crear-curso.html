@@ -1,0 +1,26 @@
+{% extends "base.html" %} {% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8 mt-16">
+    <div class="bg-white rounded-lg p-6 shadow-lg backdrop-blur-xl">
+        <form class="max-w-md mx-auto space-y-6" method="POST" enctype="multipart/form-data">
+            <!-- Security token -->
+            {% csrf_token %}
+            <h2 class="text-2xl font-bold mb-6 text-center">Crear Curso</h2>
+            <!-- Name field -->
+            <div class="space-y-4 my-6">
+                <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Nombre</label>
+                <input id="name" name="name" type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+
+            <!-- Name field -->
+            <div class="space-y-4 my-6">
+                <label for="code" class="block text-gray-700 text-sm font-bold mb-2">Codigo</label>
+                <input id="code" name="code" type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+
+            <div class="flex justify-center mt-8">
+                <input type="submit" value="Crear" class="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-300">
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
