@@ -122,12 +122,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
-
 STATICFILES_DIRS = [
-  BASE_DIR / "static",
-  BASE_DIR / "node_modules",
+  BASE_DIR / 'static',
+  BASE_DIR.parent / "node_modules",
 ]
-
 STATIC_ROOT = BASE_DIR.parent / "static"
 
 # Default primary key field type
