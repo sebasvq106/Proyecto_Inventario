@@ -40,6 +40,10 @@ INSTALLED_APPS = [
     'supply_room.apps.SupplyRoomConfig',
 ]
 
+# django_project/settings.py
+LOGIN_REDIRECT_URL = "/"  # new
+LOGOUT_REDIRECT_URL = "/"  # new
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

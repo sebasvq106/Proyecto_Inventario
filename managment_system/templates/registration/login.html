@@ -1,0 +1,71 @@
+<!-- templates/registration/login.html -->
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <div>
+                    <a href="#" class="flex items-center py-5 px-2 text-gray-700">
+                        <img src="https://eie.ucr.ac.cr/static/img/logos/EIE_v.png" alt="Logo" class="w-20 mr-2">
+                    </a>
+                </div>
+
+                <!-- Primary Navigation -->
+                <div class="hidden md:flex items-center space-x-1">
+                    <h2>Sistema de bodega de Ingenieria Electrica</h2>
+                </div>
+
+                <!-- Secondary Navigation -->
+                <div class="hidden md:flex items-center space-x-1">
+                    <a href="{% url 'login' %}" class="py-2 px-3 bg-blue-500 text-white rounded hover:bg-blue-400">Iniciar sesión</a>
+                    <a href="{% url 'login' %}" class="py-2 px-3 bg-gray-500 text-white rounded hover:bg-gray-400">Registrarse</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button class="mobile-menu-button">
+                        <svg class="w-6 h-6 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div class="mobile-menu hidden md:hidden">
+            <a href="{% url 'login' %}" class="block py-2 px-4 text-sm hover:bg-gray-200">Iniciar sesión</a>
+            <a href="{% url 'login' %}" class="block py-2 px-4 text-sm hover:bg-gray-200">Registrarse</a>
+        </div>
+    </nav>
+
+    <!-- Login Form -->
+    <div class="max-w-xl mx-auto mt-8 bg-white p-8 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-bold mb-6 text-center">Iniciar sesión</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-6">
+                <label for="username" class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                <input type="text" name="username" id="username" class="block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:border-blue-500 focus:ring-blue-500" required>
+            </div>
+            <div class="mb-6">
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                <input type="password" name="password" id="password" class="block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:border-blue-500 focus:ring-blue-500" required>
+            </div>
+            <button type="submit" class="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-400">Iniciar sesión</button>
+        </form>
+    </div>
+
+    <script src="/static/tw-elements/js/tw-elements.umd.min.js" type="text/javascript"></script>
+    <script>
+        const mobileMenuButton = document.querySelector('.mobile-menu-button');
+        const mobileMenu = document.querySelector('.mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
