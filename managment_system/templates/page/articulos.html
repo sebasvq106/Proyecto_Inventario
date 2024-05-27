@@ -2,10 +2,10 @@
 <div class="max-w-6xl mx-auto px-4 py-8 bg-white rounded-lg shadow-md mt-16">
     <div class="flex justify-between items-center mb-4">
         <!-- Spacer to push the button to the right -->
-        <div></div>
+        <h2 class="text-2xl font-bold py-2">Lista de Artículos</h2>
         <a href="{% url 'crear-articulo' %}" class="py-2 px-3 bg-blue-500 text-white rounded hover:bg-blue-400">Agregar Artículo</a>
     </div>
-    <h2 class="text-2xl font-bold mb-4">Lista de Artículos</h2>
+
     <ul class="divide-y divide-gray-200">
         <!-- Iterate over object_list -->
         {% for object in object_list %}
@@ -19,5 +19,29 @@
         <li class="py-4 text-center text-gray-500">No objects yet.</li>
         {% endfor %}
     </ul>
+
+    <div class="pagination ">
+    <div class="step-links flex w-full justify-between items-center p-2">
+        {% if page_obj.has_previous %}
+        <a href="?page=1" class="mx-2">Primero</a>
+        <a href="?page={{ page_obj.previous_page_number }}" class="mx-2">Previo</a>
+        {% else %}
+        <div></div>
+        <div></div>
+        {% endif %}
+
+        <span class="current font-bold mx-4">
+            Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="mx-2">Siguiente</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}" class="mx-2">Última</a>
+        {% else %}
+        <div></div>
+        <div></div>
+        {% endif %}
+    </div>
+</div>
 </div>
 {% endblock %}

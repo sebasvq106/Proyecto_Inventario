@@ -9,6 +9,7 @@ class ItemList(ListView):
 
 	# specify the model for list view
 	model = Item
+	paginate_by = 10
 
 	def get_queryset(self, *args, **kwargs):
 		qs = super(ItemList, self).get_queryset(*args, **kwargs)
