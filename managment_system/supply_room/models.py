@@ -47,6 +47,12 @@ class Users(AbstractUser):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["name", "role"]
 
+    def save(self, *args, **kwargs):
+        # Set username to the part of the email before the '@' symbol
+        if not self.username:
+            self.username = self.email.split('@')[0]
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f'{self.email}'
 

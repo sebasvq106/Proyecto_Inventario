@@ -4,85 +4,108 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="{% static 'output.css' %}" rel="stylesheet"  />
-      <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="{% static 'output.css' %}" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <title>
-      {% block head_title %}Sistema de Bodega Electrica{% endblock %}
+      {% block head_title %}Sistema de Bodega EIE{% endblock %}
     </title>
   </head>
   <body class="bg-gray-100 h-full h-screen">
     <nav class="bg-white shadow-lg">
-        <div class="max-w-6xl mx-auto px-4">
-            <div class="flex justify-between">
-                <div class="flex space-x-4">
-                    <!-- Logo -->
-                    <div>
-                         <a href="{% url 'home' %}" class="flex items-center py-5 px-2 text-gray-700">
-                            <img src="https://eie.ucr.ac.cr/static/img/logos/EIE_v.png" alt="Logo" class="w-20 mr-2">
-                        </a>
-                    </div>
-
-                    <!-- Primary Navigation -->
-                    <div class="hidden md:flex items-center space-x-1">
-                        <a href="{% url 'home' %}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Página Principal</a>
-                        <a href="#" class="py-5 px-3 text-gray-700 hover:text-gray-900">Mis Órdenes</a>
-                        <a href="#" class="py-5 px-3 text-gray-700 hover:text-gray-900">Trámites</a>
-                        <a href="#" class="py-5 px-3 text-gray-700 hover:text-gray-900">Contacto</a>
-                    </div>
-                </div>
-
-                {% if user.is_authenticated %}
-                <div class="hidden md:flex items-center space-x-1">
-                     <form action="{% url 'logout' %}" method="post">
-  {% csrf_token %}
-  <button type="submit" class="py-2 px-3 bg-gray-500 text-white rounded hover:bg-gray-400">Cerrar Sesión</button>
-</form>
-                </div>
-
-                {% else %}
-                <!-- Secondary Navigation -->
-                <div class="hidden md:flex items-center space-x-1">
-                    <a href="{% url 'login' %}" class="py-2 px-3 bg-blue-500 text-white rounded hover:bg-blue-400">Iniciar sesión</a>
-                    <a href="{% url 'login' %}" class="py-2 px-3 bg-gray-500 text-white rounded hover:bg-gray-400">Registrarse</a>
-                </div>
-                {% endif %}
-
-                <!-- Mobile Menu Button -->
-                <div class="md:hidden flex items-center">
-                    <button class="mobile-menu-button">
-                        <svg class="w-6 h-6 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
-                </div>
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="flex justify-between">
+          <div class="flex space-x-4">
+            <!-- Logo -->
+            <div>
+              <a href="{% url 'home' %}" class="flex items-center py-5 px-2 text-gray-700">
+                <img src="https://eie.ucr.ac.cr/static/img/logos/EIE_v.png" alt="Logo" class="w-20 mr-2">
+              </a>
             </div>
-        </div>
 
-        <!-- Mobile Menu -->
-        <div class="mobile-menu hidden md:hidden">
-            <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-200">Página Principal</a>
-            <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-200">Mis Ordenes</a>
-            <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-200">Tramites</a>
-            <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-200">Contacto</a>
+            <!-- Primary Navigation -->
+            <div class="hidden md:flex items-center space-x-1">
+              <a href="{% url 'home' %}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Página Principal</a>
+              <a href="#" class="py-5 px-3 text-gray-700 hover:text-gray-900">Mis Órdenes</a>
+              <a href="#" class="py-5 px-3 text-gray-700 hover:text-gray-900">Trámites</a>
+              <a href="#" class="py-5 px-3 text-gray-700 hover:text-gray-900">Contacto</a>
+            </div>
+          </div>
+
+          {% if user.is_authenticated %}
+          <div class="hidden md:flex items-center space-x-1">
+            <!-- User Dropdown -->
+            <div class="relative inline-block text-left">
+              <div>
+                <button type="button" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none" id="menu-button" aria-expanded="true" aria-haspopup="true">
+                  {{ user.username }}
+                  <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Dropdown menu -->
+              <div class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1" id="user-dropdown">
+                <div class="py-1" role="none">
+                  <a href="{% url 'password_change' %}" class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">Cambiar contraseña</a>
+                  <form action="{% url 'logout' %}" method="post" class="block px-4 py-2 text-sm">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full text-left text-gray-700">Cerrar Sesión</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {% else %}
+          <!-- Secondary Navigation -->
+          <div class="hidden md:flex items-center space-x-1">
+            <a href="{% url 'login' %}" class="py-2 px-3 bg-blue-500 text-white rounded hover:bg-blue-400">Iniciar sesión</a>
+            <a href="{% url 'register' %}" class="py-2 px-3 bg-gray-500 text-white rounded hover:bg-gray-400">Registrarse</a>
+          </div>
+          {% endif %}
+
+          <!-- Mobile Menu Button -->
+          <div class="md:hidden flex items-center">
+            <button class="mobile-menu-button">
+              <svg class="w-6 h-6 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          </div>
         </div>
+      </div>
+
+      <!-- Mobile Menu -->
+      <div class="mobile-menu hidden md:hidden">
+        <a href="{% url 'home' %}" class="block py-2 px-4 text-sm hover:bg-gray-200">Página Principal</a>
+        <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-200">Mis Órdenes</a>
+        <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-200">Trámites</a>
+        <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-200">Contacto</a>
+      </div>
     </nav>
+
     {% if user.is_authenticated %}
-<div>{% block content %} {% endblock %}</div>
-{% else %}
-<p>You are not logged in</p>
-<a href="{% url 'login' %}">Log In</a>
-{% endif %}
+    <div>{% block content %} {% endblock %}</div>
+    {% else %}
+    <p>You are not logged in</p>
+    <a href="{% url 'login' %}">Log In</a>
+    {% endif %}
 
-    <script
-    src="{% static 'tw-elements/js/tw-elements.umd.min.js' %}"
-    type="text/javascript"></script>
-  <script>
-        const mobileMenuButton = document.querySelector('.mobile-menu-button');
-        const mobileMenu = document.querySelector('.mobile-menu');
+    <script src="{% static 'tw-elements/js/tw-elements.umd.min.js' %}" type="text/javascript"></script>
+    <script>
+      const mobileMenuButton = document.querySelector('.mobile-menu-button');
+      const mobileMenu = document.querySelector('.mobile-menu');
+      const userDropdownButton = document.querySelector('#menu-button');
+      const userDropdown = document.querySelector('#user-dropdown');
 
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
+      mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+      });
+
+      userDropdownButton.addEventListener('click', () => {
+        userDropdown.classList.toggle('hidden');
+      });
     </script>
   </body>
 </html>
