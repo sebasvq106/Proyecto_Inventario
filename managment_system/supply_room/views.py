@@ -4,7 +4,7 @@ from django.views.generic import CreateView, DeleteView
 
 # Create your views here.
 from django.views.generic.list import ListView
-from .models import Item, Class
+from .models import Item, Class, Users
 
 
 class ItemList(ListView):
@@ -51,3 +51,16 @@ class ClassCreate(CreateView):
 
     # specify the fields to be displayed
     fields = ["name", "code"]
+
+
+class StudentList(ListView):
+
+    # specify the model for list view
+    model = Users
+    paginate_by = 10
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super(StudentList, self).get_queryset(*args, **kwargs)
+        qs = qs.filter(role='student')
+        qs = qs.order_by("name")
+        return qs

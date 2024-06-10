@@ -1,7 +1,7 @@
 from django.urls import path
 
 # importing views from views.py
-from .views import ItemList, ItemCreate, ClassList, ClassCreate, ItemDelete
+from .views import ItemList, ItemCreate, ClassList, ClassCreate, ItemDelete, StudentList
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -18,6 +18,7 @@ urlpatterns = [
         name="crear-articulo",
     ),
     path("cursos", ClassList.as_view(template_name="page/cursos.html"), name="cursos"),
+    path("estudiantes", StudentList.as_view(template_name="page/estudiantes.html"), name="estudiantes"),
     path(
         "crear-curso",
         ClassCreate.as_view(
