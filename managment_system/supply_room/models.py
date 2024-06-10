@@ -13,34 +13,45 @@ STATUS_CHOICES = (
     ("denied", "Denegado"),
 )
 
+
 class CustomUserManager(UserManager):
     def create_user(self, username=None, email=None, password=None, **extra_fields):
-        return super(CustomUserManager, self).create_user(username, email, password, **extra_fields)
+        return super(CustomUserManager, self).create_user(
+            username, email, password, **extra_fields
+        )
 
-    def create_superuser(self, username=None, email=None, password=None, **extra_fields):
-        return super(CustomUserManager, self).create_superuser(username, email, password, **extra_fields)
+    def create_superuser(
+        self, username=None, email=None, password=None, **extra_fields
+    ):
+        return super(CustomUserManager, self).create_superuser(
+            username, email, password, **extra_fields
+        )
 
     def _create_user(self, username, email, password, **extra_fields):
         email = self.normalize_email(email)
-        GlobalUserModel = apps.get_model(self.model._meta.app_label, self.model._meta.object_name)
+        GlobalUserModel = apps.get_model(
+            self.model._meta.app_label, self.model._meta.object_name
+        )
         username = GlobalUserModel.normalize_username(username)
         user = self.model(username=username, email=email, **extra_fields)
         user.password = make_password(password)
         user.save(using=self._db)
         return user
 
+
 class Item(models.Model):
     name = models.CharField(max_length=200)
 
     def __str__(self):
-        return f'{self.name}'
+        return f"{self.name}"
+
 
 class Users(AbstractUser):
     name = models.CharField(max_length=200)
     email = models.EmailField(unique=True)
     role = models.CharField(max_length=200)
     student_id = models.CharField(max_length=200, null=True)
-    username =  models.CharField(max_length=50, null=True)
+    username = models.CharField(max_length=50, null=True)
 
     objects = CustomUserManager()
 
@@ -50,11 +61,12 @@ class Users(AbstractUser):
     def save(self, *args, **kwargs):
         # Set username to the part of the email before the '@' symbol
         if not self.username:
-            self.username = self.email.split('@')[0]
+            self.username = self.email.split("@")[0]
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f'{self.email}'
+        return f"{self.email}"
+
 
 class Class(models.Model):
     name = models.CharField(max_length=200)
@@ -62,6 +74,7 @@ class Class(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.code})"
+
 
 class ClassGroups(models.Model):
     number = models.PositiveIntegerField()
@@ -72,18 +85,18 @@ class ClassGroups(models.Model):
     def __str__(self):
         return f"{self.class_id} ({self.number}, {self.semester})"
 
+
 class Order(models.Model):
     group = models.ForeignKey(ClassGroups, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.group.id}'
+        return f"{self.group.id}"
+
 
 class ItemOrder(models.Model):
     status = models.CharField(
-        max_length = 20,
-        choices = STATUS_CHOICES,
-        default = 'requested'
-        )
+        max_length=20, choices=STATUS_CHOICES, default="requested"
+    )
     quantity = models.PositiveIntegerField(validators=[MinValueValidator(1)])
     code = models.CharField(max_length=200)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
@@ -92,6 +105,7 @@ class ItemOrder(models.Model):
     def __str__(self):
         return f"{self.order.id}, {self.item.id}"
 
+
 class UserOrder(models.Model):
     user = models.ForeignKey(Users, on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
@@ -99,10 +113,10 @@ class UserOrder(models.Model):
     def __str__(self):
         return f"{self.user.name}, {self.order.id}"
 
+
 class StudentGroups(models.Model):
     student = models.ForeignKey(Users, on_delete=models.CASCADE)
     group = models.ForeignKey(ClassGroups, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.student.id}, {self.group.id}"
-
