@@ -15,13 +15,13 @@ class LoginRequiredMiddleware:
     def __call__(self, request):
         # List of URL names that don't require authentication
         exempt_urls = [
-            reverse('login'),
+            reverse("login"),
             # Add other URLs that should be accessible without login
         ]
 
         # Check if the user is not authenticated and the requested URL is not exempt
         if not request.user.is_authenticated and request.path not in exempt_urls:
-            return redirect('login')  # Redirect to the login page
+            return redirect("login")  # Redirect to the login page
 
         response = self.get_response(request)
         return response

@@ -1,27 +1,38 @@
 from django.contrib import admin
 from .models import *
-from django.contrib.auth.admin import UserAdmin
+
 
 class ItemAdmin(admin.ModelAdmin):
     pass
 
+
+class UserAdmin(admin.ModelAdmin):
+    pass
+
+
 class ClassAdmin(admin.ModelAdmin):
     pass
+
 
 class GroupsAdmin(admin.ModelAdmin):
     pass
 
+
 class OrderAdmin(admin.ModelAdmin):
     pass
+
 
 class ItemOrderAdmin(admin.ModelAdmin):
     pass
 
+
 class UserOrderAdmin(admin.ModelAdmin):
     pass
 
+
 class StudentGroupsAdmin(admin.ModelAdmin):
     pass
+
 
 admin.site.register(Item, ItemAdmin)
 admin.site.register(Users, UserAdmin)

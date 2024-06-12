@@ -2,8 +2,8 @@
 <div class="max-w-6xl mx-auto px-4 py-8 bg-white rounded-lg shadow-md mt-16">
     <div class="flex justify-between items-center mb-4">
         <!-- Spacer to push the button to the right -->
-        <h2 class="text-2xl font-bold py-2">Lista de Cursos</h2>
-        <a href="{% url 'crear-curso' %}" class="py-2 px-3 bg-blue-500 text-white rounded hover:bg-blue-400">Agregar Curso</a>
+        <h2 class="text-2xl font-bold py-2">Lista de Estudiantes</h2>
+        <a href="#" class="py-2 px-3 bg-blue-500 text-white rounded hover:bg-blue-400">Agregar Estudiantes</a>
     </div>
 
     <ul class="divide-y divide-gray-200">
@@ -12,9 +12,14 @@
         <!-- Display Objects -->
         <li class="py-4">
             <div class="flex justify-between items-center">
-                <a href="{% url 'grupos' code=object.code %}">
-                <span class="text-gray-700">{{ object.name }} {{ object.code }}</span>
-                    </a>
+                <div class="text-gray-700">{{ object.email }}
+                </div>
+                <div class="text-gray-700">
+                    {{ object.student_id }}
+                </div>
+                <div class="text-gray-700">
+                    {{ object.name }}</div>
+                <div></div>
             </div>
         </li>
         {% empty %}
