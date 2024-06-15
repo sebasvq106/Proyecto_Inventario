@@ -77,8 +77,14 @@ class ClassGroupsCreate(CreateView):
     model = ClassGroups
 
     # specify the fields to be displayed
-    fields = ["semester", "number", "professor"]
+    fields = ["semester", "number", "professor", "class_id"]
 
+    def get_initial(self):
+        initial = super().get_initial()
+        class_id = Class.objects.filter(code=self.kwargs.get('code'))
+        print(class_id)
+        initial['class_id'] = class_id
+        return initial
 
 
 class StudentList(ListView):

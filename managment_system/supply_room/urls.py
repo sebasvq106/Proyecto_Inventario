@@ -20,7 +20,7 @@ urlpatterns = [
     ),
     path("cursos", ClassList.as_view(template_name="page/cursos.html"), name="cursos"),
     path("cursos/<str:code>/grupos", ClassGroupsList.as_view(template_name="page/grupos.html"), name="grupos"),
-    path("cursos/<str:code>/crear-grupo", ClassGroupsCreate.as_view(template_name="page/crear-grupo.html"), name="crear-grupo"),
+    path("cursos/<str:code>/crear-grupo", ClassGroupsCreate.as_view(template_name="page/crear-grupo.html", success_url="grupos"), name="crear-grupo"),
     path("estudiantes", StudentList.as_view(template_name="page/estudiantes.html"), name="estudiantes"),
     path(
         "crear-curso",
