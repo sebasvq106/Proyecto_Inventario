@@ -54,7 +54,7 @@ class Item(models.Model):
 class Users(AbstractUser):
     name = models.CharField(max_length=200)
     email = models.EmailField(unique=True)
-    role = models.CharField(max_length=200, choices=ROLE_CHOICES, default='student')
+    role = models.CharField(max_length=200, choices=ROLE_CHOICES, default="student")
     student_id = models.CharField(max_length=200, null=True)
     username = models.CharField(max_length=50, null=True)
 

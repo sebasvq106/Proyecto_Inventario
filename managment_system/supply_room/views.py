@@ -60,13 +60,13 @@ class ClassGroupsList(ListView):
     paginate_by = 10
 
     def get_queryset(self, *args, **kwargs):
-        class_id = Class.objects.filter(code=self.kwargs.get('code'))
+        class_id = Class.objects.filter(code=self.kwargs.get("code"))
         qs = super(ClassGroupsList, self).get_queryset(*args, **kwargs)
         qs = qs.filter(class_id=class_id[0])
         return qs
 
     def get_context_data(self, **kwargs):
-        class_id = Class.objects.filter(code=self.kwargs.get('code'))
+        class_id = Class.objects.filter(code=self.kwargs.get("code"))
         context = super().get_context_data(**kwargs)
         context["class"] = class_id[0]
         return context
@@ -77,14 +77,13 @@ class ClassGroupsCreate(CreateView):
     model = ClassGroups
 
     # specify the fields to be displayed
-    fields = ["semester", "number", "professor", "class_id"]
+    fields = ["semester", "number", "professor"]
 
-    def get_initial(self):
-        initial = super().get_initial()
-        class_id = Class.objects.filter(code=self.kwargs.get('code'))
-        print(class_id)
-        initial['class_id'] = class_id
-        return initial
+    def form_valid(self, form):
+        class_id = Class.objects.filter(code=self.kwargs.get("code"))
+        form.instance.class_id = class_id[0]
+        print(form)
+        return super(ClassGroupsCreate, self).form_valid(form)
 
 
 class StudentList(ListView):
@@ -95,6 +94,6 @@ class StudentList(ListView):
 
     def get_queryset(self, *args, **kwargs):
         qs = super(StudentList, self).get_queryset(*args, **kwargs)
-        qs = qs.filter(role='student')
+        qs = qs.filter(role="student")
         qs = qs.order_by("name")
         return qs
