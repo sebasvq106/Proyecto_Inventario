@@ -4,6 +4,8 @@ from django.views.generic import CreateView, DeleteView
 
 # Create your views here.
 from django.views.generic.list import ListView
+
+from .forms import GroupForm
 from .models import Item, Class, Users, ClassGroups
 
 
@@ -75,9 +77,7 @@ class ClassGroupsList(ListView):
 class ClassGroupsCreate(CreateView):
     # specify the model for create view
     model = ClassGroups
-
-    # specify the fields to be displayed
-    fields = ["semester", "number", "professor"]
+    form_class = GroupForm
 
     def form_valid(self, form):
         class_id = Class.objects.filter(code=self.kwargs.get("code"))

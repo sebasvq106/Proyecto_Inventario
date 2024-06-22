@@ -29,6 +29,7 @@ urlpatterns = [
         name="login",
     ),
     path("accounts/", include("django.contrib.auth.urls")),
+    path("select2/", include("django_select2.urls")),
     path("", include("supply_room.urls")),
     path("", views.home_view, name="home"),
 ]

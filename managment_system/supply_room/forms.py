@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import password_validation
-from .models import Users
+from django_select2 import forms as s2forms
+from .models import Users, ClassGroups
 
 
 class RegistrationForm(UserCreationForm):
@@ -29,3 +30,17 @@ class RegistrationForm(UserCreationForm):
     class Meta:
         model = Users
         fields = ("username", "email", "role", "student_id", "name")
+
+
+class StudentWidget(s2forms.Select2MultipleWidget):
+    search_fields = [
+        "name__icontains",
+        "email__icontains",
+    ]
+
+
+class GroupForm(forms.ModelForm):
+    class Meta:
+        model = ClassGroups
+        fields = ["semester", "number", "professor", "student"]
+        widgets = {"student": StudentWidget}
