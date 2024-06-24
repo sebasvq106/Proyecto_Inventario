@@ -1,5 +1,5 @@
-from django.shortcuts import render
-from django.urls import reverse_lazy
+from django.shortcuts import render, get_object_or_404
+from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, DeleteView
 
 # Create your views here.
@@ -84,6 +84,21 @@ class ClassGroupsCreate(CreateView):
         form.instance.class_id = class_id[0]
         print(form)
         return super(ClassGroupsCreate, self).form_valid(form)
+
+
+class ClassGroupsDelete(DeleteView):
+    model = ClassGroups
+    template_name = "page/confirm_delete_grupos.html"
+    code = ""
+
+    def get_success_url(self):
+        # I cannot access the 'pk' of the deleted object here
+        return reverse("grupos", kwargs={"code": self.code})
+
+    def form_valid(self, form):
+        group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
+        self.code = group.class_id.code
+        return super(ClassGroupsDelete, self).form_valid(form)
 
 
 class StudentList(ListView):

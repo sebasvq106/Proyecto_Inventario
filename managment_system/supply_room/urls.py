@@ -10,6 +10,7 @@ from .views import (
     StudentList,
     ClassGroupsList,
     ClassGroupsCreate,
+    ClassGroupsDelete,
 )
 from django.contrib.auth import views as auth_views
 
@@ -52,6 +53,7 @@ urlpatterns = [
         name="crear-curso",
     ),
     path("eliminar-articulo/<int:pk>", ItemDelete.as_view(), name="eliminar-articulo"),
+    path("eliminar-grupo/<int:pk>", ClassGroupsDelete.as_view(), name="eliminar-grupo"),
     path(
         "cambiar-contrasena/",
         auth_views.PasswordChangeView.as_view(

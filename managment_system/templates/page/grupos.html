@@ -11,8 +11,11 @@
         {% for object in object_list %}
         <!-- Display Objects -->
         <li class="py-4">
-            <div class="flex justify-between items-center">
-                <span class="text-gray-700">{{ object.semester }} - Grupo {{ object.number }} - {{object.professor.name}}</span>
+            <div class="flex justify-between items-center  ">
+                <span class="text-gray-700 w-1/4">{{ object.semester }} - Grupo {{ object.number }} - {{object.professor.name}}</span>
+                <button class="py-2 px-3 bg-gray-500 text-white rounded hover:bg-gray-400">Datos</button>
+                <button class="py-2 px-3 bg-blue-500 text-white rounded hover:bg-blue-400">Estudiantes</button>
+                <a href="{% url 'eliminar-grupo' object.id %}" class="py-2 px-3 bg-red-500 text-white rounded hover:bg-red-400">Eliminar</a>
             </div>
         </li>
         {% empty %}
