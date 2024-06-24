@@ -54,7 +54,7 @@ class Item(models.Model):
 class Users(AbstractUser):
     name = models.CharField(max_length=200)
     email = models.EmailField(unique=True)
-    role = models.CharField(max_length=200, choices=ROLE_CHOICES, default='student')
+    role = models.CharField(max_length=200, choices=ROLE_CHOICES, default="student")
     student_id = models.CharField(max_length=200, null=True)
     username = models.CharField(max_length=50, null=True)
 
@@ -86,6 +86,7 @@ class ClassGroups(models.Model):
     semester = models.CharField(max_length=200)
     professor = models.ForeignKey(Users, on_delete=models.CASCADE)
     class_id = models.ForeignKey(Class, on_delete=models.CASCADE)
+    student = models.ManyToManyField(Users, related_name="group_student")
 
     def __str__(self):
         return f"{self.class_id} ({self.number}, {self.semester})"

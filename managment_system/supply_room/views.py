@@ -1,9 +1,11 @@
-from django.shortcuts import render
-from django.urls import reverse_lazy
+from django.shortcuts import render, get_object_or_404
+from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, DeleteView
 
 # Create your views here.
 from django.views.generic.list import ListView
+
+from .forms import GroupForm
 from .models import Item, Class, Users, ClassGroups
 
 
@@ -60,13 +62,13 @@ class ClassGroupsList(ListView):
     paginate_by = 10
 
     def get_queryset(self, *args, **kwargs):
-        class_id = Class.objects.filter(code=self.kwargs.get('code'))
+        class_id = Class.objects.filter(code=self.kwargs.get("code"))
         qs = super(ClassGroupsList, self).get_queryset(*args, **kwargs)
         qs = qs.filter(class_id=class_id[0])
         return qs
 
     def get_context_data(self, **kwargs):
-        class_id = Class.objects.filter(code=self.kwargs.get('code'))
+        class_id = Class.objects.filter(code=self.kwargs.get("code"))
         context = super().get_context_data(**kwargs)
         context["class"] = class_id[0]
         return context
@@ -75,16 +77,28 @@ class ClassGroupsList(ListView):
 class ClassGroupsCreate(CreateView):
     # specify the model for create view
     model = ClassGroups
+    form_class = GroupForm
 
-    # specify the fields to be displayed
-    fields = ["semester", "number", "professor", "class_id"]
+    def form_valid(self, form):
+        class_id = Class.objects.filter(code=self.kwargs.get("code"))
+        form.instance.class_id = class_id[0]
+        print(form)
+        return super(ClassGroupsCreate, self).form_valid(form)
 
-    def get_initial(self):
-        initial = super().get_initial()
-        class_id = Class.objects.filter(code=self.kwargs.get('code'))
-        print(class_id)
-        initial['class_id'] = class_id
-        return initial
+
+class ClassGroupsDelete(DeleteView):
+    model = ClassGroups
+    template_name = "page/confirm_delete_grupos.html"
+    code = ""
+
+    def get_success_url(self):
+        # I cannot access the 'pk' of the deleted object here
+        return reverse("grupos", kwargs={"code": self.code})
+
+    def form_valid(self, form):
+        group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
+        self.code = group.class_id.code
+        return super(ClassGroupsDelete, self).form_valid(form)
 
 
 class StudentList(ListView):
@@ -95,6 +109,6 @@ class StudentList(ListView):
 
     def get_queryset(self, *args, **kwargs):
         qs = super(StudentList, self).get_queryset(*args, **kwargs)
-        qs = qs.filter(role='student')
+        qs = qs.filter(role="student")
         qs = qs.order_by("name")
         return qs
