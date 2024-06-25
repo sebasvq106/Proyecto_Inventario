@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
+from django.views import View
 from django.views.generic import CreateView, DeleteView, UpdateView
 
 # Create your views here.
@@ -88,7 +89,7 @@ class ClassGroupsCreate(CreateView):
 
 class ClassGroupsDelete(DeleteView):
     model = ClassGroups
-    template_name = "page/confirm_delete_grupos.html"
+    template_name = "page/grupos/confirm_delete_grupos.html"
     code = ""
 
     def get_success_url(self):
@@ -104,6 +105,17 @@ class ClassGroupsDelete(DeleteView):
 class ClassGroupsUpdate(UpdateView):
     model = ClassGroups
     fields = ['semester', 'number', 'professor']
+
+    def get_success_url(self):
+        # I cannot access the 'pk' of the deleted object here
+        return reverse("grupos", kwargs={"code": self.kwargs["code"]})
+
+
+class GroupStudentList(View):
+    def get(self, request, *args, **kwargs):
+        group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
+        return render(request, "page/grupos/estudiantes.html", {"object_list": group.student.all()})
+
 
 
 class StudentList(ListView):

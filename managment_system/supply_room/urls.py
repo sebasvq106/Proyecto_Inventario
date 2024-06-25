@@ -10,11 +10,12 @@ from .views import (
     StudentList,
     ClassGroupsList,
     ClassGroupsCreate,
-    ClassGroupsDelete, ClassGroupsUpdate,
+    ClassGroupsDelete, ClassGroupsUpdate, GroupStudentList,
 )
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
+    # ------------- Articles -----------
     path(
         "articulos",
         ItemList.as_view(template_name="page/articulos.html"),
@@ -27,6 +28,10 @@ urlpatterns = [
         ),
         name="crear-articulo",
     ),
+    path("eliminar-articulo/<int:pk>", ItemDelete.as_view(), name="eliminar-articulo"),
+
+
+    # ------------- Groups -----------
     path("cursos", ClassList.as_view(template_name="page/cursos.html"), name="cursos"),
     path(
         "cursos/<str:code>/grupos",
@@ -36,22 +41,22 @@ urlpatterns = [
     path(
         "cursos/<str:code>/crear-grupo",
         ClassGroupsCreate.as_view(
-            template_name="page/crear-grupo.html", success_url="grupos"
+            template_name="page/grupos/crear-grupo.html", success_url="grupos"
         ),
         name="crear-grupo",
     ),
     path(
         "cursos/<str:code>/editar/<pk>",
         ClassGroupsUpdate.as_view(
-            template_name="page/editar-grupo.html", success_url="grupos"
+            template_name="page/grupos/editar-grupo.html", success_url="grupos"
         ),
         name="editar-grupo",
     ),
     path(
-        "estudiantes",
-        StudentList.as_view(template_name="page/estudiantes.html"),
-        name="estudiantes",
-    ),
+            "cursos/<str:code>/estudiantes/<pk>",
+            GroupStudentList.as_view(),
+            name="estudiantes-grupo",
+        ),
     path(
         "crear-curso",
         ClassCreate.as_view(
@@ -59,8 +64,18 @@ urlpatterns = [
         ),
         name="crear-curso",
     ),
-    path("eliminar-articulo/<int:pk>", ItemDelete.as_view(), name="eliminar-articulo"),
     path("eliminar-grupo/<int:pk>", ClassGroupsDelete.as_view(), name="eliminar-grupo"),
+
+
+    # ------------- Students -----------
+    path(
+        "estudiantes",
+        StudentList.as_view(template_name="page/estudiantes.html"),
+        name="estudiantes",
+    ),
+
+
+    # ------------- Profile -----------
     path(
         "cambiar-contrasena/",
         auth_views.PasswordChangeView.as_view(

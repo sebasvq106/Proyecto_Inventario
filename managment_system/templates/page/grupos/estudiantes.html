@@ -2,8 +2,8 @@
 <div class="max-w-6xl mx-auto px-4 py-8 bg-white rounded-lg shadow-md mt-16">
     <div class="flex justify-between items-center mb-4">
         <!-- Spacer to push the button to the right -->
-        <h2 class="text-2xl font-bold py-2">Lista de Grupos - {{ class.code }} - {{class.name}}</h2>
-        <a href="{% url 'crear-grupo' code=class.code %}" class="py-2 px-3 bg-blue-500 text-white rounded hover:bg-blue-400">Agregar Grupo</a>
+        <h2 class="text-2xl font-bold py-2">Lista de Estudiantes</h2>
+        <a href="#" class="py-2 px-3 bg-blue-500 text-white rounded hover:bg-blue-400">Agregar Estudiantes</a>
     </div>
 
     <ul class="divide-y divide-gray-200">
@@ -11,11 +11,15 @@
         {% for object in object_list %}
         <!-- Display Objects -->
         <li class="py-4">
-            <div class="flex justify-between items-center  ">
-                <span class="text-gray-700 w-1/4">{{ object.semester }} - Grupo {{ object.number }} - {{object.professor.name}}</span>
-                <a href="{% url 'editar-grupo' code=class.code pk=object.id %}" class="py-2 px-3 bg-gray-500 text-white rounded hover:bg-gray-400">Datos</a>
-                <a href="{% url 'estudiantes-grupo' code=class.code pk=object.id %}"  class="py-2 px-3 bg-blue-500 text-white rounded hover:bg-blue-400">Estudiantes</a>
-                <a href="{% url 'eliminar-grupo' object.id %}" class="py-2 px-3 bg-red-500 text-white rounded hover:bg-red-400">Eliminar</a>
+            <div class="flex justify-between items-center">
+                <div class="text-gray-700">{{ object.email }}
+                </div>
+                <div class="text-gray-700">
+                    {{ object.student_id }}
+                </div>
+                <div class="text-gray-700">
+                    {{ object.name }}</div>
+                <div></div>
             </div>
         </li>
         {% empty %}
