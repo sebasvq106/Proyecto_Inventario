@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView, DeleteView
+from django.views.generic import CreateView, DeleteView, UpdateView
 
 # Create your views here.
 from django.views.generic.list import ListView
@@ -99,6 +99,11 @@ class ClassGroupsDelete(DeleteView):
         group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
         self.code = group.class_id.code
         return super(ClassGroupsDelete, self).form_valid(form)
+
+
+class ClassGroupsUpdate(UpdateView):
+    model = ClassGroups
+    fields = ['semester', 'number', 'professor']
 
 
 class StudentList(ListView):

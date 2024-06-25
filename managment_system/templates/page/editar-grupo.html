@@ -8,13 +8,17 @@
         <form class="max-w-md mx-auto space-y-6" method="POST" enctype="multipart/form-data">
             <!-- Security token -->
             {% csrf_token %}
-            <h2 class="text-2xl font-bold mb-6 text-center">Crear Grupo</h2>
+            <h2 class="text-2xl font-bold mb-6 text-center">Editar Grupo</h2>
             <!-- Name field -->
             {{ form.as_p }}
 
 
-            <div class="flex justify-center mt-8">
-                <input type="submit" value="Crear" class="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-300">
+            <div class="flex justify-center mt-8 space-x-4">
+                <a href="{% url 'grupos' code=object.class_id.code %}" class="w-32 flex items-center justify-center py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                    Cancelar
+                </a>
+                <input type="submit" value="Guardar" class="w-32 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-300">
+
             </div>
         </form>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

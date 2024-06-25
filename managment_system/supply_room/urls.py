@@ -10,7 +10,7 @@ from .views import (
     StudentList,
     ClassGroupsList,
     ClassGroupsCreate,
-    ClassGroupsDelete,
+    ClassGroupsDelete, ClassGroupsUpdate,
 )
 from django.contrib.auth import views as auth_views
 
@@ -39,6 +39,13 @@ urlpatterns = [
             template_name="page/crear-grupo.html", success_url="grupos"
         ),
         name="crear-grupo",
+    ),
+    path(
+        "cursos/<str:code>/editar/<pk>",
+        ClassGroupsUpdate.as_view(
+            template_name="page/editar-grupo.html", success_url="grupos"
+        ),
+        name="editar-grupo",
     ),
     path(
         "estudiantes",
