@@ -156,3 +156,12 @@ class OrderCreate(CreateView):
         ctx = super(OrderCreate, self).get_context_data(**kwargs)
         ctx["group"] = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
         return ctx
+
+
+class OrderList(View):
+    def get(self, request, *args, **kwargs):
+        return render(
+            request,
+            "page/mis-ordenes.html",
+            {"object_list": request.user.orders.all()},
+        )
