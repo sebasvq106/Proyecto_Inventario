@@ -1,0 +1,45 @@
+{% extends "base.html" %} {% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8 bg-white rounded-lg shadow-md mt-16">
+
+    <h2 class="text-2xl font-bold mb-6 text-center">Seleccione el curso para el cual desea crear una orden</h2>
+
+
+    <ul class="divide-y divide-gray-200">
+        <!-- Iterate over object_list -->
+        {% for object in object_list %}
+        <!-- Display Objects -->
+        <li class="py-4">
+            <div class="flex justify-between items-center  ">
+                <a href="{% url 'crear-orden' pk=object.id %}" class="text-gray-700">{{ object.semester }} - {{ object.class_id.name }} -  Grupo {{ object.number }} - {{object.professor.name}}</a>
+            </div>
+        </li>
+        {% empty %}
+        <li class="py-4 text-center text-gray-500">No objects yet.</li>
+        {% endfor %}
+    </ul>
+
+    <div class="pagination ">
+    <div class="step-links flex w-full justify-between items-center p-2">
+        {% if page_obj.has_previous %}
+        <a href="?page=1" class="mx-2">Primero</a>
+        <a href="?page={{ page_obj.previous_page_number }}" class="mx-2">Previo</a>
+        {% else %}
+        <div></div>
+        <div></div>
+        {% endif %}
+
+        <span class="current font-bold mx-4">
+            Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="mx-2">Siguiente</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}" class="mx-2">Última</a>
+        {% else %}
+        <div></div>
+        <div></div>
+        {% endif %}
+    </div>
+</div>
+</div>
+{% endblock %}

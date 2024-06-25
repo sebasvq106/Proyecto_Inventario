@@ -1,8 +1,9 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import password_validation
+from django.contrib.auth.forms import UserCreationForm
 from django_select2 import forms as s2forms
-from .models import Users, ClassGroups
+
+from .models import ClassGroups, Order, Users
 
 
 class RegistrationForm(UserCreationForm):
@@ -43,4 +44,11 @@ class GroupForm(forms.ModelForm):
     class Meta:
         model = ClassGroups
         fields = ["semester", "number", "professor", "student"]
+        widgets = {"student": StudentWidget}
+
+
+class OrderForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ["student"]
         widgets = {"student": StudentWidget}

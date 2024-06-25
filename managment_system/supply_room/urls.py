@@ -1,18 +1,11 @@
+from django.contrib.auth import views as auth_views
 from django.urls import path
 
 # importing views from views.py
-from .views import (
-    ItemList,
-    ItemCreate,
-    ClassList,
-    ClassCreate,
-    ItemDelete,
-    StudentList,
-    ClassGroupsList,
-    ClassGroupsCreate,
-    ClassGroupsDelete, ClassGroupsUpdate, GroupStudentList,
-)
-from django.contrib.auth import views as auth_views
+from .views import (ClassCreate, ClassGroupsCreate, ClassGroupsDelete,
+                    ClassGroupsList, ClassGroupStudentList, ClassGroupsUpdate,
+                    ClassList, ItemCreate, ItemDelete, ItemList, OrderCreate,
+                    OrderGroupList, StudentList)
 
 urlpatterns = [
     # ------------- Articles -----------
@@ -29,8 +22,6 @@ urlpatterns = [
         name="crear-articulo",
     ),
     path("eliminar-articulo/<int:pk>", ItemDelete.as_view(), name="eliminar-articulo"),
-
-
     # ------------- Groups -----------
     path("cursos", ClassList.as_view(template_name="page/cursos.html"), name="cursos"),
     path(
@@ -53,10 +44,10 @@ urlpatterns = [
         name="editar-grupo",
     ),
     path(
-            "cursos/<str:code>/estudiantes/<pk>",
-            GroupStudentList.as_view(),
-            name="estudiantes-grupo",
-        ),
+        "cursos/<str:code>/estudiantes/<pk>",
+        ClassGroupStudentList.as_view(),
+        name="estudiantes-grupo",
+    ),
     path(
         "crear-curso",
         ClassCreate.as_view(
@@ -65,16 +56,12 @@ urlpatterns = [
         name="crear-curso",
     ),
     path("eliminar-grupo/<int:pk>", ClassGroupsDelete.as_view(), name="eliminar-grupo"),
-
-
     # ------------- Students -----------
     path(
         "estudiantes",
         StudentList.as_view(template_name="page/estudiantes.html"),
         name="estudiantes",
     ),
-
-
     # ------------- Profile -----------
     path(
         "cambiar-contrasena/",
@@ -89,5 +76,16 @@ urlpatterns = [
             template_name="registration/password_change_done.html"
         ),
         name="password_change_done",
+    ),
+    # ------------- Orden -----------
+    path(
+        "orden/grupos",
+        OrderGroupList.as_view(),
+        name="orden-grupos",
+    ),
+    path(
+        "orden/<pk>",
+        OrderCreate.as_view(template_name="page/crear-orden.html", success_url="home"),
+        name="crear-orden",
     ),
 ]

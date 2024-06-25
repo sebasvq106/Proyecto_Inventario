@@ -3,9 +3,10 @@
 import django.core.validators
 import django.db.models.deletion
 import django.utils.timezone
-import supply_room.models
 from django.conf import settings
 from django.db import migrations, models
+
+import supply_room.models
 
 
 class Migration(migrations.Migration):

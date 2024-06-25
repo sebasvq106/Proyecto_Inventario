@@ -1,13 +1,12 @@
-from django.shortcuts import render, get_object_or_404
-from django.urls import reverse_lazy, reverse
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, DeleteView, UpdateView
-
 # Create your views here.
 from django.views.generic.list import ListView
 
-from .forms import GroupForm
-from .models import Item, Class, Users, ClassGroups
+from .forms import GroupForm, OrderForm
+from .models import Class, ClassGroups, Item, Order, Users
 
 
 class ItemList(ListView):
@@ -83,7 +82,6 @@ class ClassGroupsCreate(CreateView):
     def form_valid(self, form):
         class_id = Class.objects.filter(code=self.kwargs.get("code"))
         form.instance.class_id = class_id[0]
-        print(form)
         return super(ClassGroupsCreate, self).form_valid(form)
 
 
@@ -104,18 +102,21 @@ class ClassGroupsDelete(DeleteView):
 
 class ClassGroupsUpdate(UpdateView):
     model = ClassGroups
-    fields = ['semester', 'number', 'professor']
+    fields = ["semester", "number", "professor"]
 
     def get_success_url(self):
         # I cannot access the 'pk' of the deleted object here
         return reverse("grupos", kwargs={"code": self.kwargs["code"]})
 
 
-class GroupStudentList(View):
+class ClassGroupStudentList(View):
     def get(self, request, *args, **kwargs):
         group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
-        return render(request, "page/grupos/estudiantes.html", {"object_list": group.student.all()})
-
+        return render(
+            request,
+            "page/grupos/estudiantes.html",
+            {"object_list": group.student.all()},
+        )
 
 
 class StudentList(ListView):
@@ -129,3 +130,29 @@ class StudentList(ListView):
         qs = qs.filter(role="student")
         qs = qs.order_by("name")
         return qs
+
+
+class OrderGroupList(View):
+    def get(self, request, *args, **kwargs):
+        print(request.user)
+        return render(
+            request,
+            "page/crear-orden-grupos.html",
+            {"object_list": request.user.groups.all()},
+        )
+
+
+class OrderCreate(CreateView):
+    # specify the model for create view
+    model = Order
+    form_class = OrderForm
+
+    def form_valid(self, form):
+        group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
+        form.instance.group = group
+        return super(OrderCreate, self).form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        ctx = super(OrderCreate, self).get_context_data(**kwargs)
+        ctx["group"] = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
+        return ctx

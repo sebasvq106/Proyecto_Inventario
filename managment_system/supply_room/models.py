@@ -1,8 +1,8 @@
-from django.core.validators import MinValueValidator
-from django.db import models
-from django.contrib.auth.models import AbstractUser, UserManager
 from django.apps import apps
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import AbstractUser, UserManager
+from django.core.validators import MinValueValidator
+from django.db import models
 
 # specifying choices
 
@@ -57,6 +57,10 @@ class Users(AbstractUser):
     role = models.CharField(max_length=200, choices=ROLE_CHOICES, default="student")
     student_id = models.CharField(max_length=200, null=True)
     username = models.CharField(max_length=50, null=True)
+    groups = models.ManyToManyField(
+        "ClassGroups", related_name="group_student", blank=True
+    )
+    orders = models.ManyToManyField("Order", related_name="order_student", blank=True)
 
     objects = CustomUserManager()
 
@@ -84,16 +88,25 @@ class Class(models.Model):
 class ClassGroups(models.Model):
     number = models.PositiveIntegerField()
     semester = models.CharField(max_length=200)
-    professor = models.ForeignKey(Users, on_delete=models.CASCADE)
+    professor = models.ForeignKey(
+        Users, related_name="group_professor", on_delete=models.PROTECT
+    )
     class_id = models.ForeignKey(Class, on_delete=models.CASCADE)
-    student = models.ManyToManyField(Users, related_name="group_student")
+    student = models.ManyToManyField(
+        Users, related_name="group_student", through=Users.groups.through, blank=True
+    )
 
     def __str__(self):
         return f"{self.class_id} ({self.number}, {self.semester})"
 
 
 class Order(models.Model):
-    group = models.ForeignKey(ClassGroups, on_delete=models.CASCADE)
+    group = models.ForeignKey(
+        ClassGroups, related_name="order_group", on_delete=models.CASCADE
+    )
+    student = models.ManyToManyField(
+        Users, related_name="Order_student", through=Users.orders.through, blank=True
+    )
 
     def __str__(self):
         return f"{self.group.id}"
