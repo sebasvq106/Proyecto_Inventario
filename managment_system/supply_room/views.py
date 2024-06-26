@@ -170,6 +170,12 @@ class OrderList(View):
         )
 
 
+class AdminOrderList(ListView):
+    # specify the model for list view
+    model = Order
+    paginate_by = 10
+
+
 class OrderDetails(View):
     def get(self, request, *args, **kwargs):
         order = get_object_or_404(Order, pk=kwargs["pk"])
