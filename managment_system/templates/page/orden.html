@@ -35,11 +35,40 @@
 
             </div>
 
+             <div class="flex justify-center mt-8">
+                    <input type="submit" value="Agregar Articulo" class="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-300">
+               </div>
+
+            <h3 class="text-xl font-bold mb-6 text-center">Lista de Articulos</h3>
 
 
 
-
+             <ul class="divide-y divide-gray-400">
+                <!-- Iterate over object_list -->
+                <li></li>
+                 <div class="flex justify-between items-center">
+                        <span class="text-gray-700 w-1/4 text-center font-bold">ARTICULO</span>
+                        <span class="text-gray-700 w-1/4 text-center font-bold">CANTIDAD</span>
+                        <span class="text-gray-700 w-1/4 text-center font-bold">CODIGO</span>
+                        <span class="text-gray-700 w-1/4 text-center font-bold">ESTADO</span>
+                 </div>
+                {% for object in items %}
+                <!-- Display Objects -->
+                <li class="py-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-700 w-1/4 text-center">{{ object.item.name }}</span>
+                        <span class="text-gray-700 w-1/4 text-center">{{ object.quantity }}</span>
+                        <span class="text-gray-700 w-1/4 text-center">{{ object.code }}</span>
+                        <span class="text-gray-700 w-1/4 text-center">{{ object.status }}</span>
+                    </div>
+                </li>
+                {% empty %}
+                <li class="py-4 text-center text-gray-500">No objects yet.</li>
+                {% endfor %}
+                 <li></li>
+            </ul>
         </div>
+
     </div>
 </div>
 {% endblock %}

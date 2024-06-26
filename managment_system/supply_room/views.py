@@ -5,8 +5,8 @@ from django.views.generic import CreateView, DeleteView, UpdateView
 # Create your views here.
 from django.views.generic.list import ListView
 
-from .forms import GroupForm, OrderForm
-from .models import Class, ClassGroups, Item, Order, Users
+from .forms import GroupForm, OrderForm, ItemForm
+from .models import Class, ClassGroups, Item, Order, Users, ItemOrder
 
 
 class ItemList(ListView):
@@ -170,8 +170,13 @@ class OrderList(View):
 class OrderDetails(View):
     def get(self, request, *args, **kwargs):
         order = get_object_or_404(Order, pk=kwargs["pk"])
+        items = ItemOrder.objects.filter(order=order)
+        print(items)
         return render(
             request,
             "page/orden.html",
-            {"order": order},
+            {
+                "order": order,
+                "items": items
+            },
         )
