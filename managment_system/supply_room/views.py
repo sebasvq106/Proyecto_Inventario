@@ -165,3 +165,13 @@ class OrderList(View):
             "page/mis-ordenes.html",
             {"object_list": request.user.orders.all()},
         )
+
+
+class OrderDetails(View):
+    def get(self, request, *args, **kwargs):
+        order = get_object_or_404(Order, pk=kwargs["pk"])
+        return render(
+            request,
+            "page/orden.html",
+            {"order": order},
+        )

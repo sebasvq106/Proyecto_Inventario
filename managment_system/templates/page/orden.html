@@ -1,0 +1,45 @@
+{% extends "base.html" %} {% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8 mt-16">
+    {{ form.media.css }}
+    <style>
+        input, select {width: 100%}
+    </style>
+    <div class="bg-white rounded-lg p-6 shadow-lg backdrop-blur-xl">
+
+
+
+        <div class="max-w-md mx-auto space-y-6">
+            <!-- Security token -->
+            {% csrf_token %}
+            <h2 class="text-2xl font-bold mb-6 text-center">Detalles de la Orden</h2>
+            <div class="flex justify-between items-center  ">
+                <div class="block text-gray-700 text-l font-bold mb-2 space-y-4 my-6">Curso: {{ order.group.class_id.name}} - Grupo {{ order.group.number}}</div>
+
+                <div class="block text-gray-700 text-l font-bold mb-2 space-y-4 my-6">{{ order.group.semester}}</div>
+            </div>
+
+            <div class="flex justify-between items-center  ">
+                <div>
+                    <div class="block text-gray-700 text-l font-bold mb-2 space-y-4 my-6">Equipo de Trabajo:</div>
+                    <ul>
+                        {% for member in order.student.all %}
+                        <li  class="text-gray-700"> -   {{ member.student_id }} - {{ member.name }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div>
+                     <div class="block text-gray-700 text-l font-bold mb-2 space-y-4 my-6">Profesor a Cargo:</div>
+                     <div class="block text-gray-700 text-l font-bold mb-2 space-y-4 my-6">{{ order.group.professor.name}}</div>
+                </div>
+
+            </div>
+
+
+
+
+
+        </div>
+    </div>
+</div>
+{% endblock %}
