@@ -7,10 +7,10 @@ from django.db import models
 # specifying choices
 
 STATUS_CHOICES = (
-    ("requested", "Solicitado"),
-    ("lent", "Prestado"),
-    ("returned", "Devuelto"),
-    ("denied", "Denegado"),
+    ("Solicitado", "Solicitado"),
+    ("Prestado", "Prestado"),
+    ("Devuelto", "Devuelto"),
+    ("Denegado", "Denegado"),
 )
 
 ROLE_CHOICES = (
@@ -111,13 +111,19 @@ class Order(models.Model):
     def __str__(self):
         return f"{self.group.id}"
 
+    @property
+    def needs_attention(self):
+        order_items = ItemOrder.objects.filter(order=self)
+        return any([item.status == 'Solicitado' for item in order_items])
+
+
 
 class ItemOrder(models.Model):
     status = models.CharField(
-        max_length=20, choices=STATUS_CHOICES, default="requested"
+        max_length=20, choices=STATUS_CHOICES, default="Solicitado"
     )
     quantity = models.PositiveIntegerField(validators=[MinValueValidator(1)])
-    code = models.CharField(max_length=200)
+    code = models.CharField(max_length=200, blank=True)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
 

@@ -157,6 +157,9 @@ class OrderCreate(CreateView):
         ctx["group"] = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
         return ctx
 
+    def get_success_url(self):
+        return reverse("orden", kwargs={"pk": self.object.id})
+
 
 class OrderList(View):
     def get(self, request, *args, **kwargs):
@@ -180,3 +183,22 @@ class OrderDetails(View):
                 "items": items
             },
         )
+
+class ItemOrderCreate(CreateView):
+    # specify the model for create view
+    model = ItemOrder
+    form_class = ItemForm
+
+    def form_valid(self, form):
+        order = get_object_or_404(Order, pk=self.kwargs["pk"])
+        form.instance.order = order
+        return super(ItemOrderCreate, self).form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        ctx = super(ItemOrderCreate, self).get_context_data(**kwargs)
+        ctx["order"] = get_object_or_404(Order, pk=self.kwargs["pk"])
+        return ctx
+
+    def get_success_url(self):
+        # I cannot access the 'pk' of the deleted object here
+        return reverse("orden", kwargs={"pk": self.kwargs["pk"]})

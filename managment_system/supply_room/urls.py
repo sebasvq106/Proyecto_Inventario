@@ -5,7 +5,7 @@ from django.urls import path
 from .views import (ClassCreate, ClassGroupsCreate, ClassGroupsDelete,
                     ClassGroupsList, ClassGroupStudentList, ClassGroupsUpdate,
                     ClassList, ItemCreate, ItemDelete, ItemList, OrderCreate,
-                    OrderGroupList, StudentList, OrderList, OrderDetails)
+                    OrderGroupList, StudentList, OrderList, OrderDetails, ItemOrderCreate)
 
 urlpatterns = [
     # ------------- Articles -----------
@@ -98,5 +98,10 @@ urlpatterns = [
         "orden/<pk>",
         OrderDetails.as_view(),
         name="orden",
+    ),
+    path(
+        "orden/<pk>/articulo",
+        ItemOrderCreate.as_view(template_name="page/crear-orden-articulo.html"),
+        name="orden-articulo",
     ),
 ]
