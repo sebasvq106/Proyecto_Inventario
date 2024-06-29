@@ -52,6 +52,20 @@ class GroupForm(forms.ModelForm):
         fields = ["semester", "number", "professor", "student"]
         widgets = {"student": StudentWidget}
 
+class StudentGroupForm(forms.ModelForm):
+    class Meta:
+        model = ClassGroups
+        fields = "__all__"
+        widgets = {
+            "student": StudentWidget,
+            "number": forms.HiddenInput(),
+            "semester": forms.HiddenInput(),
+            "professor": forms.HiddenInput(),
+            "class_id":  forms.HiddenInput(),
+        }
+        labels: {"student": "Agregar Estudiantes"}
+
+
 
 class OrderForm(forms.ModelForm):
     class Meta:
@@ -71,7 +85,6 @@ class UpdateOrderItemForm(forms.ModelForm):
     class Meta:
         model = ItemOrder
         fields = ["item", "quantity", "code", "status"]
-        # exclude = ['item']
         widgets = {
             "item": forms.HiddenInput(),
             "quantity": forms.NumberInput(attrs={"style": "text-align: center"}),

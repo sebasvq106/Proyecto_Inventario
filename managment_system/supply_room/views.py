@@ -7,7 +7,7 @@ from django.views.generic import CreateView, DeleteView, UpdateView
 # Create your views here.
 from django.views.generic.list import ListView
 
-from .forms import GroupForm, ItemForm, OrderForm, UpdateOrderItemForm
+from .forms import GroupForm, ItemForm, OrderForm, UpdateOrderItemForm, StudentGroupForm
 from .models import Class, ClassGroups, Item, ItemOrder, Order, Users
 
 
@@ -119,12 +119,18 @@ class ClassGroupsUpdate(UpdateView):
 class ClassGroupStudentList(View):
     def get(self, request, *args, **kwargs):
         group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
+        form = StudentGroupForm()
         return render(
             request,
             "page/grupos/estudiantes.html",
-            {"object_list": group.student.all()},
+            {"object_list": group.student.all(), "form": form, 'group': group},
         )
 
+    def post(self, request, *args, **kwargs):
+        formset = StudentGroupForm(request.POST, request.FILES)
+        if formset.is_valid():
+            formset.save()
+        return HttpResponseRedirect(reverse("estudiantes-grupo", kwargs=kwargs))
 
 class StudentList(ListView):
 

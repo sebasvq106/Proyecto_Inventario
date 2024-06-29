@@ -1,11 +1,25 @@
 {% extends "base.html" %} {% block content %}
 <div class="max-w-6xl mx-auto px-4 py-8 bg-white rounded-lg shadow-md mt-16">
+    {{ form.media.css }}
+    <style>
+        input, select {width: 100%}
+    </style>
     <div class="flex justify-between items-center mb-4">
         <!-- Spacer to push the button to the right -->
-        <h2 class="text-2xl font-bold py-2">Lista de Estudiantes</h2>
-        <a href="#" class="py-2 px-3 bg-blue-500 text-white rounded hover:bg-blue-400">Agregar Estudiantes</a>
+        <h2 class="text-2xl  mx-auto font-bold py-2 text-center">Lista de Estudiantes</h2>
     </div>
+    <h4 class="text-=l font-bold py-2">Agregar Estudiantes</h4>
+     <form class=" mx-auto space-y-6" method="POST" enctype="multipart/form-data">
+         <!-- Security token -->
+         {% csrf_token %}
+        {{form.as_table}}
 
+
+         <div class="flex justify-center mt-8">
+                      <input type="submit" value="Agregar Estudiantes" class="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-300">
+         </div>
+     </form>
+    <h4 class="text-=l font-bold py-2">Lista de Estudiantes</h4>
     <ul class="divide-y divide-gray-200">
         <!-- Iterate over object_list -->
         {% for object in object_list %}
@@ -49,6 +63,8 @@
         <div></div>
         {% endif %}
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    {{ form.media.js }}
 </div>
 </div>
 {% endblock %}
