@@ -105,6 +105,11 @@ class ClassGroupsDelete(DeleteView):
 class ClassGroupsUpdate(UpdateView):
     model = ClassGroups
     fields = ["semester", "number", "professor"]
+    labels = {
+        "semester": "Semestre",
+        "number": "Numero de Clase",
+        "professor": "Profesor"
+    }
 
     def get_success_url(self):
         # I cannot access the 'pk' of the deleted object here
