@@ -1,3 +1,5 @@
+from django.forms import formset_factory, modelformset_factory
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse, reverse_lazy
 from django.views import View
@@ -5,8 +7,8 @@ from django.views.generic import CreateView, DeleteView, UpdateView
 # Create your views here.
 from django.views.generic.list import ListView
 
-from .forms import GroupForm, OrderForm, ItemForm
-from .models import Class, ClassGroups, Item, Order, Users, ItemOrder
+from .forms import GroupForm, ItemForm, OrderForm, UpdateOrderItemForm
+from .models import Class, ClassGroups, Item, ItemOrder, Order, Users
 
 
 class ItemList(ListView):
@@ -180,15 +182,37 @@ class OrderDetails(View):
     def get(self, request, *args, **kwargs):
         order = get_object_or_404(Order, pk=kwargs["pk"])
         items = ItemOrder.objects.filter(order=order)
-        print(items)
         return render(
             request,
             "page/orden.html",
-            {
-                "order": order,
-                "items": items
-            },
+            {"order": order, "items": items},
         )
+
+
+class AdminOrderDetails(View):
+    def get(self, request, *args, **kwargs):
+        order = get_object_or_404(Order, pk=kwargs["pk"])
+        items = ItemOrder.objects.filter(order=order)
+        OrderItemFormSet = modelformset_factory(
+            ItemOrder, form=UpdateOrderItemForm, extra=0
+        )
+        forms = OrderItemFormSet(queryset=ItemOrder.objects.filter(order=order))
+        data = [
+            {"name": items[i].item.name, "form": forms[i]} for i in range(len(items))
+        ]
+        return render(
+            request,
+            "page/administrar-orden.html",
+            {"order": order, "forms": forms, "data": data},
+        )
+
+    def post(self, request, *args, **kwargs):
+        OrderItemFormSet = modelformset_factory(ItemOrder, form=UpdateOrderItemForm)
+        formset = OrderItemFormSet(request.POST, request.FILES)
+        if formset.is_valid():
+            formset.save()
+        return HttpResponseRedirect(reverse("admin-orden", kwargs=kwargs))
+
 
 class ItemOrderCreate(CreateView):
     # specify the model for create view

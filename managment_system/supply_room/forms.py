@@ -3,7 +3,7 @@ from django.contrib.auth import password_validation
 from django.contrib.auth.forms import UserCreationForm
 from django_select2 import forms as s2forms
 
-from .models import ClassGroups, Order, Users, Item, ItemOrder
+from .models import ClassGroups, Item, ItemOrder, Order, Users
 
 
 class RegistrationForm(UserCreationForm):
@@ -39,6 +39,7 @@ class StudentWidget(s2forms.Select2MultipleWidget):
         "email__icontains",
     ]
 
+
 class ItemWidget(s2forms.Select2Widget):
     search_fields = [
         "name__icontains",
@@ -65,3 +66,14 @@ class ItemForm(forms.ModelForm):
         fields = ["item", "quantity", "code"]
         widgets = {"item": ItemWidget}
 
+
+class UpdateOrderItemForm(forms.ModelForm):
+    class Meta:
+        model = ItemOrder
+        fields = ["item", "quantity", "code", "status"]
+        # exclude = ['item']
+        widgets = {
+            "item": forms.HiddenInput(),
+            "quantity": forms.NumberInput(attrs={"style": "text-align: center"}),
+            "code": forms.TextInput(attrs={"style": "text-align: center"}),
+        }

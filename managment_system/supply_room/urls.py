@@ -2,10 +2,12 @@ from django.contrib.auth import views as auth_views
 from django.urls import path
 
 # importing views from views.py
-from .views import (ClassCreate, ClassGroupsCreate, ClassGroupsDelete,
-                    ClassGroupsList, ClassGroupStudentList, ClassGroupsUpdate,
-                    ClassList, ItemCreate, ItemDelete, ItemList, OrderCreate,
-                    OrderGroupList, StudentList, OrderList, OrderDetails, ItemOrderCreate, AdminOrderList)
+from .views import (AdminOrderDetails, AdminOrderList, ClassCreate,
+                    ClassGroupsCreate, ClassGroupsDelete, ClassGroupsList,
+                    ClassGroupStudentList, ClassGroupsUpdate, ClassList,
+                    ItemCreate, ItemDelete, ItemList, ItemOrderCreate,
+                    OrderCreate, OrderDetails, OrderGroupList, OrderList,
+                    StudentList)
 
 urlpatterns = [
     # ------------- Articles -----------
@@ -109,5 +111,10 @@ urlpatterns = [
         "administrar-ordenes",
         AdminOrderList.as_view(template_name="page/administrar-ordenes.html"),
         name="administrar-ordenes",
+    ),
+    path(
+        "administrar-ordenes/orden/<pk>",
+        AdminOrderDetails.as_view(),
+        name="admin-orden",
     ),
 ]

@@ -114,8 +114,7 @@ class Order(models.Model):
     @property
     def needs_attention(self):
         order_items = ItemOrder.objects.filter(order=self)
-        return any([item.status == 'Solicitado' for item in order_items])
-
+        return any([item.status == "Solicitado" for item in order_items])
 
 
 class ItemOrder(models.Model):
