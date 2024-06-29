@@ -7,7 +7,7 @@ from .views import (AdminOrderDetails, AdminOrderList, ClassCreate,
                     ClassGroupStudentList, ClassGroupsUpdate, ClassList,
                     ItemCreate, ItemDelete, ItemList, ItemOrderCreate,
                     OrderCreate, OrderDetails, OrderGroupList, OrderList,
-                    StudentList)
+                    StudentList, MyProfileView)
 
 urlpatterns = [
     # ------------- Articles -----------
@@ -116,5 +116,11 @@ urlpatterns = [
         "administrar-ordenes/orden/<pk>",
         AdminOrderDetails.as_view(),
         name="admin-orden",
+    ),
+    # ------------- Perfil -----------
+    path(
+        "mi-perfil",
+        MyProfileView.as_view(),
+        name="perfil",
     ),
 ]

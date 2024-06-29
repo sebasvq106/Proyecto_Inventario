@@ -243,3 +243,13 @@ class ItemOrderCreate(CreateView):
     def get_success_url(self):
         # I cannot access the 'pk' of the deleted object here
         return reverse("orden", kwargs={"pk": self.kwargs["pk"]})
+
+
+class MyProfileView(View):
+    def get(self, request, *args, **kwargs):
+        return render(
+            request,
+            "page/perfil.html",
+            {"user": request.user, "grupos": request.user.groups.all()},
+        )
+
