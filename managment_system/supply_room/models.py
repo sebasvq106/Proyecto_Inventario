@@ -123,24 +123,24 @@ class ItemOrder(models.Model):
     )
     quantity = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name='Cantidad')
     code = models.CharField(max_length=200, blank=True, verbose_name='Codigo')
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name='Orden')
-    item = models.ForeignKey(Item, on_delete=models.CASCADE, verbose_name='Articulo')
+    order = models.ForeignKey(Order, on_delete=models.RESTRICT, verbose_name='Orden')
+    item = models.ForeignKey(Item, on_delete=models.RESTRICT, verbose_name='Articulo')
 
     def __str__(self):
         return f"{self.order.id}, {self.item.id}"
 
 
 class UserOrder(models.Model):
-    user = models.ForeignKey(Users, on_delete=models.CASCADE)
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    user = models.ForeignKey(Users, on_delete=models.RESTRICT)
+    order = models.ForeignKey(Order, on_delete=models.RESTRICT)
 
     def __str__(self):
         return f"{self.user.name}, {self.order.id}"
 
 
 class StudentGroups(models.Model):
-    student = models.ForeignKey(Users, on_delete=models.CASCADE)
-    group = models.ForeignKey(ClassGroups, on_delete=models.CASCADE)
+    student = models.ForeignKey(Users, on_delete=models.RESTRICT)
+    group = models.ForeignKey(ClassGroups, on_delete=models.RESTRICT)
 
     def __str__(self):
         return f"{self.student.id}, {self.group.id}"
