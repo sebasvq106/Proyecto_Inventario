@@ -10,7 +10,7 @@
       {% block head_title %}Sistema de Bodega EIE{% endblock %}
     </title>
   </head>
-  <body class="bg-gray-100 h-full h-screen">
+  <body class="bg-gray-100 h-full min-h-screen">
     <nav class="bg-white shadow-lg">
       <div class="max-w-6xl mx-auto px-4">
         <div class="flex justify-between">
@@ -26,7 +26,7 @@
             <div class="hidden md:flex items-center space-x-1">
               <a href="{% url 'home' %}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Página Principal</a>
               <a href="{% url 'mis-ordenes' %}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Mis Órdenes</a>
-              <a href="#" class="py-5 px-3 text-gray-700 hover:text-gray-900">Trámites</a>
+              <a href="{% url 'perfil' %}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Mi Perfil</a>
               <a href="#" class="py-5 px-3 text-gray-700 hover:text-gray-900">Contacto</a>
             </div>
           </div>
@@ -86,7 +86,7 @@
     </nav>
 
     {% if user.is_authenticated %}
-    <div>{% block content %} {% endblock %}</div>
+    <div class="pb-12 ">{% block content %} {% endblock %}</div>
     {% else %}
     <p>You are not logged in</p>
     <a href="{% url 'login' %}">Log In</a>
