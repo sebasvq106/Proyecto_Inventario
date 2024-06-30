@@ -52,6 +52,7 @@ class GroupForm(forms.ModelForm):
         fields = ["year", "term", "number", "professor", "student"]
         widgets = {"student": StudentWidget}
 
+
 class StudentGroupForm(forms.ModelForm):
     class Meta:
         model = ClassGroups
@@ -64,7 +65,6 @@ class StudentGroupForm(forms.ModelForm):
             "professor": forms.HiddenInput(),
         }
         labels: {"student": "Agregar Estudiantes"}
-
 
 
 class OrderForm(forms.ModelForm):
@@ -82,6 +82,27 @@ class ItemForm(forms.ModelForm):
 
 
 class UpdateOrderItemForm(forms.ModelForm):
+    RESTRICTED_CHOICES = {
+        "Solicitado": (
+                ("Solicitado", "Solicitado"),
+                ("Prestado", "Prestado"),
+                ("Denegado", "Denegado"),
+            ),
+        "Prestado": (
+            ("Solicitado", "Solicitado"),
+            ("Prestado", "Prestado"),
+            ("Devuelto", "Devuelto"),
+        ),
+        "Devuelto": (
+            ("Prestado", "Prestado"),
+            ("Devuelto", "Devuelto"),
+        ),
+        "Denegado": (
+            ("Solicitado", "Solicitado"),
+            ("Denegado", "Denegado"),
+        ),
+    }
+
     class Meta:
         model = ItemOrder
         fields = ["item", "quantity", "code", "status"]
@@ -90,3 +111,8 @@ class UpdateOrderItemForm(forms.ModelForm):
             "quantity": forms.NumberInput(attrs={"style": "text-align: center"}),
             "code": forms.TextInput(attrs={"style": "text-align: center"}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateOrderItemForm, self).__init__(*args, **kwargs)
+        self.fields['status'].choices = self.RESTRICTED_CHOICES[self.instance.status]
+        print(self.RESTRICTED_CHOICES[self.instance.status])
