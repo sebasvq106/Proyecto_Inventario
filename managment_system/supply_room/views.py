@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.forms import formset_factory, modelformset_factory
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -9,6 +10,7 @@ from django.views.generic.list import ListView
 
 from .forms import GroupForm, ItemForm, OrderForm, UpdateOrderItemForm, StudentGroupForm
 from .models import Class, ClassGroups, Item, ItemOrder, Order, Users
+from .utils import AdminRoleCheck, StudentRoleCheck, TeacherRoleCheck, TeacherOrStudentRoleCheck, AdminOrTeacherRoleCheck
 
 
 class ItemList(ListView):
@@ -23,7 +25,7 @@ class ItemList(ListView):
         return qs
 
 
-class ItemCreate(CreateView):
+class ItemCreate(AdminRoleCheck, CreateView):
     # specify the model for create view
     model = Item
 
@@ -31,13 +33,13 @@ class ItemCreate(CreateView):
     fields = ["name"]
 
 
-class ItemDelete(DeleteView):
+class ItemDelete(AdminRoleCheck, DeleteView):
     model = Item
     success_url = reverse_lazy("articulos")
     template_name = "page/confirm_delete.html"
 
 
-class ClassList(ListView):
+class ClassList(AdminOrTeacherRoleCheck, ListView):
 
     # specify the model for list view
     model = Class
@@ -49,7 +51,7 @@ class ClassList(ListView):
         return qs
 
 
-class ClassCreate(CreateView):
+class ClassCreate(TeacherRoleCheck, CreateView):
     # specify the model for create view
     model = Class
 
@@ -57,7 +59,7 @@ class ClassCreate(CreateView):
     fields = ["name", "code"]
 
 
-class ClassGroupsList(ListView):
+class ClassGroupsList(AdminOrTeacherRoleCheck, ListView):
 
     # specify the model for list view
     model = ClassGroups
@@ -77,7 +79,7 @@ class ClassGroupsList(ListView):
         return context
 
 
-class ClassGroupsCreate(CreateView):
+class ClassGroupsCreate(TeacherRoleCheck, CreateView):
     # specify the model for create view
     model = ClassGroups
     form_class = GroupForm
@@ -88,7 +90,7 @@ class ClassGroupsCreate(CreateView):
         return super(ClassGroupsCreate, self).form_valid(form)
 
 
-class ClassGroupsDelete(DeleteView):
+class ClassGroupsDelete(TeacherRoleCheck, DeleteView):
     model = ClassGroups
     template_name = "page/grupos/confirm_delete_grupos.html"
     code = ""
@@ -103,7 +105,7 @@ class ClassGroupsDelete(DeleteView):
         return super(ClassGroupsDelete, self).form_valid(form)
 
 
-class ClassGroupsUpdate(UpdateView):
+class ClassGroupsUpdate(TeacherRoleCheck, UpdateView):
     model = ClassGroups
     fields = ["year", "term", "number", "professor"]
     labels = {
@@ -116,7 +118,7 @@ class ClassGroupsUpdate(UpdateView):
         return reverse("grupos", kwargs={"code": self.kwargs["code"]})
 
 
-class ClassGroupStudentList(View):
+class ClassGroupStudentList(TeacherRoleCheck, View):
     def get(self, request, *args, **kwargs):
         group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
         print(group.class_id)
@@ -138,7 +140,7 @@ class ClassGroupStudentList(View):
         return HttpResponseRedirect(reverse("estudiantes-grupo", kwargs=kwargs))
 
 
-class StudentList(ListView):
+class StudentList(AdminOrTeacherRoleCheck, ListView):
 
     # specify the model for list view
     model = Users
@@ -151,7 +153,7 @@ class StudentList(ListView):
         return qs
 
 
-class OrderGroupList(View):
+class OrderGroupList(TeacherOrStudentRoleCheck, View):
     def get(self, request, *args, **kwargs):
         return render(
             request,
@@ -160,7 +162,7 @@ class OrderGroupList(View):
         )
 
 
-class OrderCreate(CreateView):
+class OrderCreate(TeacherOrStudentRoleCheck, CreateView):
     # specify the model for create view
     model = Order
     form_class = OrderForm
@@ -179,7 +181,7 @@ class OrderCreate(CreateView):
         return reverse("orden", kwargs={"pk": self.object.id})
 
 
-class OrderList(View):
+class OrderList(TeacherOrStudentRoleCheck, View):
     def get(self, request, *args, **kwargs):
         return render(
             request,
@@ -188,7 +190,7 @@ class OrderList(View):
         )
 
 
-class AdminOrderList(ListView):
+class AdminOrderList(AdminRoleCheck, ListView):
     # specify the model for list view
     model = Order
     paginate_by = 10
@@ -199,7 +201,7 @@ class AdminOrderList(ListView):
         return qs
 
 
-class OrderDetails(View):
+class OrderDetails(TeacherOrStudentRoleCheck, View):
     def get(self, request, *args, **kwargs):
         order = get_object_or_404(Order, pk=kwargs["pk"])
         items = ItemOrder.objects.filter(order=order)
@@ -210,7 +212,7 @@ class OrderDetails(View):
         )
 
 
-class AdminOrderDetails(View):
+class AdminOrderDetails(AdminRoleCheck, View):
     def get(self, request, *args, **kwargs):
         order = get_object_or_404(Order, pk=kwargs["pk"])
         items = ItemOrder.objects.filter(order=order)
@@ -235,7 +237,7 @@ class AdminOrderDetails(View):
         return HttpResponseRedirect(reverse("admin-orden", kwargs=kwargs))
 
 
-class ItemOrderCreate(CreateView):
+class ItemOrderCreate(TeacherOrStudentRoleCheck, CreateView):
     # specify the model for create view
     model = ItemOrder
     form_class = ItemForm

@@ -22,6 +22,7 @@ TERM_CHOICES = (
 ROLE_CHOICES = (
     ("student", "Estudiante"),
     ("teacher", "Profesor"),
+    ("admin", "Administrador"),
 )
 
 
