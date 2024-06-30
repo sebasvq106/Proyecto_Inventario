@@ -127,7 +127,11 @@ class Order(models.Model):
     @property
     def needs_attention(self):
         order_items = ItemOrder.objects.filter(order=self)
-        return any([item.status == "Solicitado" for item in order_items])
+        if any([item.status == "Solicitado" for item in order_items]):
+            return "pendiente"
+        if any([item.status == "Prestado" for item in order_items]):
+            return "prestado"
+        return "completado"
 
 
 class ItemOrder(models.Model):

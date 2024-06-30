@@ -1,7 +1,7 @@
 {% extends "base.html" %} {% block content %}
 <div class="max-w-6xl mx-auto px-4 py-8 bg-white rounded-lg shadow-md mt-16">
 
-    <h2 class="text-2xl font-bold mb-6 text-center">Mis Órdenes</h2>
+    <h2 class="text-2xl font-bold mb-6 text-center">Administrar Órdenes</h2>
 
 
     <ul class="divide-y divide-gray-200">
@@ -16,9 +16,13 @@
                     <li  class="text-gray-700">{{ member.name }}</li>
                     {% endfor %}
                 </ul>
-                {% if object.needs_attention %}
+                {% if object.needs_attention|slugify == 'pendiente' %}
                     <div class="py-2 px-3 bg-green-500 text-white">Pendiente</div>
-                {% else %}
+                {% endif %}
+                {% if object.needs_attention|slugify == 'prestado' %}
+                    <div class="py-2 px-3 bg-yellow-500 text-white">Prestado</div>
+                {% endif %}
+                {% if object.needs_attention|slugify == 'completado' %}
                     <div class="py-2 px-3 bg-gray-500 text-white">Completo</div>
                 {% endif %}
                 <div></div>
