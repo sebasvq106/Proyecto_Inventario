@@ -67,6 +67,7 @@ class ClassGroupsList(ListView):
         class_id = Class.objects.filter(code=self.kwargs.get("code"))
         qs = super(ClassGroupsList, self).get_queryset(*args, **kwargs)
         qs = qs.filter(class_id=class_id[0])
+        qs = qs.order_by("-year", "-term")
         return qs
 
     def get_context_data(self, **kwargs):
@@ -104,9 +105,8 @@ class ClassGroupsDelete(DeleteView):
 
 class ClassGroupsUpdate(UpdateView):
     model = ClassGroups
-    fields = ["semester", "number", "professor"]
+    fields = ["year", "term", "number", "professor"]
     labels = {
-        "semester": "Semestre",
         "number": "Numero de Clase",
         "professor": "Profesor"
     }
@@ -147,11 +147,10 @@ class StudentList(ListView):
 
 class OrderGroupList(View):
     def get(self, request, *args, **kwargs):
-        print(request.user)
         return render(
             request,
             "page/crear-orden-grupos.html",
-            {"object_list": request.user.groups.all()},
+            {"object_list": request.user.groups.order_by("-year", "-term").all()},
         )
 
 
@@ -179,7 +178,7 @@ class OrderList(View):
         return render(
             request,
             "page/mis-ordenes.html",
-            {"object_list": request.user.orders.all()},
+            {"object_list": request.user.orders.order_by("-group__year", "-group__term").all()},
         )
 
 
@@ -187,6 +186,11 @@ class AdminOrderList(ListView):
     # specify the model for list view
     model = Order
     paginate_by = 10
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super(AdminOrderList, self).get_queryset(*args, **kwargs)
+        qs = qs.order_by("-group__year", "-group__term")
+        return qs
 
 
 class OrderDetails(View):
@@ -250,6 +254,6 @@ class MyProfileView(View):
         return render(
             request,
             "page/perfil.html",
-            {"user": request.user, "grupos": request.user.groups.all()},
+            {"user": request.user, "grupos": request.user.groups.order_by("-year", "-term").all()},
         )
 

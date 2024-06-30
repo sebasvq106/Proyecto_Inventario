@@ -49,7 +49,7 @@ class ItemWidget(s2forms.Select2Widget):
 class GroupForm(forms.ModelForm):
     class Meta:
         model = ClassGroups
-        fields = ["semester", "number", "professor", "student"]
+        fields = ["year", "term", "number", "professor", "student"]
         widgets = {"student": StudentWidget}
 
 class StudentGroupForm(forms.ModelForm):
@@ -59,7 +59,8 @@ class StudentGroupForm(forms.ModelForm):
         widgets = {
             "student": StudentWidget,
             "number": forms.HiddenInput(),
-            "semester": forms.HiddenInput(),
+            "year": forms.HiddenInput(),
+            "term": forms.HiddenInput(),
             "professor": forms.HiddenInput(),
             "class_id":  forms.HiddenInput(),
         }

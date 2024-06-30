@@ -13,6 +13,12 @@ STATUS_CHOICES = (
     ("Denegado", "Denegado"),
 )
 
+TERM_CHOICES = (
+    ("I", "I"),
+    ("II", "II"),
+    ("III", "III"),
+)
+
 ROLE_CHOICES = (
     ("student", "Estudiante"),
     ("teacher", "Profesor"),
@@ -87,7 +93,10 @@ class Class(models.Model):
 
 class ClassGroups(models.Model):
     number = models.PositiveIntegerField(verbose_name='Numero de Curso:')
-    semester = models.CharField(verbose_name='Semestre',max_length=200)
+    year = models.PositiveIntegerField(verbose_name='Año', default=2024)
+    term = models.CharField(
+        max_length=3, choices=TERM_CHOICES, default="I", verbose_name='Semestre'
+    )
     professor = models.ForeignKey(
         Users, related_name="group_professor", on_delete=models.PROTECT, verbose_name='Profesor'
     )
@@ -95,6 +104,10 @@ class ClassGroups(models.Model):
     student = models.ManyToManyField(
         Users, related_name="group_student", through=Users.groups.through, blank=True, verbose_name='Estudiantes'
     )
+
+    @property
+    def semester(self):
+        return f"{self.term} Semestre {str(self.year)}"
 
     def __str__(self):
         return f"{self.class_id} ({self.number}, {self.semester})"
