@@ -25,7 +25,13 @@
             <!-- Primary Navigation -->
             <div class="hidden md:flex items-center space-x-1">
               <a href="{% url 'home' %}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Página Principal</a>
+              {% if user.role == 'student' or user.role == 'teacher' %}
               <a href="{% url 'mis-ordenes' %}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Mis Órdenes</a>
+              {% endif %}
+              {% if user.role == 'admin' %}
+              <a href="{% url 'administrar-ordenes' %}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Administrar Órdenes</a>
+              {% endif %}
+
               <a href="{% url 'perfil' %}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Mi Perfil</a>
               <a href="#" class="py-5 px-3 text-gray-700 hover:text-gray-900">Contacto</a>
             </div>
@@ -79,7 +85,12 @@
       <!-- Mobile Menu -->
       <div class="mobile-menu hidden md:hidden">
         <a href="{% url 'home' %}" class="block py-2 px-4 text-sm hover:bg-gray-200">Página Principal</a>
+        {% if user.role == 'student' or user.role == 'teacher' %}
         <a href="{% url 'mis-ordenes' %}" class="block py-2 px-4 text-sm hover:bg-gray-200">Mis Órdenes</a>
+        {% endif %}
+        {% if user.role == 'admin' %}
+        <a href="{% url 'administrar-ordenes' %}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Administrar Órdenes</a>
+        {% endif %}
         <a href="{% url 'perfil' %}" class="block py-2 px-4 text-sm hover:bg-gray-200">Mi Perfil</a>
         <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-200">Contacto</a>
       </div>

@@ -3,7 +3,9 @@
     <div class="flex justify-between items-center mb-4">
         <!-- Spacer to push the button to the right -->
         <h2 class="text-2xl font-bold py-2">Lista de Grupos - {{ class.code }} - {{class.name}}</h2>
+        {% if user.role == 'teacher' %}
         <a href="{% url 'crear-grupo' code=class.code %}" class="py-2 px-3 bg-blue-500 text-white rounded hover:bg-blue-400">Agregar Grupo</a>
+        {% endif %}
     </div>
 
     <ul class="divide-y divide-gray-200">
@@ -13,9 +15,11 @@
         <li class="py-4">
             <div class="flex justify-between items-center  ">
                 <span class="text-gray-700 w-1/4">{{ object.semester }} - Grupo {{ object.number }} - {{object.professor.name}}</span>
+                {% if user.role == 'teacher' %}
                 <a href="{% url 'editar-grupo' code=class.code pk=object.id %}" class="py-2 px-3 bg-gray-500 text-white rounded hover:bg-gray-400">Datos</a>
                 <a href="{% url 'estudiantes-grupo' code=class.code pk=object.id %}"  class="py-2 px-3 bg-blue-500 text-white rounded hover:bg-blue-400">Estudiantes</a>
                 <a href="{% url 'eliminar-grupo' object.id %}" class="py-2 px-3 bg-red-500 text-white rounded hover:bg-red-400">Eliminar</a>
+                {% endif %}
             </div>
         </li>
         {% empty %}
