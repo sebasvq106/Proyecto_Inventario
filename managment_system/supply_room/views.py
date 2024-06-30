@@ -119,7 +119,8 @@ class ClassGroupsUpdate(UpdateView):
 class ClassGroupStudentList(View):
     def get(self, request, *args, **kwargs):
         group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
-        form = StudentGroupForm()
+        print(group.class_id)
+        form = StudentGroupForm(instance=group)
         return render(
             request,
             "page/grupos/estudiantes.html",
@@ -127,10 +128,15 @@ class ClassGroupStudentList(View):
         )
 
     def post(self, request, *args, **kwargs):
-        formset = StudentGroupForm(request.POST, request.FILES)
-        if formset.is_valid():
-            formset.save()
+        group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
+        form = StudentGroupForm(request.POST, instance=group)
+        form.instance.class_id = group.class_id
+        print(form.data)
+        if form.is_valid():
+            form.save()
+            print('rere')
         return HttpResponseRedirect(reverse("estudiantes-grupo", kwargs=kwargs))
+
 
 class StudentList(ListView):
 

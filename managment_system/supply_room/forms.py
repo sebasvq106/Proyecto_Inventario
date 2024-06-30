@@ -55,14 +55,13 @@ class GroupForm(forms.ModelForm):
 class StudentGroupForm(forms.ModelForm):
     class Meta:
         model = ClassGroups
-        fields = "__all__"
+        fields = ["year", "term", "number", "professor", "student"]
         widgets = {
             "student": StudentWidget,
             "number": forms.HiddenInput(),
             "year": forms.HiddenInput(),
             "term": forms.HiddenInput(),
             "professor": forms.HiddenInput(),
-            "class_id":  forms.HiddenInput(),
         }
         labels: {"student": "Agregar Estudiantes"}
 

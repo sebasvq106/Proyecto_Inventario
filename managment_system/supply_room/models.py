@@ -61,7 +61,7 @@ class Users(AbstractUser):
     name = models.CharField(max_length=200)
     email = models.EmailField(unique=True)
     role = models.CharField(max_length=200, choices=ROLE_CHOICES, default="student")
-    student_id = models.CharField(max_length=200, null=True)
+    student_id = models.CharField(max_length=200, null=True, blank=True)
     username = models.CharField(max_length=50, null=True)
     groups = models.ManyToManyField(
         "ClassGroups", related_name="group_student", blank=True
@@ -100,7 +100,7 @@ class ClassGroups(models.Model):
     professor = models.ForeignKey(
         Users, related_name="group_professor", on_delete=models.PROTECT, verbose_name='Profesor'
     )
-    class_id = models.ForeignKey(Class, on_delete=models.CASCADE, verbose_name='Clase')
+    class_id = models.ForeignKey(Class, on_delete=models.PROTECT, verbose_name='Clase')
     student = models.ManyToManyField(
         Users, related_name="group_student", through=Users.groups.through, blank=True, verbose_name='Estudiantes'
     )
