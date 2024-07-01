@@ -4,8 +4,7 @@ from django.contrib.auth.models import AbstractUser, UserManager
 from django.core.validators import MinValueValidator
 from django.db import models
 
-# specifying choices
-
+# ALL CHOICES DEFINITIONS
 STATUS_CHOICES = (
     ("Solicitado", "Solicitado"),
     ("Prestado", "Prestado"),
@@ -27,7 +26,16 @@ ROLE_CHOICES = (
 
 
 class CustomUserManager(UserManager):
+    """
+    Custom user manager for expanding the django basic user definition.
+
+    Documentation: https://docs.djangoproject.com/en/5.0/topics/auth/customizing/#a-full-example
+    """
+
     def create_user(self, username=None, email=None, password=None, **extra_fields):
+        """
+        Overrides basic create user with new parameters
+        """
         return super(CustomUserManager, self).create_user(
             username, email, password, **extra_fields
         )
@@ -35,11 +43,17 @@ class CustomUserManager(UserManager):
     def create_superuser(
         self, username=None, email=None, password=None, **extra_fields
     ):
+        """
+        Overrides basic create superuser with new parameters
+        """
         return super(CustomUserManager, self).create_superuser(
             username, email, password, **extra_fields
         )
 
     def _create_user(self, username, email, password, **extra_fields):
+        """
+        Overrides create user with new parameters
+        """
         email = self.normalize_email(email)
         GlobalUserModel = apps.get_model(
             self.model._meta.app_label, self.model._meta.object_name
@@ -63,6 +77,12 @@ class Item(models.Model):
 
 
 class Users(AbstractUser):
+    """
+    Expands the basic django user definition with custom fields
+
+    Documentation: https://docs.djangoproject.com/en/5.0/topics/auth/customizing/#using-a-custom-user-model-when-starting-a-project
+    """
+
     name = models.CharField(max_length=200)
     email = models.EmailField(unique=True)
     role = models.CharField(max_length=200, choices=ROLE_CHOICES, default="student")
@@ -112,13 +132,16 @@ class ClassGroups(models.Model):
     student = models.ManyToManyField(
         Users,
         related_name="group_student",
-        through=Users.groups.through,
+        through=Users.groups.through,  # allow to sync up using the same many-many table
         blank=True,
         verbose_name="Estudiantes",
     )
 
     @property
     def semester(self):
+        """
+        Computed property based on term and year
+        """
         return f"{self.term} Semestre {str(self.year)}"
 
     def __str__(self):
@@ -135,7 +158,7 @@ class Order(models.Model):
     student = models.ManyToManyField(
         Users,
         related_name="Order_student",
-        through=Users.orders.through,
+        through=Users.orders.through,  # allow to sync up using the same many-many table
         blank=True,
         verbose_name="Estudiantes",
     )
@@ -145,6 +168,9 @@ class Order(models.Model):
 
     @property
     def needs_attention(self):
+        """
+        Computed property base on items in the order
+        """
         order_items = ItemOrder.objects.filter(order=self)
         if any([item.status == "Solicitado" for item in order_items]):
             return "pendiente"

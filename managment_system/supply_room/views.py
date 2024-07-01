@@ -5,18 +5,14 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, DeleteView, UpdateView
-
 # Create your views here.
 from django.views.generic.list import ListView
 
-from .forms import GroupForm, ItemForm, OrderForm, StudentGroupForm, UpdateOrderItemForm
+from .forms import (GroupForm, ItemForm, OrderForm, StudentGroupForm,
+                    UpdateOrderItemForm)
 from .models import Class, ClassGroups, Item, ItemOrder, Order, Users
-from .utils import (
-    AdminOrTeacherRoleCheck,
-    AdminRoleCheck,
-    TeacherOrStudentRoleCheck,
-    TeacherRoleCheck,
-)
+from .utils import (AdminOrTeacherRoleCheck, AdminRoleCheck,
+                    TeacherOrStudentRoleCheck, TeacherRoleCheck)
 
 
 class ItemList(ListView):
@@ -26,6 +22,7 @@ class ItemList(ListView):
     Requests Methods:
     Get: Renders list of all items
     """
+
     # specify the model for list view
     model = Item
     paginate_by = 10
@@ -48,6 +45,7 @@ class ItemCreate(AdminRoleCheck, CreateView):
     Get: Render the form for Item Creation
     Post: Validates the form and saves the Item
     """
+
     # specify the model for create view
     model = Item
 
@@ -63,6 +61,7 @@ class ItemDelete(AdminRoleCheck, DeleteView):
     Get: Render a deletion confirmation modal
     Delete: Deletes the specified Item in the db
     """
+
     # specify the model for delete view
     model = Item
     success_url = reverse_lazy("articulos")
@@ -76,6 +75,7 @@ class ClassList(AdminOrTeacherRoleCheck, ListView):
     Requests Methods:
     Get: Renders a List of all classes
     """
+
     # specify the model for list view
     model = Class
     paginate_by = 10
@@ -98,6 +98,7 @@ class ClassCreate(TeacherRoleCheck, CreateView):
     Get: Render the form for Class Creation
     Post: Validates the form and saves the Class
     """
+
     # specify the model for create view
     model = Class
 
@@ -115,6 +116,7 @@ class ClassGroupsList(AdminOrTeacherRoleCheck, ListView):
     Params (kwargs)
     :code: code of the specific class
     """
+
     # specify the model for list view
     model = ClassGroups
     paginate_by = 10
@@ -154,6 +156,7 @@ class ClassGroupsCreate(TeacherRoleCheck, CreateView):
     Params (kwargs)
     :code: code of the specific class for which the ClassGroup is being created
     """
+
     # specify the model for create view
     model = ClassGroups
     # specify the form rendered
@@ -180,6 +183,7 @@ class ClassGroupsDelete(TeacherRoleCheck, DeleteView):
     :code: code of the class associated to the ClassGroup that is being deleted
     :pk: primary key of the ClassGroup to be deleted
     """
+
     # specify the model for delete view
     model = ClassGroups
     template_name = "page/grupos/confirm_delete_grupos.html"
@@ -217,6 +221,7 @@ class ClassGroupsUpdate(TeacherRoleCheck, UpdateView):
     :code: code of the class associated to the ClassGroup that is being updated
     :pk: primary key of the ClassGroup to be updated
     """
+
     # specify the model for update view
     model = ClassGroups
     # filter which fields are shown in the form
@@ -280,6 +285,7 @@ class StudentList(AdminOrTeacherRoleCheck, ListView):
     Requests Methods:
     Get: Renders list of all students
     """
+
     # specify the model for list view
     model = Users
     paginate_by = 10
@@ -312,7 +318,9 @@ class OrderGroupList(TeacherOrStudentRoleCheck, View):
         """
         querySet = request.user.groups.order_by("-year", "-term")
         if self.request.user.role == "teacher":
-            querySet = ClassGroups.objects.filter(professor=self.request.user).order_by("-year", "-term")
+            querySet = ClassGroups.objects.filter(professor=self.request.user).order_by(
+                "-year", "-term"
+            )
 
         paginator = Paginator(querySet, 10)
 
@@ -326,11 +334,26 @@ class OrderGroupList(TeacherOrStudentRoleCheck, View):
 
 
 class OrderCreate(TeacherOrStudentRoleCheck, CreateView):
+    """
+    CreateView for Order model
+
+    Requests Methods:
+    Get: Render the form for Order Creation
+    Post: Validates the form and saves the Order
+
+    Params (kwargs)
+    :pk: code of the specific ClassGroup for which the order is being created
+    """
+
     # specify the model for create view
     model = Order
+    # specify the form rendered
     form_class = OrderForm
 
     def get_form_kwargs(self):
+        """
+        Passes the kwargs down to the form initializer
+        """
         kwargs = super(OrderCreate, self).get_form_kwargs()
         kwargs.update(
             {"group_pk": self.kwargs.get("pk"), "user_pk": self.request.user.pk}
@@ -338,6 +361,10 @@ class OrderCreate(TeacherOrStudentRoleCheck, CreateView):
         return kwargs
 
     def form_valid(self, form):
+        """
+        Parses the form information and saves the Order
+        If the user is a students then adds the current user into the student
+        """
         group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
         form.instance.group = group
         response = super(OrderCreate, self).form_valid(form)
@@ -346,16 +373,38 @@ class OrderCreate(TeacherOrStudentRoleCheck, CreateView):
         return response
 
     def get_context_data(self, **kwargs):
+        """
+        Expands data send to the template
+
+        Extra Context Data
+        :group: specific ClassGroup
+        """
         ctx = super(OrderCreate, self).get_context_data(**kwargs)
         ctx["group"] = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
         return ctx
 
     def get_success_url(self):
+        """
+        Calculates the successful url for redirection
+        """
         return reverse("orden", kwargs={"pk": self.object.id})
 
 
 class OrderList(TeacherOrStudentRoleCheck, View):
+    """
+    Basic View for showing the Orders related with the current User
+
+    Requests Methods:
+    Get: Renders list of all orders form the current User
+    """
+
     def get(self, request, *args, **kwargs):
+        """
+        Gather the data, performs pagination and renders the template
+
+        Context Data
+        :page_obj: pagination object that contain the list of user's Orders
+        """
         querySet = request.user.orders.order_by("-group__year", "-group__term")
         if self.request.user.role == "teacher":
             querySet = Order.objects.filter(
@@ -374,18 +423,45 @@ class OrderList(TeacherOrStudentRoleCheck, View):
 
 
 class AdminOrderList(AdminRoleCheck, ListView):
+    """
+    ListView for Order model
+
+    Requests Methods:
+    Get: Renders list of all Orders
+    """
+
     # specify the model for list view
     model = Order
     paginate_by = 10
 
     def get_queryset(self, *args, **kwargs):
+        """
+        Overrides internal queryset to add ordering by semester
+        """
         qs = super(AdminOrderList, self).get_queryset(*args, **kwargs)
         qs = qs.order_by("-group__year", "-group__term")
         return qs
 
 
 class OrderDetails(TeacherOrStudentRoleCheck, View):
+    """
+    Basic View for showing the details of a specific Order
+
+    Requests Methods:
+    Get: Renders the details of a specific Order including the related Items
+
+    Params (kwargs)
+    :pk: primary key of the specific Order
+    """
+
     def get(self, request, *args, **kwargs):
+        """
+        Gather the data and renders the template
+
+        Context Data
+        :order: specific Order
+        :items: items from the order
+        """
         order = get_object_or_404(Order, pk=kwargs["pk"])
         items = ItemOrder.objects.filter(order=order)
         return render(
@@ -396,7 +472,26 @@ class OrderDetails(TeacherOrStudentRoleCheck, View):
 
 
 class AdminOrderDetails(AdminRoleCheck, View):
+    """
+    Basic View for managing the items of an Order
+
+    Requests Methods:
+    Get: Render the details of the current Order and a formset with all the items
+    Post: Validates the form and updates each item in the Order
+
+    Params (kwargs)
+    :pk: primary key of the specific Order
+    """
+
     def get(self, request, *args, **kwargs):
+        """
+        Gather the data, creates the formset and renders the template
+
+        Context Data
+        :order: specific Order
+        :forms: formset containing all the individual item forms
+        :data: custom object that have each item form with the item name value
+        """
         order = get_object_or_404(Order, pk=kwargs["pk"])
         items = ItemOrder.objects.filter(order=order)
         OrderItemFormSet = modelformset_factory(
@@ -413,6 +508,9 @@ class AdminOrderDetails(AdminRoleCheck, View):
         )
 
     def post(self, request, *args, **kwargs):
+        """
+        Parses the formset information and updates the items in Order
+        """
         OrderItemFormSet = modelformset_factory(ItemOrder, form=UpdateOrderItemForm)
         formset = OrderItemFormSet(request.POST, request.FILES)
         if formset.is_valid():
@@ -421,27 +519,64 @@ class AdminOrderDetails(AdminRoleCheck, View):
 
 
 class ItemOrderCreate(TeacherOrStudentRoleCheck, CreateView):
+    """
+    CreateView for ItemOrder model
+
+    Requests Methods:
+    Get: Render the form for ItemOrder Creation
+    Post: Validates the form and saves the ItemOrder
+
+    Params (kwargs)
+    :pk: code of the specific Order for which the ItemOrder is being created
+    """
+
     # specify the model for create view
     model = ItemOrder
+    # specify the form rendered
     form_class = ItemForm
 
     def form_valid(self, form):
+        """
+        Sets the specific Order of the ItemOrder before saving
+        """
         order = get_object_or_404(Order, pk=self.kwargs["pk"])
         form.instance.order = order
         return super(ItemOrderCreate, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
+        """
+        Expands data send to the template
+
+        Extra Context Data
+        :order: specific Order
+        """
         ctx = super(ItemOrderCreate, self).get_context_data(**kwargs)
         ctx["order"] = get_object_or_404(Order, pk=self.kwargs["pk"])
         return ctx
 
     def get_success_url(self):
-        # I cannot access the 'pk' of the deleted object here
+        """
+        Calculates the successful url for redirection
+        """
         return reverse("orden", kwargs={"pk": self.kwargs["pk"]})
 
 
 class MyProfileView(View):
+    """
+    Basic View for showing the User's Profile information and related Groups
+
+    Requests Methods:
+    Get: Render the details of the current User and the related Groups
+    """
+
     def get(self, request, *args, **kwargs):
+        """
+        Gather the data and renders the template
+
+        Context Data
+        :user: current user
+        :grupos: all groups related to the user ordered by semester
+        """
         return render(
             request,
             "page/perfil.html",

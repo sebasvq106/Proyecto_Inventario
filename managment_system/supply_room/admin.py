@@ -1,3 +1,8 @@
+"""
+Creates the AdminModels for each model and attach it to the admin site.
+This allows each model to appear on the django admin console.
+"""
+
 from django.contrib import admin
 
 from .models import *
