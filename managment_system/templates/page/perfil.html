@@ -23,7 +23,7 @@
                 <div class="block text-gray-700 text-l font-bold mb-2 space-y-4 my-6"></div>
             </div>
         </div>
-        {% if user.role != 'admin' %}
+        {% if user.role == 'student' %}
         <div class="max-w-md mx-auto space-y-6">
             <!-- Security token -->
             {% csrf_token %}
