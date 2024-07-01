@@ -1,18 +1,24 @@
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.core.paginator import Paginator
 from django.forms import formset_factory, modelformset_factory
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, DeleteView, UpdateView
+
 # Create your views here.
 from django.views.generic.list import ListView
 
-from .forms import (GroupForm, ItemForm, OrderForm, StudentGroupForm,
-                    UpdateOrderItemForm)
+from .forms import GroupForm, ItemForm, OrderForm, StudentGroupForm, UpdateOrderItemForm
 from .models import Class, ClassGroups, Item, ItemOrder, Order, Users
-from .utils import (AdminOrTeacherRoleCheck, AdminRoleCheck, StudentRoleCheck,
-                    TeacherOrStudentRoleCheck, TeacherRoleCheck)
+from .utils import (
+    AdminOrTeacherRoleCheck,
+    AdminRoleCheck,
+    StudentRoleCheck,
+    TeacherOrStudentRoleCheck,
+    TeacherRoleCheck,
+)
 
 
 class ItemList(ListView):
@@ -192,15 +198,20 @@ class OrderCreate(TeacherOrStudentRoleCheck, CreateView):
 
 class OrderList(TeacherOrStudentRoleCheck, View):
     def get(self, request, *args, **kwargs):
-        object_list = request.user.orders.order_by("-group__year", "-group__term").all()
+        querySet = request.user.orders.order_by("-group__year", "-group__term")
         if self.request.user.role == "teacher":
-            object_list = Order.objects.filter(
+            querySet = Order.objects.filter(
                 group__professor=self.request.user, student=None
-            ).all()
+            )
+
+        paginator = Paginator(querySet, 10)
+
+        page = request.GET.get("page")
+        page_obj = paginator.get_page(page)
         return render(
             request,
             "page/mis-ordenes.html",
-            {"object_list": object_list},
+            {"page_obj": page_obj},
         )
 
 
