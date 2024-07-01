@@ -75,7 +75,9 @@ class OrderForm(forms.ModelForm):
 
     def __init__(self, group_pk: int, user_pk: int, *args, **kwargs):
         super(OrderForm, self).__init__(*args, **kwargs)
-        self.fields['student'].queryset = Users.objects.filter(role='student', groups__in=group_pk).exclude(pk=user_pk)
+        self.fields["student"].queryset = Users.objects.filter(
+            role="student", groups__in=group_pk
+        ).exclude(pk=user_pk)
 
 
 class ItemForm(forms.ModelForm):
@@ -88,10 +90,10 @@ class ItemForm(forms.ModelForm):
 class UpdateOrderItemForm(forms.ModelForm):
     RESTRICTED_CHOICES = {
         "Solicitado": (
-                ("Solicitado", "Solicitado"),
-                ("Prestado", "Prestado"),
-                ("Denegado", "Denegado"),
-            ),
+            ("Solicitado", "Solicitado"),
+            ("Prestado", "Prestado"),
+            ("Denegado", "Denegado"),
+        ),
         "Prestado": (
             ("Solicitado", "Solicitado"),
             ("Prestado", "Prestado"),
@@ -118,4 +120,4 @@ class UpdateOrderItemForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(UpdateOrderItemForm, self).__init__(*args, **kwargs)
-        self.fields['status'].choices = self.RESTRICTED_CHOICES[self.instance.status]
+        self.fields["status"].choices = self.RESTRICTED_CHOICES[self.instance.status]

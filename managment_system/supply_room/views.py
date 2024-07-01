@@ -8,9 +8,11 @@ from django.views.generic import CreateView, DeleteView, UpdateView
 # Create your views here.
 from django.views.generic.list import ListView
 
-from .forms import GroupForm, ItemForm, OrderForm, UpdateOrderItemForm, StudentGroupForm
+from .forms import (GroupForm, ItemForm, OrderForm, StudentGroupForm,
+                    UpdateOrderItemForm)
 from .models import Class, ClassGroups, Item, ItemOrder, Order, Users
-from .utils import AdminRoleCheck, StudentRoleCheck, TeacherRoleCheck, TeacherOrStudentRoleCheck, AdminOrTeacherRoleCheck
+from .utils import (AdminOrTeacherRoleCheck, AdminRoleCheck, StudentRoleCheck,
+                    TeacherOrStudentRoleCheck, TeacherRoleCheck)
 
 
 class ItemList(ListView):
@@ -108,10 +110,7 @@ class ClassGroupsDelete(TeacherRoleCheck, DeleteView):
 class ClassGroupsUpdate(TeacherRoleCheck, UpdateView):
     model = ClassGroups
     fields = ["year", "term", "number", "professor"]
-    labels = {
-        "number": "Numero de Clase",
-        "professor": "Profesor"
-    }
+    labels = {"number": "Numero de Clase", "professor": "Profesor"}
 
     def get_success_url(self):
         # I cannot access the 'pk' of the deleted object here
@@ -125,7 +124,7 @@ class ClassGroupStudentList(TeacherRoleCheck, View):
         return render(
             request,
             "page/grupos/estudiantes.html",
-            {"object_list": group.student.all(), "form": form, 'group': group},
+            {"object_list": group.student.all(), "form": form, "group": group},
         )
 
     def post(self, request, *args, **kwargs):
@@ -153,7 +152,7 @@ class StudentList(AdminOrTeacherRoleCheck, ListView):
 class OrderGroupList(TeacherOrStudentRoleCheck, View):
     def get(self, request, *args, **kwargs):
         object_list = request.user.groups.order_by("-year", "-term").all()
-        if self.request.user.role == 'teacher':
+        if self.request.user.role == "teacher":
             object_list = ClassGroups.objects.filter(professor=self.request.user).all()
         return render(
             request,
@@ -169,14 +168,16 @@ class OrderCreate(TeacherOrStudentRoleCheck, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super(OrderCreate, self).get_form_kwargs()
-        kwargs.update({'group_pk': self.kwargs.get('pk'), 'user_pk': self.request.user.pk})
+        kwargs.update(
+            {"group_pk": self.kwargs.get("pk"), "user_pk": self.request.user.pk}
+        )
         return kwargs
 
     def form_valid(self, form):
         group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
         form.instance.group = group
         response = super(OrderCreate, self).form_valid(form)
-        if self.request.user.role == 'student':
+        if self.request.user.role == "student":
             self.object.student.add(self.request.user)
         return response
 
@@ -192,8 +193,10 @@ class OrderCreate(TeacherOrStudentRoleCheck, CreateView):
 class OrderList(TeacherOrStudentRoleCheck, View):
     def get(self, request, *args, **kwargs):
         object_list = request.user.orders.order_by("-group__year", "-group__term").all()
-        if self.request.user.role == 'teacher':
-            object_list = Order.objects.filter(group__professor=self.request.user, student=None).all()
+        if self.request.user.role == "teacher":
+            object_list = Order.objects.filter(
+                group__professor=self.request.user, student=None
+            ).all()
         return render(
             request,
             "page/mis-ordenes.html",
@@ -273,6 +276,8 @@ class MyProfileView(View):
         return render(
             request,
             "page/perfil.html",
-            {"user": request.user, "grupos": request.user.groups.order_by("-year", "-term").all()},
+            {
+                "user": request.user,
+                "grupos": request.user.groups.order_by("-year", "-term").all(),
+            },
         )
-

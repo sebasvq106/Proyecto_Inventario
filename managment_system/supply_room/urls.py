@@ -6,8 +6,8 @@ from .views import (AdminOrderDetails, AdminOrderList, ClassCreate,
                     ClassGroupsCreate, ClassGroupsDelete, ClassGroupsList,
                     ClassGroupStudentList, ClassGroupsUpdate, ClassList,
                     ItemCreate, ItemDelete, ItemList, ItemOrderCreate,
-                    OrderCreate, OrderDetails, OrderGroupList, OrderList,
-                    StudentList, MyProfileView)
+                    MyProfileView, OrderCreate, OrderDetails, OrderGroupList,
+                    OrderList, StudentList)
 
 urlpatterns = [
     # ------------- Articles -----------
