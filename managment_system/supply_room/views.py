@@ -167,6 +167,11 @@ class OrderCreate(TeacherOrStudentRoleCheck, CreateView):
     model = Order
     form_class = OrderForm
 
+    def get_form_kwargs(self):
+        kwargs = super(OrderCreate, self).get_form_kwargs()
+        kwargs.update({'pk': self.kwargs.get('pk')})
+        return kwargs
+
     def form_valid(self, form):
         group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
         form.instance.group = group

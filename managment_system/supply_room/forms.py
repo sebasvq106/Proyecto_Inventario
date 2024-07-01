@@ -73,6 +73,10 @@ class OrderForm(forms.ModelForm):
         fields = ["student"]
         widgets = {"student": StudentWidget}
 
+    def __init__(self, pk: int, *args, **kwargs):
+        super(OrderForm, self).__init__(*args, **kwargs)
+        self.fields['student'].queryset = Users.objects.filter(role='student', groups__in=pk)
+
 
 class ItemForm(forms.ModelForm):
     class Meta:
