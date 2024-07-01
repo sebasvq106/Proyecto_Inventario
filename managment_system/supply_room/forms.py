@@ -52,6 +52,10 @@ class GroupForm(forms.ModelForm):
         fields = ["year", "term", "number", "professor", "student"]
         widgets = {"student": StudentWidget}
 
+    def __init__(self, *args, **kwargs):
+        super(GroupForm, self).__init__(*args, **kwargs)
+        self.fields["student"].queryset = Users.objects.filter(role="student")
+        self.fields["professor"].queryset = Users.objects.filter(role="teacher")
 
 class StudentGroupForm(forms.ModelForm):
     class Meta:

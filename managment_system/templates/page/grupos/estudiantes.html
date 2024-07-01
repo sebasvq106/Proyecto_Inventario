@@ -41,28 +41,6 @@
         {% endfor %}
     </ul>
 
-    <div class="pagination ">
-    <div class="step-links flex w-full justify-between items-center p-2">
-        {% if page_obj.has_previous %}
-        <a href="?page=1" class="mx-2">Primero</a>
-        <a href="?page={{ page_obj.previous_page_number }}" class="mx-2">Previo</a>
-        {% else %}
-        <div></div>
-        <div></div>
-        {% endif %}
-
-        <span class="current font-bold mx-4">
-            Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
-        </span>
-
-        {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}" class="mx-2">Siguiente</a>
-        <a href="?page={{ page_obj.paginator.num_pages }}" class="mx-2">Última</a>
-        {% else %}
-        <div></div>
-        <div></div>
-        {% endif %}
-    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     {{ form.media.js }}
 </div>

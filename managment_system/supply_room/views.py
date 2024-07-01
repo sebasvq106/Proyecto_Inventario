@@ -1,6 +1,5 @@
-from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.paginator import Paginator
-from django.forms import formset_factory, modelformset_factory
+from django.forms import modelformset_factory
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse, reverse_lazy
@@ -15,25 +14,40 @@ from .models import Class, ClassGroups, Item, ItemOrder, Order, Users
 from .utils import (
     AdminOrTeacherRoleCheck,
     AdminRoleCheck,
-    StudentRoleCheck,
     TeacherOrStudentRoleCheck,
     TeacherRoleCheck,
 )
 
 
 class ItemList(ListView):
+    """
+    ListView for Item model
 
+    Requests Methods:
+    Get: Renders list of all items
+    """
     # specify the model for list view
     model = Item
     paginate_by = 10
 
     def get_queryset(self, *args, **kwargs):
+        """
+        Overrides internal queryset to add alphabetical ordering
+        by name
+        """
         qs = super(ItemList, self).get_queryset(*args, **kwargs)
         qs = qs.order_by("name")
         return qs
 
 
 class ItemCreate(AdminRoleCheck, CreateView):
+    """
+    CreateView for Item model
+
+    Requests Methods:
+    Get: Render the form for Item Creation
+    Post: Validates the form and saves the Item
+    """
     # specify the model for create view
     model = Item
 
@@ -42,24 +56,48 @@ class ItemCreate(AdminRoleCheck, CreateView):
 
 
 class ItemDelete(AdminRoleCheck, DeleteView):
+    """
+    DeleteView for Item model
+
+    Requests Methods:
+    Get: Render a deletion confirmation modal
+    Delete: Deletes the specified Item in the db
+    """
+    # specify the model for delete view
     model = Item
     success_url = reverse_lazy("articulos")
     template_name = "page/confirm_delete.html"
 
 
 class ClassList(AdminOrTeacherRoleCheck, ListView):
+    """
+    ListView for Class model
 
+    Requests Methods:
+    Get: Renders a List of all classes
+    """
     # specify the model for list view
     model = Class
     paginate_by = 10
 
     def get_queryset(self, *args, **kwargs):
+        """
+        Overrides internal queryset to add alphabetical ordering
+        by name
+        """
         qs = super(ClassList, self).get_queryset(*args, **kwargs)
         qs = qs.order_by("name")
         return qs
 
 
 class ClassCreate(TeacherRoleCheck, CreateView):
+    """
+    CreateView for Class model
+
+    Requests Methods:
+    Get: Render the form for Class Creation
+    Post: Validates the form and saves the Class
+    """
     # specify the model for create view
     model = Class
 
@@ -68,12 +106,24 @@ class ClassCreate(TeacherRoleCheck, CreateView):
 
 
 class ClassGroupsList(AdminOrTeacherRoleCheck, ListView):
+    """
+    ListView for ClassGroups
 
+    Requests Methods:
+    Get: Renders list of all ClassGroups in a specific Class
+
+    Params (kwargs)
+    :code: code of the specific class
+    """
     # specify the model for list view
     model = ClassGroups
     paginate_by = 10
 
     def get_queryset(self, *args, **kwargs):
+        """
+        Overrides internal queryset to only return the ClassGroups associated
+        with the specific Class and add ordering by semester (term and year)
+        """
         class_id = Class.objects.filter(code=self.kwargs.get("code"))
         qs = super(ClassGroupsList, self).get_queryset(*args, **kwargs)
         qs = qs.filter(class_id=class_id[0])
@@ -81,6 +131,12 @@ class ClassGroupsList(AdminOrTeacherRoleCheck, ListView):
         return qs
 
     def get_context_data(self, **kwargs):
+        """
+        Expands data send to the template
+
+        Extra Context Data
+        :class: specific Class
+        """
         class_id = Class.objects.filter(code=self.kwargs.get("code"))
         context = super().get_context_data(**kwargs)
         context["class"] = class_id[0]
@@ -88,43 +144,114 @@ class ClassGroupsList(AdminOrTeacherRoleCheck, ListView):
 
 
 class ClassGroupsCreate(TeacherRoleCheck, CreateView):
+    """
+    CreateView for ClassGroup model
+
+    Requests Methods:
+    Get: Render the form for ClassGroup Creation
+    Post: Validates the form and saves the ClassGroup
+
+    Params (kwargs)
+    :code: code of the specific class for which the ClassGroup is being created
+    """
     # specify the model for create view
     model = ClassGroups
+    # specify the form rendered
     form_class = GroupForm
 
     def form_valid(self, form):
+        """
+        Sets the specific class of the ClassGroup before saving
+        """
         class_id = Class.objects.filter(code=self.kwargs.get("code"))
         form.instance.class_id = class_id[0]
         return super(ClassGroupsCreate, self).form_valid(form)
 
 
 class ClassGroupsDelete(TeacherRoleCheck, DeleteView):
+    """
+    DeleteView for ClassGroup model
+
+    Requests Methods:
+    Get: Render a deletion confirmation modal
+    Delete: Deletes the specified ClassGroup in the db
+
+    Params (kwargs)
+    :code: code of the class associated to the ClassGroup that is being deleted
+    :pk: primary key of the ClassGroup to be deleted
+    """
+    # specify the model for delete view
     model = ClassGroups
     template_name = "page/grupos/confirm_delete_grupos.html"
+    # Internal variable for class code
     code = ""
 
     def get_success_url(self):
-        # I cannot access the 'pk' of the deleted object here
+        """
+        Calculates the successful url for redirection
+
+        Here the information of the deleted object is no longer accessible,
+        thus the need for preserving the class code in an internal variable
+        """
         return reverse("grupos", kwargs={"code": self.code})
 
     def form_valid(self, form):
+        """
+        Preserves the class code before deletion
+        """
         group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
         self.code = group.class_id.code
         return super(ClassGroupsDelete, self).form_valid(form)
 
 
 class ClassGroupsUpdate(TeacherRoleCheck, UpdateView):
+    """
+    UpdateView for ClassGroup model
+    Only updates Group data
+
+    Requests Methods:
+    Get: Render the form for ClassGroup data
+    Post: Validates the form and updates the ClassGroup
+
+    Params (kwargs)
+    :code: code of the class associated to the ClassGroup that is being updated
+    :pk: primary key of the ClassGroup to be updated
+    """
+    # specify the model for update view
     model = ClassGroups
+    # filter which fields are shown in the form
     fields = ["year", "term", "number", "professor"]
     labels = {"number": "Numero de Clase", "professor": "Profesor"}
 
     def get_success_url(self):
-        # I cannot access the 'pk' of the deleted object here
+        """
+        Calculates the successful url for redirection
+        """
         return reverse("grupos", kwargs={"code": self.kwargs["code"]})
 
 
 class ClassGroupStudentList(TeacherRoleCheck, View):
+    """
+    Basic View for managing students of a ClassGroup
+
+    Requests Methods:
+    Get: Render a form updating the current students in the ClassGroup
+    Post: Validates the form and updates the students in the ClassGroup
+
+    Params (kwargs)
+    :code: code of the class associated to the ClassGroup that is being updated
+    :pk: primary key of the ClassGroup to be updated
+    """
+
     def get(self, request, *args, **kwargs):
+        """
+        Gather the data and renders the template
+
+        Context Data
+        :object_list: list of current students in the ClassGroup
+        :form: form that allows the updating of the students
+        :group: specific ClassGroup
+        """
         group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
         form = StudentGroupForm(instance=group)
         return render(
@@ -134,6 +261,9 @@ class ClassGroupStudentList(TeacherRoleCheck, View):
         )
 
     def post(self, request, *args, **kwargs):
+        """
+        Parses the form information and updates the students
+        """
         group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
         form = StudentGroupForm(request.POST, instance=group)
         form.instance.class_id = group.class_id
@@ -143,12 +273,22 @@ class ClassGroupStudentList(TeacherRoleCheck, View):
 
 
 class StudentList(AdminOrTeacherRoleCheck, ListView):
+    """
+    ListView for User model
+    Only lists Users with Student Role
 
+    Requests Methods:
+    Get: Renders list of all students
+    """
     # specify the model for list view
     model = Users
     paginate_by = 10
 
     def get_queryset(self, *args, **kwargs):
+        """
+        Overrides internal queryset to only return students
+        and order alphabetical by name
+        """
         qs = super(StudentList, self).get_queryset(*args, **kwargs)
         qs = qs.filter(role="student")
         qs = qs.order_by("name")
@@ -156,7 +296,20 @@ class StudentList(AdminOrTeacherRoleCheck, ListView):
 
 
 class OrderGroupList(TeacherOrStudentRoleCheck, View):
+    """
+    Basic View for showing a list of the current user's groups
+
+    Requests Methods:
+    Get: Render a list of the current user's groups
+    """
+
     def get(self, request, *args, **kwargs):
+        """
+        Gather the data, performs pagination and renders the template
+
+        Context Data
+        :page_obj: pagination object that contain the list of ClassGroups for the user
+        """
         querySet = request.user.groups.order_by("-year", "-term")
         if self.request.user.role == "teacher":
             querySet = ClassGroups.objects.filter(professor=self.request.user).order_by("-year", "-term")
