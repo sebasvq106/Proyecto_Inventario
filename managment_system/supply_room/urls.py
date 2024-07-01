@@ -1,6 +1,6 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path
-
+from django.views.generic.base import TemplateView
 # importing views from views.py
 from .views import (
     AdminOrderDetails,
@@ -138,4 +138,10 @@ urlpatterns = [
         MyProfileView.as_view(),
         name="perfil",
     ),
+    # ------------- Contacto ---------
+    path(
+        "contacto",
+        TemplateView.as_view(template_name="page/contacto.html"),
+        name='contacto'
+    )
 ]

@@ -33,7 +33,7 @@
               {% endif %}
 
               <a href="{% url 'perfil' %}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Mi Perfil</a>
-              <a href="#" class="py-5 px-3 text-gray-700 hover:text-gray-900">Contacto</a>
+              <a href="{% url 'contacto' %}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Contacto</a>
             </div>
           </div>
 
@@ -92,7 +92,7 @@
         <a href="{% url 'administrar-ordenes' %}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Administrar Órdenes</a>
         {% endif %}
         <a href="{% url 'perfil' %}" class="block py-2 px-4 text-sm hover:bg-gray-200">Mi Perfil</a>
-        <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-200">Contacto</a>
+        <a href="{% url 'contacto' %}" class="block py-2 px-4 text-sm hover:bg-gray-200">Contacto</a>
       </div>
     </nav>
 
