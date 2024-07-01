@@ -157,13 +157,18 @@ class StudentList(AdminOrTeacherRoleCheck, ListView):
 
 class OrderGroupList(TeacherOrStudentRoleCheck, View):
     def get(self, request, *args, **kwargs):
-        object_list = request.user.groups.order_by("-year", "-term").all()
+        querySet = request.user.groups.order_by("-year", "-term")
         if self.request.user.role == "teacher":
-            object_list = ClassGroups.objects.filter(professor=self.request.user).all()
+            querySet = ClassGroups.objects.filter(professor=self.request.user).order_by("-year", "-term")
+
+        paginator = Paginator(querySet, 10)
+
+        page = request.GET.get("page")
+        page_obj = paginator.get_page(page)
         return render(
             request,
             "page/crear-orden-grupos.html",
-            {"object_list": object_list},
+            {"page_obj": page_obj},
         )
 
 
@@ -202,7 +207,7 @@ class OrderList(TeacherOrStudentRoleCheck, View):
         if self.request.user.role == "teacher":
             querySet = Order.objects.filter(
                 group__professor=self.request.user, student=None
-            )
+            ).order_by("-group__year", "-group__term")
 
         paginator = Paginator(querySet, 10)
 
