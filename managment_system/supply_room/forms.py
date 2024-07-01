@@ -66,6 +66,10 @@ class StudentGroupForm(forms.ModelForm):
         }
         labels: {"student": "Agregar Estudiantes"}
 
+    def __init__(self, *args, **kwargs):
+        super(StudentGroupForm, self).__init__(*args, **kwargs)
+        self.fields["student"].queryset = Users.objects.filter(role="student")
+
 
 class OrderForm(forms.ModelForm):
     class Meta:
