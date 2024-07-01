@@ -191,10 +191,13 @@ class OrderCreate(TeacherOrStudentRoleCheck, CreateView):
 
 class OrderList(TeacherOrStudentRoleCheck, View):
     def get(self, request, *args, **kwargs):
+        object_list = request.user.orders.order_by("-group__year", "-group__term").all()
+        if self.request.user.role == 'teacher':
+            object_list = Order.objects.filter(group__professor=self.request.user, student=None).all()
         return render(
             request,
             "page/mis-ordenes.html",
-            {"object_list": request.user.orders.order_by("-group__year", "-group__term").all()},
+            {"object_list": object_list},
         )
 
 
