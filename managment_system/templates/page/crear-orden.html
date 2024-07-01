@@ -16,7 +16,7 @@
             <div class="block text-gray-700 text-l font-bold mb-2 space-y-4 my-6">Curso: {{ group.class_id.name}}</div>
             <div class="block text-gray-700 text-l font-bold mb-2 space-y-4 my-6">Grupo: {{ group.number}}</div>
             <div class="block text-gray-700 text-l font-bold mb-2 space-y-4 my-6">Semestre: {{ group.semester}}</div>
-            <div class="block text-gray-700 text-l font-bold mb-2 space-y-4 my-6">Profesor a Cargo: {{ group.professor.name}}</div>
+            <div class="block text-gray-700 text-l font-bold mb-2 space-y-4 my-6">Profesor a cargo: {{ group.professor.name}}</div>
 
             {% if request.user.role == 'student'%}
             <!-- Name field -->

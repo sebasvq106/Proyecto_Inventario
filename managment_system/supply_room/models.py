@@ -163,9 +163,9 @@ class ItemOrder(models.Model):
     quantity = models.PositiveIntegerField(
         validators=[MinValueValidator(1)], verbose_name="Cantidad"
     )
-    code = models.CharField(max_length=200, blank=True, verbose_name="Codigo")
+    code = models.CharField(max_length=200, blank=True, verbose_name="Código")
     order = models.ForeignKey(Order, on_delete=models.RESTRICT, verbose_name="Orden")
-    item = models.ForeignKey(Item, on_delete=models.RESTRICT, verbose_name="Articulo")
+    item = models.ForeignKey(Item, on_delete=models.RESTRICT, verbose_name="Artículo")
 
     def __str__(self):
         return f"{self.order.id}, {self.item.id}"
