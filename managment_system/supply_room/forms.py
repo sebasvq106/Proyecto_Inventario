@@ -73,9 +73,9 @@ class OrderForm(forms.ModelForm):
         fields = ["student"]
         widgets = {"student": StudentWidget}
 
-    def __init__(self, pk: int, *args, **kwargs):
+    def __init__(self, group_pk: int, user_pk: int, *args, **kwargs):
         super(OrderForm, self).__init__(*args, **kwargs)
-        self.fields['student'].queryset = Users.objects.filter(role='student', groups__in=pk)
+        self.fields['student'].queryset = Users.objects.filter(role='student', groups__in=group_pk).exclude(pk=user_pk)
 
 
 class ItemForm(forms.ModelForm):
@@ -119,4 +119,3 @@ class UpdateOrderItemForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(UpdateOrderItemForm, self).__init__(*args, **kwargs)
         self.fields['status'].choices = self.RESTRICTED_CHOICES[self.instance.status]
-        print(self.RESTRICTED_CHOICES[self.instance.status])

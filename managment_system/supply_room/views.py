@@ -121,7 +121,6 @@ class ClassGroupsUpdate(TeacherRoleCheck, UpdateView):
 class ClassGroupStudentList(TeacherRoleCheck, View):
     def get(self, request, *args, **kwargs):
         group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
-        print(group.class_id)
         form = StudentGroupForm(instance=group)
         return render(
             request,
@@ -133,10 +132,8 @@ class ClassGroupStudentList(TeacherRoleCheck, View):
         group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
         form = StudentGroupForm(request.POST, instance=group)
         form.instance.class_id = group.class_id
-        print(form.data)
         if form.is_valid():
             form.save()
-            print('rere')
         return HttpResponseRedirect(reverse("estudiantes-grupo", kwargs=kwargs))
 
 
@@ -169,13 +166,16 @@ class OrderCreate(TeacherOrStudentRoleCheck, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super(OrderCreate, self).get_form_kwargs()
-        kwargs.update({'pk': self.kwargs.get('pk')})
+        kwargs.update({'group_pk': self.kwargs.get('pk'), 'user_pk': self.request.user.pk})
         return kwargs
 
     def form_valid(self, form):
         group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
         form.instance.group = group
-        return super(OrderCreate, self).form_valid(form)
+        response = super(OrderCreate, self).form_valid(form)
+        if self.request.user.role == 'student':
+            self.object.student.add(self.request.user)
+        return response
 
     def get_context_data(self, **kwargs):
         ctx = super(OrderCreate, self).get_context_data(**kwargs)
