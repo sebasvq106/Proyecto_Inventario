@@ -152,10 +152,13 @@ class StudentList(AdminOrTeacherRoleCheck, ListView):
 
 class OrderGroupList(TeacherOrStudentRoleCheck, View):
     def get(self, request, *args, **kwargs):
+        object_list = request.user.groups.order_by("-year", "-term").all()
+        if self.request.user.role == 'teacher':
+            object_list = ClassGroups.objects.filter(professor=self.request.user).all()
         return render(
             request,
             "page/crear-orden-grupos.html",
-            {"object_list": request.user.groups.order_by("-year", "-term").all()},
+            {"object_list": object_list},
         )
 
 
