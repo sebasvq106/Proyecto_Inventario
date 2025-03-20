@@ -1,0 +1,687 @@
+{
+    "item": [
+        {
+            "id": 8,
+            "name": "Banda"
+        },
+        {
+            "id": 9,
+            "name": "Cables de baja potencia"
+        },
+        {
+            "id": 17,
+            "name": "Cables tipo jumper"
+        },
+        {
+            "id": 18,
+            "name": "Protoboard"
+        },
+        {
+            "id": 21,
+            "name": "Cables tipo lagarto"
+        },
+        {
+            "id": 22,
+            "name": "Cables tipo lagarto"
+        },
+        {
+            "id": 23,
+            "name": "Capacitor"
+        },
+        {
+            "id": 1,
+            "name": "Fuente de alimentación"
+        },
+        {
+            "id": 2,
+            "name": "Cables de conexión"
+        },
+        {
+            "id": 3,
+            "name": "Módulo de resistores"
+        },
+        {
+            "id": 4,
+            "name": "Módulo de inductores"
+        },
+        {
+            "id": 5,
+            "name": "Módulo de capacitores"
+        },
+        {
+            "id": 6,
+            "name": "Módulo de adquisición de datos"
+        },
+        {
+            "id": 7,
+            "name": "Amperímetro de gancho"
+        },
+        {
+            "id": 10,
+            "name": "Electrodinamómetro"
+        },
+        {
+            "id": 11,
+            "name": "Máquina de inducción trifásica jaula de ardilla"
+        },
+        {
+            "id": 12,
+            "name": "Tacómetro de mano"
+        },
+        {
+            "id": 13,
+            "name": "Resistencia 100Ω"
+        },
+        {
+            "id": 14,
+            "name": "Resistencia 1kΩ"
+        },
+        {
+            "id": 15,
+            "name": "Resistencia 20kΩ"
+        },
+        {
+            "id": 16,
+            "name": "Multímetro"
+        },
+        {
+            "id": 19,
+            "name": "Resistencia 10kΩ"
+        },
+        {
+            "id": 20,
+            "name": "Resistencia 3.3kΩ"
+        }
+    ],
+    "users": [
+        {
+            "id": 2,
+            "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
+            "last_login": "2024-07-01 05:05:50",
+            "is_superuser": false,
+            "first_name": "Christabel",
+            "last_name": "Alvarado Anchia",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-07-01 03:03:43",
+            "name": "Christabel Alvarado Anchia",
+            "email": "christabel.anchia@ucr.ac.cr",
+            "role": "student",
+            "student_id": "B80286",
+            "username": "christabel.anchia"
+        },
+        {
+            "id": 5,
+            "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
+            "last_login": "2024-07-01 03:50:00",
+            "is_superuser": false,
+            "first_name": "Johan",
+            "last_name": "Molina",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-07-01 03:08:10",
+            "name": "Johan Molina",
+            "email": "johan.molina@ucr.ac.cr",
+            "role": "admin",
+            "student_id": null,
+            "username": "johan.molina"
+        },
+        {
+            "id": 6,
+            "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
+            "last_login": null,
+            "is_superuser": false,
+            "first_name": "Juan",
+            "last_name": "Mora",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-07-01 03:09:34",
+            "name": "Juan Mora",
+            "email": "juan.mora@ucr.ac.cr",
+            "role": "student",
+            "student_id": "B71234",
+            "username": "juan.mora"
+        },
+        {
+            "id": 7,
+            "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
+            "last_login": null,
+            "is_superuser": true,
+            "first_name": "Marco",
+            "last_name": "Villata",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-07-01 03:10:20",
+            "name": "Marco Villalta",
+            "email": "marco.villalta@ucr.ac.cr",
+            "role": "teacher",
+            "student_id": null,
+            "username": "marco.villalta"
+        },
+        {
+            "id": 8,
+            "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
+            "last_login": null,
+            "is_superuser": false,
+            "first_name": "Henry",
+            "last_name": "Alvarado",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-07-01 03:17:03",
+            "name": "Henry Alvarado",
+            "email": "henry.alvarado@ucr.ac.cr",
+            "role": "student",
+            "student_id": "B912324",
+            "username": "henry.alvarado"
+        },
+        {
+            "id": 9,
+            "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
+            "last_login": null,
+            "is_superuser": false,
+            "first_name": "Emma",
+            "last_name": "Montes",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-07-01 03:17:54",
+            "name": "Emma Montes",
+            "email": "emma.montes@ucr.ac.cr",
+            "role": "student",
+            "student_id": "C11234",
+            "username": "emma.montes"
+        },
+        {
+            "id": 12,
+            "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
+            "last_login": null,
+            "is_superuser": false,
+            "first_name": "Javier",
+            "last_name": "Granados",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-07-01 03:21:38",
+            "name": "Javier Granados",
+            "email": "javier.granados@ucr.ac.cr",
+            "role": "student",
+            "student_id": "C41234",
+            "username": "javier.granados"
+        },
+        {
+            "id": 13,
+            "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
+            "last_login": null,
+            "is_superuser": false,
+            "first_name": "Carolina",
+            "last_name": "Hernandez",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-07-01 03:23:00",
+            "name": "Carolina Hernandez",
+            "email": "carolina.hernandez@ucr.ac.cr",
+            "role": "student",
+            "student_id": "C31234",
+            "username": "carolina.hernandez"
+        },
+        {
+            "id": 15,
+            "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
+            "last_login": null,
+            "is_superuser": false,
+            "first_name": "Erick",
+            "last_name": "Carvajal",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-07-01 03:26:51",
+            "name": "Erick Carvajal",
+            "email": "erick.carvajal@ucr.ac.cr",
+            "role": "teacher",
+            "student_id": null,
+            "username": "erick.carvajal"
+        },
+        {
+            "id": 16,
+            "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
+            "last_login": "2024-07-01 04:16:54",
+            "is_superuser": false,
+            "first_name": "Diego",
+            "last_name": "Dumani",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-07-01 03:28:08",
+            "name": "Diego",
+            "email": "diego.dumani@ucr.ac.cr",
+            "role": "teacher",
+            "student_id": null,
+            "username": "diego.dumani"
+        },
+        {
+            "id": 17,
+            "password": "pbkdf2_sha256$720000$dnO63I9bjH5oWIXiuAXOoc$wecvtRDdnkjFJSifEYUmmtiufaWBxXC01w8hGah6BEU=",
+            "last_login": "2025-03-19 22:46:54",
+            "is_superuser": true,
+            "first_name": "",
+            "last_name": "",
+            "is_staff": true,
+            "is_active": true,
+            "date_joined": "2025-03-19 22:46:38",
+            "name": "Sebas",
+            "email": "sebastian.vargasquesada@ucr.ac.cr",
+            "role": "admin",
+            "student_id": null,
+            "username": "sebastian.vargasquesada"
+        },
+        {
+            "id": 1,
+            "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
+            "last_login": "2024-07-01 05:10:02",
+            "is_superuser": true,
+            "first_name": "",
+            "last_name": "",
+            "is_staff": true,
+            "is_active": true,
+            "date_joined": "2024-07-01 03:02:26",
+            "name": "José Barquero",
+            "email": "jose.barquero@ucr.ac.cr",
+            "role": "admin",
+            "student_id": null,
+            "username": "jose.barquero"
+        },
+        {
+            "id": 3,
+            "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
+            "last_login": null,
+            "is_superuser": false,
+            "first_name": "María",
+            "last_name": "Salas",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-07-01 03:05:22",
+            "name": "María Salas",
+            "email": "maria.salas@ucr.ac.cr",
+            "role": "student",
+            "student_id": "C01234",
+            "username": "maria.salas"
+        },
+        {
+            "id": 4,
+            "password": "pbkdf2_sha256$720000$xJ76xfzd4dpfiAuU31cd4l$wROM/mhx8zWeOHKBcGd7w+WAKU/vlpsB/QYUSEVgbEg=",
+            "last_login": "2024-07-01 04:53:11",
+            "is_superuser": false,
+            "first_name": "Sofía",
+            "last_name": "Villalobos Brenes",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-07-01 03:06:31",
+            "name": "Sofía Villalobos Brenes",
+            "email": "sofia.villalobos@ucr.ac.cr",
+            "role": "teacher",
+            "student_id": null,
+            "username": "sofia.villalobos"
+        },
+        {
+            "id": 10,
+            "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
+            "last_login": null,
+            "is_superuser": false,
+            "first_name": "Jorge",
+            "last_name": "Loría",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-07-01 03:18:46",
+            "name": "Jorge Loría",
+            "email": "jorge.loria@ucr.ac.cr",
+            "role": "student",
+            "student_id": "B81234",
+            "username": "jorge.loria"
+        },
+        {
+            "id": 11,
+            "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
+            "last_login": null,
+            "is_superuser": false,
+            "first_name": "Isabel",
+            "last_name": "Gómez",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-07-01 03:19:57",
+            "name": "Isabel Gómez",
+            "email": "isabel.gomez@ucr.ac.cr",
+            "role": "student",
+            "student_id": "B62345",
+            "username": "isabel.gomez"
+        },
+        {
+            "id": 14,
+            "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
+            "last_login": null,
+            "is_superuser": false,
+            "first_name": "Fausto",
+            "last_name": "Calderón",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-07-01 03:24:01",
+            "name": "Fausto Calderón",
+            "email": "fausto.calderon@ucr.ac.cr",
+            "role": "teacher",
+            "student_id": null,
+            "username": "fausto.calderon"
+        }
+    ],
+    "class": [
+        {
+            "id": 2,
+            "name": "Labratorio de Sistemas Incrustados",
+            "code": "IE0301"
+        },
+        {
+            "id": 3,
+            "name": "Laboratorio de Electrotecnia",
+            "code": "IE0303l"
+        },
+        {
+            "id": 7,
+            "name": "Laboratorio de Circuitos Digitales",
+            "code": "IE0424"
+        },
+        {
+            "id": 10,
+            "name": "Laboratorio de Telecomunicaciones",
+            "code": "IE0530"
+        },
+        {
+            "id": 12,
+            "name": "Laboratorio de Microcontroladores",
+            "code": "IE0624"
+        },
+        {
+            "id": 13,
+            "name": "Laboratorio de Microondas",
+            "code": "IE0628"
+        },
+        {
+            "id": 15,
+            "name": "Test",
+            "code": "IE0000"
+        },
+        {
+            "id": 1,
+            "name": "Programación Bajo Plataformas Abiertas",
+            "code": "IE0117"
+        },
+        {
+            "id": 4,
+            "name": "Laboratorio de Electrónica I",
+            "code": "IE0308"
+        },
+        {
+            "id": 5,
+            "name": "Laboratorio de Máquinas Eléctricas I",
+            "code": "IE0316"
+        },
+        {
+            "id": 6,
+            "name": "Laboratorio de Electrónica II",
+            "code": "IE0408"
+        },
+        {
+            "id": 8,
+            "name": "Laboratorio de Control Automático",
+            "code": "IE0432"
+        },
+        {
+            "id": 9,
+            "name": "Laboratorio de Transmisión de Datos",
+            "code": "IE0528"
+        },
+        {
+            "id": 11,
+            "name": "Laboratorio de Máquinas Eléctricas II",
+            "code": "IE0616"
+        },
+        {
+            "id": 14,
+            "name": "Laboratorio de Programación y Microcomputadores",
+            "code": "IE0724"
+        }
+    ],
+    "classgroups": [
+        {
+            "id": 1,
+            "number": 1,
+            "year": 2024,
+            "term": "I",
+            "professor_id": 4,
+            "class_id_id": 7
+        },
+        {
+            "id": 2,
+            "number": 2,
+            "year": 2024,
+            "term": "I",
+            "professor_id": 16,
+            "class_id_id": 7
+        },
+        {
+            "id": 3,
+            "number": 1,
+            "year": 2024,
+            "term": "II",
+            "professor_id": 7,
+            "class_id_id": 8
+        },
+        {
+            "id": 4,
+            "number": 1,
+            "year": 2024,
+            "term": "III",
+            "professor_id": 15,
+            "class_id_id": 8
+        }
+    ],
+    "order": [
+        {
+            "id": 1,
+            "group_id": 1
+        },
+        {
+            "id": 2,
+            "group_id": 1
+        },
+        {
+            "id": 3,
+            "group_id": 3
+        },
+        {
+            "id": 4,
+            "group_id": 3
+        },
+        {
+            "id": 5,
+            "group_id": 2
+        },
+        {
+            "id": 6,
+            "group_id": 1
+        },
+        {
+            "id": 7,
+            "group_id": 1
+        },
+        {
+            "id": 8,
+            "group_id": 3
+        }
+    ],
+    "itemorder": [
+        {
+            "id": 1,
+            "status": "Devuelto",
+            "quantity": 1,
+            "code": "",
+            "order_id": 2,
+            "item_id": 1
+        },
+        {
+            "id": 2,
+            "status": "Devuelto",
+            "quantity": 29,
+            "code": "",
+            "order_id": 2,
+            "item_id": 2
+        },
+        {
+            "id": 3,
+            "status": "Devuelto",
+            "quantity": 1,
+            "code": "",
+            "order_id": 2,
+            "item_id": 3
+        },
+        {
+            "id": 4,
+            "status": "Denegado",
+            "quantity": 1,
+            "code": "",
+            "order_id": 2,
+            "item_id": 4
+        },
+        {
+            "id": 5,
+            "status": "Denegado",
+            "quantity": 1,
+            "code": "",
+            "order_id": 2,
+            "item_id": 1
+        },
+        {
+            "id": 6,
+            "status": "Devuelto",
+            "quantity": 1,
+            "code": "",
+            "order_id": 3,
+            "item_id": 8
+        },
+        {
+            "id": 7,
+            "status": "Denegado",
+            "quantity": 4,
+            "code": "",
+            "order_id": 3,
+            "item_id": 15
+        },
+        {
+            "id": 8,
+            "status": "Devuelto",
+            "quantity": 5,
+            "code": "",
+            "order_id": 3,
+            "item_id": 13
+        },
+        {
+            "id": 9,
+            "status": "Denegado",
+            "quantity": 1,
+            "code": "",
+            "order_id": 1,
+            "item_id": 1
+        },
+        {
+            "id": 10,
+            "status": "Denegado",
+            "quantity": 1,
+            "code": "",
+            "order_id": 1,
+            "item_id": 5
+        },
+        {
+            "id": 11,
+            "status": "Denegado",
+            "quantity": 1,
+            "code": "",
+            "order_id": 1,
+            "item_id": 10
+        },
+        {
+            "id": 12,
+            "status": "Prestado",
+            "quantity": 1,
+            "code": "",
+            "order_id": 4,
+            "item_id": 1
+        },
+        {
+            "id": 13,
+            "status": "Denegado",
+            "quantity": 1,
+            "code": "",
+            "order_id": 4,
+            "item_id": 3
+        },
+        {
+            "id": 14,
+            "status": "Solicitado",
+            "quantity": 20,
+            "code": "",
+            "order_id": 5,
+            "item_id": 2
+        },
+        {
+            "id": 15,
+            "status": "Solicitado",
+            "quantity": 1,
+            "code": "",
+            "order_id": 5,
+            "item_id": 1
+        },
+        {
+            "id": 16,
+            "status": "Solicitado",
+            "quantity": 1,
+            "code": "",
+            "order_id": 6,
+            "item_id": 4
+        },
+        {
+            "id": 17,
+            "status": "Solicitado",
+            "quantity": 3,
+            "code": "123456",
+            "order_id": 6,
+            "item_id": 1
+        },
+        {
+            "id": 18,
+            "status": "Solicitado",
+            "quantity": 1,
+            "code": "",
+            "order_id": 7,
+            "item_id": 2
+        },
+        {
+            "id": 19,
+            "status": "Solicitado",
+            "quantity": 1,
+            "code": "",
+            "order_id": 8,
+            "item_id": 1
+        },
+        {
+            "id": 20,
+            "status": "Solicitado",
+            "quantity": 2,
+            "code": "",
+            "order_id": 2,
+            "item_id": 2
+        },
+        {
+            "id": 21,
+            "status": "Solicitado",
+            "quantity": 3,
+            "code": "",
+            "order_id": 2,
+            "item_id": 14
+        }
+    ],
+    "userorder": [],
+    "studentgroups": []
+}
