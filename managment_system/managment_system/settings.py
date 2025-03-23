@@ -29,7 +29,7 @@ SECRET_KEY = "django-insecure-94nbtovf3_+gs+*!1zxw*tx=1$!ove3wp_l!c!wq159o7eu44g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -111,7 +111,7 @@ DATABASES = {
         "NAME": env("DB_NAME"),
         "USER": env("DB_USER"),
         "PASSWORD": env("DB_PASSWORD"),
-        "HOST": env("DB_HOST"),
+        "HOST": "db",
         "PORT": env("DB_PORT")
     }
 }
@@ -147,6 +147,10 @@ USE_I18N = True
 
 USE_TZ = True
 
+DEFAULT_CHARSET = 'utf-8'
+
+FILE_CHARSET = 'utf-8'
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
@@ -154,7 +158,7 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATICFILES_DIRS = [
     BASE_DIR / "static",
-    BASE_DIR.parent / "node_modules",
+    BASE_DIR / "node_modules",
 ]
 STATIC_ROOT = BASE_DIR.parent / "static"
 

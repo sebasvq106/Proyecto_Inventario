@@ -1,0 +1,43 @@
+services:
+    db:
+        image: postgres:17
+        restart: always
+        container_name: postgresql
+        environment:
+            - DATABASE_HOST=db
+            - POSTGRES_DB=bodega
+            - POSTGRES_USER=sebas_db
+            - POSTGRES_PASSWORD=sebas123
+        ports:
+            - "5432:5432"
+
+    pgadmin:
+        image: dpage/pgadmin4
+        container_name: pgadmin
+        environment:
+            - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+            - PGADMIN_DEFAULT_PASSWORD=admin
+        ports:
+            - "80:80"
+        depends_on:
+            - db
+            
+    web:
+        build: .
+        container_name: django
+        command: >
+                sh -c "sleep 1 &&
+                python manage.py migrate &&
+                python manage.py seed &&
+                python manage.py runserver 0.0.0.0:8000"
+        volumes:
+            - ./managment_system:/managment_system
+        ports:
+            - "8000:8000"
+        environment:
+            - POSTGRES_NAME=bodega
+            - POSTGRES_USER=sebas_db
+            - POSTGRES_PASSWORD=sebas123
+            - DATABASE_HOST=db
+        depends_on:
+            - db

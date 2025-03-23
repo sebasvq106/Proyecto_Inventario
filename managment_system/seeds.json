@@ -1,101 +1,77 @@
 {
     "item": [
         {
-            "id": 8,
             "name": "Banda"
         },
         {
-            "id": 9,
             "name": "Cables de baja potencia"
         },
         {
-            "id": 17,
             "name": "Cables tipo jumper"
         },
         {
-            "id": 18,
             "name": "Protoboard"
         },
         {
-            "id": 21,
             "name": "Cables tipo lagarto"
         },
         {
-            "id": 22,
             "name": "Cables tipo lagarto"
         },
         {
-            "id": 23,
             "name": "Capacitor"
         },
         {
-            "id": 1,
             "name": "Fuente de alimentación"
         },
         {
-            "id": 2,
             "name": "Cables de conexión"
         },
         {
-            "id": 3,
             "name": "Módulo de resistores"
         },
         {
-            "id": 4,
             "name": "Módulo de inductores"
         },
         {
-            "id": 5,
             "name": "Módulo de capacitores"
         },
         {
-            "id": 6,
             "name": "Módulo de adquisición de datos"
         },
         {
-            "id": 7,
             "name": "Amperímetro de gancho"
         },
         {
-            "id": 10,
             "name": "Electrodinamómetro"
         },
         {
-            "id": 11,
             "name": "Máquina de inducción trifásica jaula de ardilla"
         },
         {
-            "id": 12,
             "name": "Tacómetro de mano"
         },
         {
-            "id": 13,
             "name": "Resistencia 100Ω"
         },
         {
-            "id": 14,
             "name": "Resistencia 1kΩ"
         },
         {
-            "id": 15,
             "name": "Resistencia 20kΩ"
         },
         {
-            "id": 16,
             "name": "Multímetro"
         },
         {
-            "id": 19,
             "name": "Resistencia 10kΩ"
         },
         {
-            "id": 20,
             "name": "Resistencia 3.3kΩ"
         }
     ],
     "users": [
         {
-            "id": 2,
             "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
             "last_login": "2024-07-01 05:05:50",
             "is_superuser": false,
@@ -111,7 +87,6 @@
             "username": "christabel.anchia"
         },
         {
-            "id": 5,
             "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
             "last_login": "2024-07-01 03:50:00",
             "is_superuser": false,
@@ -127,7 +102,6 @@
             "username": "johan.molina"
         },
         {
-            "id": 6,
             "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
             "last_login": null,
             "is_superuser": false,
@@ -143,7 +117,6 @@
             "username": "juan.mora"
         },
         {
-            "id": 7,
             "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
             "last_login": null,
             "is_superuser": true,
@@ -159,7 +132,6 @@
             "username": "marco.villalta"
         },
         {
-            "id": 8,
             "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
             "last_login": null,
             "is_superuser": false,
@@ -175,7 +147,6 @@
             "username": "henry.alvarado"
         },
         {
-            "id": 9,
             "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
             "last_login": null,
             "is_superuser": false,
@@ -191,7 +162,6 @@
             "username": "emma.montes"
         },
         {
-            "id": 12,
             "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
             "last_login": null,
             "is_superuser": false,
@@ -207,7 +177,6 @@
             "username": "javier.granados"
         },
         {
-            "id": 13,
             "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
             "last_login": null,
             "is_superuser": false,
@@ -223,7 +192,6 @@
             "username": "carolina.hernandez"
         },
         {
-            "id": 15,
             "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
             "last_login": null,
             "is_superuser": false,
@@ -239,7 +207,6 @@
             "username": "erick.carvajal"
         },
         {
-            "id": 16,
             "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
             "last_login": "2024-07-01 04:16:54",
             "is_superuser": false,
@@ -255,7 +222,6 @@
             "username": "diego.dumani"
         },
         {
-            "id": 17,
             "password": "pbkdf2_sha256$720000$dnO63I9bjH5oWIXiuAXOoc$wecvtRDdnkjFJSifEYUmmtiufaWBxXC01w8hGah6BEU=",
             "last_login": "2025-03-19 22:46:54",
             "is_superuser": true,
@@ -271,7 +237,6 @@
             "username": "sebastian.vargasquesada"
         },
         {
-            "id": 1,
             "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
             "last_login": "2024-07-01 05:10:02",
             "is_superuser": true,
@@ -287,7 +252,6 @@
             "username": "jose.barquero"
         },
         {
-            "id": 3,
             "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
             "last_login": null,
             "is_superuser": false,
@@ -303,7 +267,6 @@
             "username": "maria.salas"
         },
         {
-            "id": 4,
             "password": "pbkdf2_sha256$720000$xJ76xfzd4dpfiAuU31cd4l$wROM/mhx8zWeOHKBcGd7w+WAKU/vlpsB/QYUSEVgbEg=",
             "last_login": "2024-07-01 04:53:11",
             "is_superuser": false,
@@ -319,7 +282,6 @@
             "username": "sofia.villalobos"
         },
         {
-            "id": 10,
             "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
             "last_login": null,
             "is_superuser": false,
@@ -335,7 +297,6 @@
             "username": "jorge.loria"
         },
         {
-            "id": 11,
             "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
             "last_login": null,
             "is_superuser": false,
@@ -351,7 +312,6 @@
             "username": "isabel.gomez"
         },
         {
-            "id": 14,
             "password": "pbkdf2_sha256$720000$lCp1psWkXzJupQWvnZvuzX$Wvw/CRbWlg6Db/S+nxeimvAHyMV0AMOdUkSunKK+6Jo=",
             "last_login": null,
             "is_superuser": false,
@@ -365,88 +325,102 @@
             "role": "teacher",
             "student_id": null,
             "username": "fausto.calderon"
+        },
+        {
+            "password": "pbkdf2_sha256$720000$dnO63I9bjH5oWIXiuAXOoc$wecvtRDdnkjFJSifEYUmmtiufaWBxXC01w8hGah6BEU=",
+            "last_login": null,
+            "is_superuser": false,
+            "first_name": "user",
+            "last_name": "user",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-07-01 03:24:01",
+            "name": "user",
+            "email": "user@user.com",
+            "role": "student",
+            "student_id": null,
+            "username": "user"
+        },
+        {
+            "password": "pbkdf2_sha256$720000$dnO63I9bjH5oWIXiuAXOoc$wecvtRDdnkjFJSifEYUmmtiufaWBxXC01w8hGah6BEU=",
+            "last_login": null,
+            "is_superuser": false,
+            "first_name": "profe",
+            "last_name": "profe",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-07-01 03:24:01",
+            "name": "Profe",
+            "email": "profe@profe.com",
+            "role": "teacher",
+            "student_id": null,
+            "username": "profe"
         }
     ],
     "class": [
         {
-            "id": 2,
             "name": "Labratorio de Sistemas Incrustados",
             "code": "IE0301"
         },
         {
-            "id": 3,
             "name": "Laboratorio de Electrotecnia",
             "code": "IE0303l"
         },
         {
-            "id": 7,
             "name": "Laboratorio de Circuitos Digitales",
             "code": "IE0424"
         },
         {
-            "id": 10,
             "name": "Laboratorio de Telecomunicaciones",
             "code": "IE0530"
         },
         {
-            "id": 12,
             "name": "Laboratorio de Microcontroladores",
             "code": "IE0624"
         },
         {
-            "id": 13,
             "name": "Laboratorio de Microondas",
             "code": "IE0628"
         },
         {
-            "id": 15,
             "name": "Test",
             "code": "IE0000"
         },
         {
-            "id": 1,
             "name": "Programación Bajo Plataformas Abiertas",
             "code": "IE0117"
         },
         {
-            "id": 4,
             "name": "Laboratorio de Electrónica I",
             "code": "IE0308"
         },
         {
-            "id": 5,
             "name": "Laboratorio de Máquinas Eléctricas I",
             "code": "IE0316"
         },
         {
-            "id": 6,
             "name": "Laboratorio de Electrónica II",
             "code": "IE0408"
         },
         {
-            "id": 8,
             "name": "Laboratorio de Control Automático",
             "code": "IE0432"
         },
         {
-            "id": 9,
             "name": "Laboratorio de Transmisión de Datos",
             "code": "IE0528"
         },
         {
-            "id": 11,
             "name": "Laboratorio de Máquinas Eléctricas II",
             "code": "IE0616"
         },
         {
-            "id": 14,
             "name": "Laboratorio de Programación y Microcomputadores",
             "code": "IE0724"
         }
     ],
     "classgroups": [
         {
-            "id": 1,
             "number": 1,
             "year": 2024,
             "term": "I",
@@ -454,27 +428,24 @@
             "class_id_id": 7
         },
         {
-            "id": 2,
             "number": 2,
             "year": 2024,
             "term": "I",
-            "professor_id": 16,
+            "professor_id": 4,
             "class_id_id": 7
         },
         {
-            "id": 3,
             "number": 1,
             "year": 2024,
             "term": "II",
-            "professor_id": 7,
+            "professor_id": 4,
             "class_id_id": 8
         },
         {
-            "id": 4,
             "number": 1,
             "year": 2024,
             "term": "III",
-            "professor_id": 15,
+            "professor_id": 9,
             "class_id_id": 8
         }
     ],
@@ -514,7 +485,6 @@
     ],
     "itemorder": [
         {
-            "id": 1,
             "status": "Devuelto",
             "quantity": 1,
             "code": "",
@@ -522,7 +492,6 @@
             "item_id": 1
         },
         {
-            "id": 2,
             "status": "Devuelto",
             "quantity": 29,
             "code": "",
@@ -530,7 +499,6 @@
             "item_id": 2
         },
         {
-            "id": 3,
             "status": "Devuelto",
             "quantity": 1,
             "code": "",
@@ -538,7 +506,6 @@
             "item_id": 3
         },
         {
-            "id": 4,
             "status": "Denegado",
             "quantity": 1,
             "code": "",
@@ -546,7 +513,6 @@
             "item_id": 4
         },
         {
-            "id": 5,
             "status": "Denegado",
             "quantity": 1,
             "code": "",
@@ -554,7 +520,6 @@
             "item_id": 1
         },
         {
-            "id": 6,
             "status": "Devuelto",
             "quantity": 1,
             "code": "",
@@ -562,7 +527,6 @@
             "item_id": 8
         },
         {
-            "id": 7,
             "status": "Denegado",
             "quantity": 4,
             "code": "",
@@ -570,7 +534,6 @@
             "item_id": 15
         },
         {
-            "id": 8,
             "status": "Devuelto",
             "quantity": 5,
             "code": "",
@@ -578,7 +541,6 @@
             "item_id": 13
         },
         {
-            "id": 9,
             "status": "Denegado",
             "quantity": 1,
             "code": "",
@@ -586,7 +548,6 @@
             "item_id": 1
         },
         {
-            "id": 10,
             "status": "Denegado",
             "quantity": 1,
             "code": "",
@@ -594,7 +555,6 @@
             "item_id": 5
         },
         {
-            "id": 11,
             "status": "Denegado",
             "quantity": 1,
             "code": "",
@@ -602,7 +562,6 @@
             "item_id": 10
         },
         {
-            "id": 12,
             "status": "Prestado",
             "quantity": 1,
             "code": "",
@@ -610,7 +569,6 @@
             "item_id": 1
         },
         {
-            "id": 13,
             "status": "Denegado",
             "quantity": 1,
             "code": "",
@@ -618,7 +576,6 @@
             "item_id": 3
         },
         {
-            "id": 14,
             "status": "Solicitado",
             "quantity": 20,
             "code": "",
@@ -626,7 +583,6 @@
             "item_id": 2
         },
         {
-            "id": 15,
             "status": "Solicitado",
             "quantity": 1,
             "code": "",
@@ -634,7 +590,6 @@
             "item_id": 1
         },
         {
-            "id": 16,
             "status": "Solicitado",
             "quantity": 1,
             "code": "",
@@ -642,7 +597,6 @@
             "item_id": 4
         },
         {
-            "id": 17,
             "status": "Solicitado",
             "quantity": 3,
             "code": "123456",
@@ -650,7 +604,6 @@
             "item_id": 1
         },
         {
-            "id": 18,
             "status": "Solicitado",
             "quantity": 1,
             "code": "",
@@ -658,7 +611,6 @@
             "item_id": 2
         },
         {
-            "id": 19,
             "status": "Solicitado",
             "quantity": 1,
             "code": "",
@@ -666,7 +618,6 @@
             "item_id": 1
         },
         {
-            "id": 20,
             "status": "Solicitado",
             "quantity": 2,
             "code": "",
@@ -674,7 +625,6 @@
             "item_id": 2
         },
         {
-            "id": 21,
             "status": "Solicitado",
             "quantity": 3,
             "code": "",
