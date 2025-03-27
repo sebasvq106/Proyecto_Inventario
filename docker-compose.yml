@@ -8,6 +8,8 @@ services:
             - POSTGRES_DB=bodega
             - POSTGRES_USER=sebas_db
             - POSTGRES_PASSWORD=sebas123
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
         ports:
             - "5432:5432"
 
@@ -17,6 +19,8 @@ services:
         environment:
             - PGADMIN_DEFAULT_EMAIL=admin@admin.com
             - PGADMIN_DEFAULT_PASSWORD=admin
+        volumes:
+            - pgadmin_data:/var/lib/pgadmin
         ports:
             - "80:80"
         depends_on:
@@ -27,8 +31,6 @@ services:
         container_name: django
         command: >
                 sh -c "sleep 1 &&
-                python manage.py migrate &&
-                python manage.py seed &&
                 python manage.py runserver 0.0.0.0:8000"
         volumes:
             - ./managment_system:/managment_system
@@ -41,3 +43,6 @@ services:
             - DATABASE_HOST=db
         depends_on:
             - db
+volumes:
+    postgres_data:
+    pgadmin_data:
