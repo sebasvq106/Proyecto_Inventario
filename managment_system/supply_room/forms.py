@@ -3,7 +3,30 @@ from django.contrib.auth import password_validation
 from django.contrib.auth.forms import UserCreationForm
 from django_select2 import forms as s2forms
 
-from .models import ClassGroups, ItemOrder, Order, Users
+from .models import ClassGroups, ItemOrder, Order, Users, Item
+
+
+class ItemCreateForm(forms.ModelForm):
+    quantity = forms.IntegerField(
+        min_value=1,
+        initial=1,
+        label="Cantidad",
+        widget=forms.NumberInput(attrs={
+            'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+        })
+    )
+
+    class Meta:
+        model = Item
+        fields = ['name']
+        labels = {
+            'name': 'Nombre'
+        }
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+            })
+        }
 
 
 class RegistrationForm(UserCreationForm):

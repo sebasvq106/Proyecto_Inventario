@@ -2,7 +2,7 @@ import json
 from django.core.paginator import Paginator
 from django.forms import modelformset_factory
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, DeleteView, UpdateView
@@ -10,7 +10,7 @@ from django.views.generic import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 
 from .forms import (GroupForm, ItemForm, OrderForm, StudentGroupForm,
-                    UpdateOrderItemForm)
+                    UpdateOrderItemForm, ItemCreateForm)
 from .models import Class, ClassGroups, Item, ItemOrder, Order, Users
 from .utils import (AdminOrTeacherRoleCheck, AdminRoleCheck,
                     TeacherOrStudentRoleCheck, TeacherRoleCheck)
@@ -79,19 +79,25 @@ class AvailableItemList(ListView):
 
 
 class ItemCreate(AdminRoleCheck, CreateView):
-    """
-    CreateView for Item model
-
-    Requests Methods:
-    Get: Render the form for Item Creation
-    Post: Validates the form and saves the Item
-    """
-
-    # specify the model for create view
     model = Item
+    form_class = ItemCreateForm  # Usamos nuestro formulario personalizado
+    template_name = "tu_template.html"
 
-    # specify the fields to be displayed
-    fields = ["name"]
+    def form_valid(self, form):
+        quantity = form.cleaned_data.get('quantity', 1)
+        
+        # Guardamos el primer item (para manejar relaciones many-to-many correctamente)
+        self.object = form.save()
+        
+        # Creamos los items adicionales
+        if quantity > 1:
+            for _ in range(quantity - 1):
+                Item.objects.create(
+                    name=form.cleaned_data['name'],
+                    # Copia aquí otros campos necesarios
+                )
+        
+        return redirect(self.get_success_url())
 
 
 class ItemDelete(AdminRoleCheck, DeleteView):
