@@ -16,7 +16,8 @@
             "name": "Cables tipo lagarto"
         },
         {
-            "name": "Cables tipo lagarto"
+            "name": "Cables tipo lagarto",
+            "is_available": "False"
         },
         {
             "name": "Capacitor"

@@ -1,7 +1,8 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %}
+
+{% block content %}
 <div class="max-w-6xl mx-auto px-4 py-8 bg-white rounded-lg shadow-md mt-16">
     <div class="flex justify-between items-center mb-4">
-        <!-- Spacer to push the button to the right -->
         <h2 class="text-2xl font-bold py-2">Lista de Artículos</h2>
         {% if user.role == 'admin' %}
         <a href="{% url 'crear-articulo' %}" class="py-2 px-3 bg-blue-500 text-white rounded hover:bg-blue-400">Agregar Artículo</a>
@@ -9,14 +10,14 @@
     </div>
 
     <ul class="divide-y divide-gray-200">
-        <!-- Iterate over object_list -->
         {% for object in object_list %}
-        <!-- Display Objects -->
-        <li class="py-4">
+        <li class="py-4 cursor-pointer" id="item-{{ object.detalles }}" 
+            onclick="openModal('{{ object.name }}', '{{ object.detalles|escapejs }}')">
             <div class="flex justify-between items-center">
                 <span class="text-gray-700">{{ object.name }}</span>
+                <span class="text-gray-500">Cantidad: {{ object.count }}</span>
                 {% if user.role == 'admin' and object.can_be_deleted %}
-                <a href="{% url 'eliminar-articulo' object.id %}" class="py-2 px-3 bg-red-500 text-white rounded hover:bg-red-400">Eliminar</a>
+                <a href="{% url 'eliminar-articulo' object.detalles.0.id %}" class="py-2 px-3 bg-red-500 text-white rounded hover:bg-red-400">Eliminar</a>
                 {% endif %}
             </div>
         </li>
@@ -25,28 +26,86 @@
         {% endfor %}
     </ul>
 
-    <div class="pagination ">
-    <div class="step-links flex w-full justify-between items-center p-2">
-        {% if page_obj.has_previous %}
-        <a href="?page=1" class="mx-2">Primero</a>
-        <a href="?page={{ page_obj.previous_page_number }}" class="mx-2">Previo</a>
-        {% else %}
-        <div></div>
-        <div></div>
-        {% endif %}
+    <div class="pagination">
+        <div class="step-links flex w-full justify-between items-center p-2">
+            {% if page_obj.has_previous %}
+            <a href="?page=1" class="mx-2">Primero</a>
+            <a href="?page={{ page_obj.previous_page_number }}" class="mx-2">Previo</a>
+            {% else %}
+            <div></div>
+            <div></div>
+            {% endif %}
 
-        <span class="current font-bold mx-4">
-            Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
-        </span>
+            <span class="current font-bold mx-4">
+                Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+            </span>
 
-        {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}" class="mx-2">Siguiente</a>
-        <a href="?page={{ page_obj.paginator.num_pages }}" class="mx-2">Última</a>
-        {% else %}
-        <div></div>
-        <div></div>
-        {% endif %}
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="mx-2">Siguiente</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="mx-2">Última</a>
+            {% else %}
+            <div></div>
+            <div></div>
+            {% endif %}
+        </div>
     </div>
 </div>
+
+<!-- Modal -->
+<div id="itemModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+        <h2 class="text-xl font-bold mb-2" id="modalTitle">Nombre del Artículo</h2>
+
+        <!-- Aquí se mostrarán los detalles -->
+        <div id="modalContent"></div>
+
+        <div id="deleteButtonContainer" class="flex justify-end mt-4"></div>
+
+        <div class="flex justify-center">
+            <button onclick="closeModal()" class="py-2 px-3 mt-4 bg-gray-500 text-white rounded hover:bg-gray-400">
+                Cerrar
+            </button>
+        </div>
+    </div>
 </div>
+
+<script>
+function openModal(name, detallesJSON) {
+    let detalles = JSON.parse(detallesJSON);
+
+    document.getElementById("itemModal").classList.remove("hidden");
+    document.getElementById("modalTitle").innerText = name;
+
+    let content = '';
+    let deleteButtonContainer = document.getElementById("deleteButtonContainer");
+    deleteButtonContainer.innerHTML = ''; // Limpiar el contenedor de botones de eliminación antes de añadir los nuevos
+
+    if (detalles.length > 0) {
+        detalles.forEach(function(detalle) {
+            let state = detalle.is_available ? "Disponible" : "Prestado";
+            content += `
+                <div class="flex justify-between items-center mb-2">
+                    <span>ID: ${detalle.id} - Estado: ${state}</span>
+                    ${detalle.is_available ? `
+                        <a href="/eliminar-articulo/${detalle.id}" class="py-2 px-3 bg-red-500 text-white rounded hover:bg-red-400">
+                            Eliminar
+                        </a>` : ''}
+                </div>
+            `;
+        });
+    } else {
+        content += "No hay detalles disponibles.";
+    }
+
+    // Actualizar el contenido del modal con los detalles
+    document.getElementById("modalContent").innerHTML = content;
+}
+
+function closeModal() {
+    document.getElementById("itemModal").classList.add("hidden");
+}
+
+
+</script>
+
 {% endblock %}

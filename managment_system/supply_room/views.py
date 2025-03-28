@@ -1,3 +1,4 @@
+import json
 from django.core.paginator import Paginator
 from django.forms import modelformset_factory
 from django.http import HttpResponseRedirect
@@ -13,6 +14,7 @@ from .forms import (GroupForm, ItemForm, OrderForm, StudentGroupForm,
 from .models import Class, ClassGroups, Item, ItemOrder, Order, Users
 from .utils import (AdminOrTeacherRoleCheck, AdminRoleCheck,
                     TeacherOrStudentRoleCheck, TeacherRoleCheck)
+from collections import defaultdict
 
 
 class ItemList(ListView):
@@ -22,19 +24,58 @@ class ItemList(ListView):
     Requests Methods:
     Get: Renders list of all items
     """
-
-    # specify the model for list view
     model = Item
     paginate_by = 10
 
     def get_queryset(self, *args, **kwargs):
         """
-        Overrides internal queryset to add alphabetical ordering
-        by name
+        Overrides internal queryset to return unique items
+        with their count, availability status list, and IDs.
         """
-        qs = super(ItemList, self).get_queryset(*args, **kwargs)
-        qs = qs.order_by("name")
-        return qs
+        queryset = super().get_queryset(*args, **kwargs).order_by("name")
+
+        item_counts = defaultdict(lambda: {"name": "", "count": 0, "detalles": []})
+
+        for item in queryset:
+            item_counts[item.name]["name"] = item.name
+            item_counts[item.name]["count"] += 1
+            item_counts[item.name]["detalles"].append({
+                "id": item.id,
+                "is_available": item.is_available
+            })
+
+        items = list(item_counts.values())
+
+        for item in items:
+            item["detalles"] = json.dumps(item["detalles"])
+
+        return items
+
+
+class AvailableItemList(ListView):
+    """
+    ListView for Item model
+
+    Requests Methods:
+    Get: Renders list of all items, counting only available ones
+    """
+    model = Item
+    paginate_by = 10
+
+    def get_queryset(self, *args, **kwargs):
+        """
+        Overrides internal queryset to return unique available items
+        with their count.
+        """
+        queryset = super().get_queryset(*args, **kwargs).filter(is_available=True).order_by("name")
+
+        item_counts = defaultdict(lambda: {"name": "", "count": 0})
+
+        for item in queryset:
+            item_counts[item.name]["name"] = item.name
+            item_counts[item.name]["count"] += 1
+
+        return list(item_counts.values())
 
 
 class ItemCreate(AdminRoleCheck, CreateView):

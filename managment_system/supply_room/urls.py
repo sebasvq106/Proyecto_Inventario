@@ -5,7 +5,7 @@ from django.views.generic.base import TemplateView
 from .views import (AdminOrderDetails, AdminOrderList, ClassCreate,
                     ClassGroupsCreate, ClassGroupsDelete, ClassGroupsList,
                     ClassGroupStudentList, ClassGroupsUpdate, ClassList,
-                    ItemCreate, ItemDelete, ItemList, ItemOrderCreate,
+                    ItemCreate, ItemDelete, ItemList, AvailableItemList, ItemOrderCreate,
                     MyProfileView, OrderCreate, OrderDetails, OrderGroupList,
                     OrderList, StudentList)
 
@@ -15,6 +15,11 @@ urlpatterns = [
         "articulos",
         ItemList.as_view(template_name="page/articulos.html"),
         name="articulos",
+    ),
+    path(
+        "articulos-disponibles",
+        AvailableItemList.as_view(template_name="page/articulos-disponibles.html"),
+        name="articulos-disponibles",
     ),
     path(
         "crear-articulo",

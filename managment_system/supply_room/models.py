@@ -67,6 +67,7 @@ class CustomUserManager(UserManager):
 
 class Item(models.Model):
     name = models.CharField(max_length=200)
+    is_available = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.name}"
