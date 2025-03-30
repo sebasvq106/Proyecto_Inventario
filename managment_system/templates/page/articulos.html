@@ -56,10 +56,19 @@
     <div class="bg-white p-6 rounded-lg shadow-lg w-96">
         <h2 class="text-xl font-bold mb-2" id="modalTitle">Nombre del Artículo</h2>
 
-        <!-- Aquí se mostrarán los detalles -->
         <div id="modalContent"></div>
 
         <div id="deleteButtonContainer" class="flex justify-end mt-4"></div>
+
+        <div id="paginationControls" class="flex justify-between mt-4 hidden">
+            <button id="prevPage" class="py-1 px-3 bg-gray-200 rounded hover:bg-gray-300">
+                Anterior
+            </button>
+            <span id="pageInfo">Página 1</span>
+            <button id="nextPage" class="py-1 px-3 bg-gray-200 rounded hover:bg-gray-300">
+                Siguiente
+            </button>
+        </div>
 
         <div class="flex justify-center">
             <button onclick="closeModal()" class="py-2 px-3 mt-4 bg-gray-500 text-white rounded hover:bg-gray-400">
@@ -70,18 +79,47 @@
 </div>
 
 <script>
+let currentPage = 1;
+let itemsPerPage = 5;
+let paginatedDetalles = [];
+
 function openModal(name, detallesJSON) {
     let detalles = JSON.parse(detallesJSON);
-
+    currentPage = 1; 
+    
     document.getElementById("itemModal").classList.remove("hidden");
     document.getElementById("modalTitle").innerText = name;
 
+    paginatedDetalles = divideArray(detalles, itemsPerPage);
+    const paginationControls = document.getElementById("paginationControls");
+    
+    if (detalles.length > itemsPerPage) {
+        paginationControls.classList.remove("hidden");
+        updatePaginationControls();
+    } else {
+        paginationControls.classList.add("hidden");
+    }
+
+    renderModalContent();
+}
+
+function divideArray(arr, size) {
+    const chunks = [];
+    for (let i = 0; i < arr.length; i += size) {
+        chunks.push(arr.slice(i, i + size));
+    }
+    return chunks;
+}
+
+function renderModalContent() {
     let content = '';
     let deleteButtonContainer = document.getElementById("deleteButtonContainer");
-    deleteButtonContainer.innerHTML = ''; // Limpiar el contenedor de botones de eliminación antes de añadir los nuevos
+    deleteButtonContainer.innerHTML = '';
 
-    if (detalles.length > 0) {
-        detalles.forEach(function(detalle) {
+    const currentItems = paginatedDetalles[currentPage - 1] || [];
+    
+    if (currentItems.length > 0) {
+        currentItems.forEach(function(detalle) {
             let state = detalle.is_available ? "Disponible" : "Prestado";
             content += `
                 <div class="flex justify-between items-center mb-2">
@@ -97,15 +135,33 @@ function openModal(name, detallesJSON) {
         content += "No hay detalles disponibles.";
     }
 
-    // Actualizar el contenido del modal con los detalles
     document.getElementById("modalContent").innerHTML = content;
+    updatePaginationControls();
+}
+
+function updatePaginationControls() {
+    document.getElementById("pageInfo").innerText = `Página ${currentPage} de ${paginatedDetalles.length}`;
+    document.getElementById("prevPage").disabled = currentPage === 1;
+    document.getElementById("nextPage").disabled = currentPage === paginatedDetalles.length;
 }
 
 function closeModal() {
     document.getElementById("itemModal").classList.add("hidden");
 }
 
+document.getElementById("prevPage").addEventListener("click", function() {
+    if (currentPage > 1) {
+        currentPage--;
+        renderModalContent();
+    }
+});
 
+document.getElementById("nextPage").addEventListener("click", function() {
+    if (currentPage < paginatedDetalles.length) {
+        currentPage++;
+        renderModalContent();
+    }
+});
 </script>
 
 {% endblock %}

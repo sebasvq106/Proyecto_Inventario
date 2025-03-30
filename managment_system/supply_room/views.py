@@ -1,7 +1,7 @@
 import json
 from django.core.paginator import Paginator
 from django.forms import modelformset_factory
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views import View
@@ -102,17 +102,30 @@ class ItemCreate(AdminRoleCheck, CreateView):
 
 class ItemDelete(AdminRoleCheck, DeleteView):
     """
-    DeleteView for Item model
+    DeleteView for Item model with availability check
 
     Requests Methods:
     Get: Render a deletion confirmation modal
-    Delete: Deletes the specified Item in the db
+    Delete: Deletes the specified Item in the db only if available
     """
-
-    # specify the model for delete view
     model = Item
     success_url = reverse_lazy("articulos")
     template_name = "page/confirm_delete.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        
+        if not self.object.is_available:
+            return HttpResponseForbidden("No se puede eliminar un artículo que no está disponible")
+            
+        return super().dispatch(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if not self.object.is_available:
+            return HttpResponseForbidden("No se puede eliminar un artículo que no está disponible")
+            
+        return super().delete(request, *args, **kwargs)
 
 
 class ClassList(AdminOrTeacherRoleCheck, ListView):
