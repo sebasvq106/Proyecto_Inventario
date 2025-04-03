@@ -10,7 +10,11 @@ def test_articulos(client):
     Test that the ItemList view renders the grouped items correctly.
     """
     # Create and authenticate user
-    user = Users.objects.create_user(username='testuser', password='testpass', role='admin')
+    user = Users.objects.create_user(
+        username='testuser',
+        password='testpass',
+        role='admin'
+    )
     client.force_login(user)
 
     # Create test data

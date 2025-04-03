@@ -9,13 +9,17 @@ def test_articulos_disponibles(client):
     Test that the ItemList view renders the grouped items correctly.
     """
     # Create and authenticate user
-    user = Users.objects.create_user(username='testuser', password='testpass', role='student')
+    user = Users.objects.create_user(
+        username='testuser',
+        password='testpass',
+        role='student'
+    )
     client.force_login(user)
 
     # Create test data
-    item1 = Item.objects.create(name="Resistencia", is_available=True)
-    item2 = Item.objects.create(name="Resistencia", is_available=False)
-    item3 = Item.objects.create(name="Capacitor", is_available=True)
+    Item.objects.create(name="Resistencia", is_available=True)
+    Item.objects.create(name="Resistencia", is_available=False)
+    Item.objects.create(name="Capacitor", is_available=True)
 
     # Make GET request
     url = reverse("articulos-disponibles")
