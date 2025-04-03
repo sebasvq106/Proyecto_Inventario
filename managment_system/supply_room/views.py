@@ -1,5 +1,7 @@
 import json
+from django.db.models import ProtectedError
 from django.core.paginator import Paginator
+from django.contrib import messages
 from django.forms import modelformset_factory
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
@@ -85,10 +87,10 @@ class ItemCreate(AdminRoleCheck, CreateView):
 
     def form_valid(self, form):
         quantity = form.cleaned_data.get('quantity', 1)
-        
+
         # Guardamos el primer item (para manejar relaciones many-to-many correctamente)
         self.object = form.save()
-        
+
         # Creamos los items adicionales
         if quantity > 1:
             for _ in range(quantity - 1):
@@ -96,7 +98,7 @@ class ItemCreate(AdminRoleCheck, CreateView):
                     name=form.cleaned_data['name'],
                     # Copia aquí otros campos necesarios
                 )
-        
+
         return redirect(self.get_success_url())
 
 
@@ -114,17 +116,17 @@ class ItemDelete(AdminRoleCheck, DeleteView):
 
     def dispatch(self, request, *args, **kwargs):
         self.object = self.get_object()
-        
+
         if not self.object.is_available:
             return HttpResponseForbidden("No se puede eliminar un artículo que no está disponible")
-            
+
         return super().dispatch(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
         if not self.object.is_available:
             return HttpResponseForbidden("No se puede eliminar un artículo que no está disponible")
-            
+
         return super().delete(request, *args, **kwargs)
 
 
@@ -164,6 +166,51 @@ class ClassCreate(TeacherRoleCheck, CreateView):
 
     # specify the fields to be displayed
     fields = ["name", "code"]
+
+    def form_valid(self, form):
+        """
+        Validates that the class name and code are unique before saving.
+        """
+        name = form.cleaned_data.get("name")
+        code = form.cleaned_data.get("code")
+
+        # Check if a class with the same name and code already exists
+        if Class.objects.filter(name=name, code=code).exists():
+            messages.error(self.request, 'Este curso ya existe.')
+            return redirect("crear-curso")  # Redirect to the class creation form
+
+        return super().form_valid(form)
+
+
+class ClassDelete(TeacherRoleCheck, DeleteView):
+    """
+    DeleteView for Class model
+
+    Requests Methods:
+    Get: Render a deletion confirmation modal
+    Delete: Deletes the specified Class in the db
+    """
+    model = Class
+    success_url = reverse_lazy("cursos")
+    template_name = "page/eliminar-curso.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        # Check if there are any groups associated with this class
+        if ClassGroups.objects.filter(class_id=self.object).exists():
+            messages.error(request, "Este curso no se puede eliminar porque tiene grupos activos.")
+        return super().dispatch(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        try:
+            return super().delete(request, *args, **kwargs)
+
+        except ProtectedError:
+            messages.error(request, "Este curso no se puede eliminar porque tiene grupos activos.")
+            return redirect(self.success_url)
 
 
 class ClassGroupsList(AdminOrTeacherRoleCheck, ListView):
@@ -224,10 +271,24 @@ class ClassGroupsCreate(TeacherRoleCheck, CreateView):
 
     def form_valid(self, form):
         """
-        Sets the specific class of the ClassGroup before saving
+        Sets the specific class of the ClassGroup before saving and checks for duplicate group numbers
         """
-        class_id = Class.objects.filter(code=self.kwargs.get("code"))
-        form.instance.class_id = class_id[0]
+        class_id = Class.objects.filter(code=self.kwargs.get("code")).first()
+        # Obtener los datos del formulario
+        group_number = form.cleaned_data.get('number')
+        group_year = form.cleaned_data.get('year')
+        group_term = form.cleaned_data.get('term')
+
+        # Verificar si ya existe un grupo con este número, año y término en la misma clase
+        if ClassGroups.objects.filter(class_id=class_id, number=group_number, year=group_year, term=group_term).exists():
+            # Si existe, mostrar un mensaje de error y redirigir al formulario
+            messages.error(self.request, f'Ya existe un grupo con estas características.')
+            return redirect('crear-grupo', code=self.kwargs.get("code"))
+
+        # Asignar la clase al grupo antes de guardarlo
+        form.instance.class_id = class_id
+
+        # Si todo está bien, proceder a guardar el grupo
         return super(ClassGroupsCreate, self).form_valid(form)
 
 

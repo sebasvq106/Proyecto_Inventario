@@ -2,7 +2,7 @@ from django.contrib.auth import views as auth_views
 from django.urls import path
 from django.views.generic.base import TemplateView
 
-from .views import (AdminOrderDetails, AdminOrderList, ClassCreate,
+from .views import (AdminOrderDetails, AdminOrderList, ClassCreate, ClassDelete,
                     ClassGroupsCreate, ClassGroupsDelete, ClassGroupsList,
                     ClassGroupStudentList, ClassGroupsUpdate, ClassList,
                     ItemCreate, ItemDelete, ItemList, AvailableItemList, ItemOrderCreate,
@@ -43,6 +43,7 @@ urlpatterns = [
         ),
         name="crear-grupo",
     ),
+    path("eliminar-curso/<int:pk>", ClassDelete.as_view(), name="eliminar-curso"),
     path(
         "cursos/<str:code>/editar/<pk>",
         ClassGroupsUpdate.as_view(

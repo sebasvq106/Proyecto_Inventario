@@ -16,7 +16,10 @@
             <div class="flex justify-between items-center">
                 <a href="{% url 'grupos' code=object.code %}">
                 <span class="text-gray-700">{{ object.name }} {{ object.code }}</span>
-                    </a>
+                </a>
+                {% if user.role == 'teacher' %}
+                <a href="{% url 'eliminar-curso' object.id %}" class="py-2 px-3 bg-red-500 text-white rounded hover:bg-red-400">Eliminar</a>
+                {% endif %}
             </div>
         </li>
         {% empty %}

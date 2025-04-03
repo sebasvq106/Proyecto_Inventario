@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8 bg-white rounded-lg shadow-md mt-16 text-center">
+    <h2 class="text-2xl font-bold py-2">Confirmar Eliminación</h2>
+    <p>¿Estás seguro que quieres eliminar el curso "{{ object.name }}"?</p>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="flex justify-center">
+                <div class="flex items-center p-4 mb-4 border-2 border-red-500 rounded-lg shadow-md bg-white text-center">
+                    <p class="text-black font-semibold">
+                        {{ message }}
+                    </p>
+                </div>
+            </div>
+        {% endfor %}
+        <a href="{% url 'cursos' %}" class="py-2 px-3 bg-gray-500 text-white rounded hover:bg-gray-400">Volver</a>
+    {% else %}
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="py-2 px-3 bg-red-500 text-white rounded hover:bg-red-400">Eliminar</button>
+            <a href="{% url 'cursos' %}" class="py-2 px-3 bg-gray-500 text-white rounded hover:bg-gray-400">Cancelar</a>
+        </form>
+    {% endif %}
+</div>
+{% endblock %}
