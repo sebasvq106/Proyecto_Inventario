@@ -356,7 +356,7 @@ class ClassGroupsUpdate(TeacherRoleCheck, UpdateView):
         return reverse("grupos", kwargs={"code": self.kwargs["code"]})
 
 
-class ClassGroupStudentList(TeacherRoleCheck, View):
+class ClassGroupStudentList(AdminOrTeacherRoleCheck, View):
     """
     Basic View for managing students of a ClassGroup
 
@@ -368,22 +368,31 @@ class ClassGroupStudentList(TeacherRoleCheck, View):
     :code: code of the class associated to the ClassGroup that is being updated
     :pk: primary key of the ClassGroup to be updated
     """
+    paginate_by = 7
 
     def get(self, request, *args, **kwargs):
         """
-        Gather the data and renders the template
-
-        Context Data
-        :object_list: list of current students in the ClassGroup
-        :form: form that allows the updating of the students
-        :group: specific ClassGroup
+        Renderiza el formulario con lista paginada de estudiantes
         """
         group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
+        class1 = group.class_id
+
+        student_list = group.student.all().order_by('name')
+        paginator = Paginator(student_list, self.paginate_by)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
         form = StudentGroupForm(instance=group)
+
         return render(
             request,
             "page/grupos/estudiantes.html",
-            {"object_list": group.student.all(), "form": form, "group": group},
+            {
+                "page_obj": page_obj,
+                "form": form,
+                "group": group,
+                "class1": class1,
+            },
         )
 
     def post(self, request, *args, **kwargs):
@@ -392,10 +401,13 @@ class ClassGroupStudentList(TeacherRoleCheck, View):
         """
         group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
         form = StudentGroupForm(request.POST, instance=group)
-        form.instance.class_id = group.class_id
+
         if form.is_valid():
-            form.save()
-        return HttpResponseRedirect(reverse("estudiantes-grupo", kwargs=kwargs))
+            students = form.cleaned_data["student"]
+            group.student.set(students)
+            return HttpResponseRedirect(reverse("estudiantes-grupo", kwargs=kwargs))
+
+        return render(request, "page/grupos/estudiantes.html", {"form": form, "group": group})
 
 
 class StudentList(AdminOrTeacherRoleCheck, ListView):
