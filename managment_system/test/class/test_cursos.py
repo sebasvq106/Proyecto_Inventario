@@ -90,7 +90,7 @@ def test_class_admin(client):
 @pytest.mark.django_db
 def test_class_student(client):
     """
-    Test that the ClassList view renders correctly with user role student.
+    Test that the ClassList view not renders with user role student.
     """
     # Create and authenticate user
     user = Users.objects.create_user(

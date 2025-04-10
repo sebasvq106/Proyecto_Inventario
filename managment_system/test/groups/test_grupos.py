@@ -132,7 +132,7 @@ def test_groups_admin(client):
 @pytest.mark.django_db
 def test_groups_student(client):
     """
-    Test that the ClassGroupList view renders correctly with user role student.
+    Test that the ClassGroupList view not renders with user role student.
     """
     # Create and authenticate user
     user = Users.objects.create_user(

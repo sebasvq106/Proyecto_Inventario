@@ -82,13 +82,12 @@ class AvailableItemList(ListView):
 
 class ItemCreate(AdminRoleCheck, CreateView):
     model = Item
-    form_class = ItemCreateForm  # Usamos nuestro formulario personalizado
+    form_class = ItemCreateForm
     template_name = "tu_template.html"
 
     def form_valid(self, form):
         quantity = form.cleaned_data.get('quantity', 1)
 
-        # Guardamos el primer item (para manejar relaciones many-to-many correctamente)
         self.object = form.save()
 
         # Creamos los items adicionales
@@ -96,7 +95,6 @@ class ItemCreate(AdminRoleCheck, CreateView):
             for _ in range(quantity - 1):
                 Item.objects.create(
                     name=form.cleaned_data['name'],
-                    # Copia aquí otros campos necesarios
                 )
 
         return redirect(self.get_success_url())
@@ -274,21 +272,16 @@ class ClassGroupsCreate(TeacherRoleCheck, CreateView):
         Sets the specific class of the ClassGroup before saving and checks for duplicate group numbers
         """
         class_id = Class.objects.filter(code=self.kwargs.get("code")).first()
-        # Obtener los datos del formulario
         group_number = form.cleaned_data.get('number')
         group_year = form.cleaned_data.get('year')
         group_term = form.cleaned_data.get('term')
 
-        # Verificar si ya existe un grupo con este número, año y término en la misma clase
         if ClassGroups.objects.filter(class_id=class_id, number=group_number, year=group_year, term=group_term).exists():
-            # Si existe, mostrar un mensaje de error y redirigir al formulario
-            messages.error(self.request, f'Ya existe un grupo con estas características.')
+            messages.error(self.request, 'Ya existe un grupo con estas características.')
             return redirect('crear-grupo', code=self.kwargs.get("code"))
 
-        # Asignar la clase al grupo antes de guardarlo
         form.instance.class_id = class_id
 
-        # Si todo está bien, proceder a guardar el grupo
         return super(ClassGroupsCreate, self).form_valid(form)
 
 
