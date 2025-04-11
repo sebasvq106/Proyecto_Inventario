@@ -7,7 +7,7 @@ from .views import (AdminOrderDetails, AdminOrderList, ClassCreate, ClassDelete,
                     ClassGroupStudentList, ClassGroupsUpdate, ClassList,
                     ItemCreate, ItemDelete, ItemList, AvailableItemList, ItemOrderCreate,
                     MyProfileView, OrderCreate, OrderDetails, OrderGroupList,
-                    OrderList, StudentList)
+                    OrderList, StudentList, CustomPasswordChangeView)
 
 urlpatterns = [
     # ------------- Articles -----------
@@ -73,7 +73,7 @@ urlpatterns = [
     # ------------- Profile -----------
     path(
         "cambiar-contrasena/",
-        auth_views.PasswordChangeView.as_view(
+        CustomPasswordChangeView.as_view(
             template_name="registration/password_change_form.html"
         ),
         name="password_change",

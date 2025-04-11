@@ -2,6 +2,9 @@ from django import forms
 from django.contrib.auth import password_validation
 from django.contrib.auth.forms import UserCreationForm
 from django_select2 import forms as s2forms
+from django.contrib.auth.forms import PasswordChangeForm
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 from .models import ClassGroups, ItemOrder, Order, Users, Item
 
@@ -195,3 +198,52 @@ class UpdateOrderItemForm(forms.ModelForm):
         super(UpdateOrderItemForm, self).__init__(*args, **kwargs)
         # Apply the restriction over the order status modifications
         self.fields["status"].choices = self.RESTRICTED_CHOICES[self.instance.status]
+
+
+class CustomPasswordChangeForm(PasswordChangeForm):
+    """
+    Form for change the password.
+    """
+
+    def clean_new_password1(self):
+        """
+        Verifica que la nueva contraseña no sea igual a la actual y cumple con los requisitos de seguridad.
+        """
+        old_password = self.cleaned_data.get("old_password")
+        new_password1 = self.cleaned_data.get("new_password1")
+        user = self.user
+
+        if not user.check_password(old_password):
+            raise ValidationError(_("La contraseña antigua es incorrecta."))
+        if old_password == new_password1:
+            raise ValidationError(_("La nueva contraseña no puede ser la misma que la anterior."))
+
+        # Verificar que la nueva contraseña cumpla con requisitos mínimos de seguridad
+        if len(new_password1) < 8:
+            raise ValidationError(_("La nueva contraseña debe tener al menos 8 caracteres."))
+
+        if not any(char.isdigit() for char in new_password1):
+            raise ValidationError(_("La nueva contraseña debe contener al menos un número."))
+
+        if not any(char.islower() for char in new_password1):
+            raise ValidationError(_("La nueva contraseña debe contener al menos una letra minúscula."))
+
+        if not any(char.isupper() for char in new_password1):
+            raise ValidationError(_("La nueva contraseña debe contener al menos una letra mayúscula."))
+
+        if not any(char in "!@#$%^&*()_+" for char in new_password1):
+            raise ValidationError(_("La nueva contraseña debe contener al menos un carácter especial (como !@#$%^&*())."))
+
+        return new_password1
+
+    def clean_new_password2(self):
+        """
+        Verifica que las dos contraseñas nuevas coincidan.
+        """
+        new_password1 = self.cleaned_data.get("new_password1")
+        new_password2 = self.cleaned_data.get("new_password2")
+
+        if new_password1 != new_password2:
+            raise ValidationError(_("Las contraseñas nuevas no coinciden."))
+
+        return new_password2

@@ -2,6 +2,7 @@ import json
 from django.db.models import ProtectedError
 from django.core.paginator import Paginator
 from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
 from django.forms import modelformset_factory
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
@@ -12,11 +13,13 @@ from django.views.generic import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 
 from .forms import (GroupForm, ItemForm, OrderForm, StudentGroupForm,
-                    UpdateOrderItemForm, ItemCreateForm)
+                    UpdateOrderItemForm, ItemCreateForm, CustomPasswordChangeForm)
 from .models import Class, ClassGroups, Item, ItemOrder, Order, Users
 from .utils import (AdminOrTeacherRoleCheck, AdminRoleCheck,
                     TeacherOrStudentRoleCheck, TeacherRoleCheck)
 from collections import defaultdict
+from django.contrib.auth.views import PasswordChangeView
+from django.utils.translation import gettext_lazy as _
 
 
 class ItemList(ListView):
@@ -425,6 +428,35 @@ class StudentList(AdminOrTeacherRoleCheck, ListView):
         qs = qs.filter(role="student")
         qs = qs.order_by("name")
         return qs
+
+
+class CustomPasswordChangeView(PasswordChangeView):
+    form_class = CustomPasswordChangeForm
+    success_url = reverse_lazy("password_change_done")
+    template_name = "registration/password_change_form.html"
+    title = _("Password change")
+
+    def dispatch(self, *args, **kwargs):
+        # Se maneja el inicio de sesión y protección CSRF como en la vista original
+        return super().dispatch(*args, **kwargs)
+
+    def form_valid(self, form):
+        # Lógica cuando el formulario es válido, se guarda la nueva contraseña
+        form.save()
+        # Actualizar la sesión para que no se cierre después de cambiar la contraseña
+        update_session_auth_hash(self.request, form.user)
+        # Mensaje de éxito
+        messages.success(self.request, _("Your password was successfully updated."))
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        # Verificar si hay errores en el formulario
+        if form.errors:
+            # Obtener el primer error de los errores
+            first_error = next(iter(form.errors.values()))[0]
+            print("Primer error:", first_error)
+            messages.error(self.request, first_error)
+        return super().form_invalid(form)
 
 
 class OrderGroupList(TeacherOrStudentRoleCheck, View):
