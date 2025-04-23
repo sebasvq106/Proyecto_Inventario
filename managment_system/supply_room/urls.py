@@ -88,7 +88,7 @@ urlpatterns = [
     # ------------- Crear Orden -----------
     path(
         "orden/grupos",
-        OrderGroupList.as_view(),
+        OrderGroupList.as_view(template_name="page/crear-orden-grupos.html"),
         name="orden-grupos",
     ),
     path(

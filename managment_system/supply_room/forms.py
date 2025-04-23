@@ -131,20 +131,54 @@ class StudentGroupForm(forms.ModelForm):
 
 class OrderForm(forms.ModelForm):
     """
-    Form to create an Order
+     Form for creating orders with improved student selection
     """
+    is_group_order = forms.BooleanField(
+        required=False,
+        label="¿Es una orden grupal?",
+        widget=forms.CheckboxInput(attrs={
+            'class': 'form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500',
+            'id': 'id_is_group_order',
+            'onchange': 'toggleStudentSelection()'
+        })
+    )
+
+    students = forms.ModelMultipleChoiceField(
+        queryset=Users.objects.none(),
+        widget=forms.SelectMultiple(attrs={
+            'class': 'student-select hidden',
+            'multiple': 'multiple',
+            'data-placeholder': 'Seleccione estudiantes...'
+        }),
+        required=False,
+        label="Estudiantes del grupo"
+    )
 
     class Meta:
         model = Order
-        fields = ["student"]
-        widgets = {"student": StudentWidget}  # use custom widget for students
+        fields = ['is_group_order', 'students']
 
     def __init__(self, group_pk: int, user_pk: int, *args, **kwargs):
-        super(OrderForm, self).__init__(*args, **kwargs)
-        # update form choices with only students of the current group excluding the current user
-        self.fields["student"].queryset = Users.objects.filter(
-            role="student", groups__in=group_pk
-        ).exclude(pk=user_pk)
+        super().__init__(*args, **kwargs)
+
+        self.fields['students'].queryset = Users.objects.filter(
+            role='student',
+            groups__in=[group_pk]
+        ).exclude(pk=user_pk).order_by('last_name')
+
+        if self.data.get('is_group_order') == 'on':
+            self.fields['students'].widget.attrs['class'] = 'student-select'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        is_group = cleaned_data.get('is_group_order')
+        students = cleaned_data.get('students')
+
+        if is_group and not students:
+            raise forms.ValidationError(
+                "Debe seleccionar al menos un estudiante para la orden grupal."
+            )
+        return cleaned_data
 
 
 class ItemForm(forms.ModelForm):

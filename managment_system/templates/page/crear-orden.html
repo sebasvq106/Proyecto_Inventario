@@ -1,34 +1,179 @@
 {% extends "base.html" %} {% block content %}
-<div class="max-w-6xl mx-auto px-4 py-8 mt-16">
-    {{ form.media.css }}
-    <style>
-        input, select {width: 100%}
-    </style>
-    <div class="bg-white rounded-lg p-6 shadow-lg backdrop-blur-xl">
 
-
-
-        <form class="max-w-md mx-auto space-y-6" method="POST" enctype="multipart/form-data">
-            <!-- Security token -->
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-xl shadow-md overflow-hidden p-6">
+        <form class="space-y-6" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <h2 class="text-2xl font-bold mb-6 text-center">Crear Orden</h2>
+            <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">Crear Orden</h2>
+            
+            <!-- Group Information -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-gray-500 text-sm">Curso</p>
+                    <p class="font-medium">{{ group.class_id.name }}</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-gray-500 text-sm">Grupo</p>
+                    <p class="font-medium">{{ group.number }}</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-gray-500 text-sm">Semestre</p>
+                    <p class="font-medium">{{ group.semester }}</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-gray-500 text-sm">Profesor</p>
+                    <p class="font-medium">{{ group.professor.name }}</p>
+                </div>
+            </div>
 
-            <div class="block text-gray-700 text-l font-bold mb-2 space-y-4 my-6">Curso: {{ group.class_id.name}}</div>
-            <div class="block text-gray-700 text-l font-bold mb-2 space-y-4 my-6">Grupo: {{ group.number}}</div>
-            <div class="block text-gray-700 text-l font-bold mb-2 space-y-4 my-6">Semestre: {{ group.semester}}</div>
-            <div class="block text-gray-700 text-l font-bold mb-2 space-y-4 my-6">Profesor a cargo: {{ group.professor.name}}</div>
+            <!-- Order Group -->
+            <div class="flex items-center mb-6 p-4 bg-blue-50 rounded-lg">
+                {{ form.is_group_order }}
+                <label for="id_is_group_order" class="ml-3 text-gray-700 cursor-pointer text-lg">
+                    ¿Es una orden grupal?
+                </label>
+            </div>
 
-            {% if request.user.role == 'student'%}
-            <!-- Name field -->
-            {{ form.as_p }}
+            <!-- Students -->
+            <div id="student-selection" class="{% if not form.is_group_order.value %}hidden{% endif %}">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-lg font-medium mb-3">
+                        {{ form.students.label }}
+                    </label>
+                    <div class="text-gray-500 text-sm mb-4">
+                        Haz click para seleccionar.
+                    </div>
+                    
+                    <div id="custom-student-select" class="border rounded-lg p-2 max-h-96 overflow-y-auto">
+                        {% for student in form.students.field.queryset %}
+                        <div class="student-option flex items-center justify-between p-2 hover:bg-gray-50 rounded cursor-pointer"
+                             data-value="{{ student.pk }}"
+                             onclick="toggleStudentSelection(this)">
+                            <span>{{ student.get_full_name|default:student.username }}</span>
+                            <button type="button" class="deselect-btn hidden text-gray-400 hover:text-red-500 p-1"
+                                    onclick="deselectStudent(event, this)">
+                                 X
+                            </button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <select name="students" id="id_students" multiple class="hidden">
+                        {% for student in form.students.field.queryset %}
+                        <option value="{{ student.pk }}">{{ student.get_full_name|default:student.username }}</option>
+                        {% endfor %}
+                    </select>
+                    
+                    {% if form.students.errors %}
+                        <div class="text-red-600 text-sm mt-2">
+                            {{ form.students.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
 
-            {% endif %}
-            <div class="flex justify-center mt-8">
-                <input type="submit" value="Crear" class="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-300">
+            <div class="flex justify-center pt-6">
+                <button type="submit" class="px-8 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-md">
+                    Crear Orden
+                </button>
             </div>
         </form>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        {{ form.media.js }}
     </div>
 </div>
+
+<style>
+    .student-option {
+        transition: background-color 0.2s;
+    }
+    .student-option.selected {
+        background-color: #ebf8ff;
+        color: #1e40af;
+    }
+    .deselect-btn {
+        transition: color 0.2s;
+    }
+    .max-h-96 {
+        max-height: 24rem;
+    }
+   
+</style>
+
+<script>
+function toggleStudentSection() {
+    const studentSection = document.getElementById('student-selection');
+    const isGroupOrder = document.getElementById('id_is_group_order').checked;
+    
+    if (isGroupOrder) {
+        studentSection.classList.remove('hidden');
+    } else {
+        studentSection.classList.add('hidden');
+        document.querySelectorAll('#custom-student-select .student-option').forEach(opt => {
+            opt.classList.remove('selected');
+        });
+        document.getElementById('id_students').selectedIndex = -1;
+    }
+}
+
+function toggleStudentSelection(element) {
+    const optionValue = element.getAttribute('data-value');
+    const realSelect = document.getElementById('id_students');
+    const option = Array.from(realSelect.options).find(opt => opt.value === optionValue);
+    
+    if (element.classList.contains('selected')) {
+        element.classList.remove('selected');
+        if (option) option.selected = false;
+    } else {
+        element.classList.add('selected');
+        if (option) option.selected = true;
+    }
+    
+    updateDeselectButtons();
+}
+
+function deselectStudent(event, button) {
+    event.stopPropagation();
+    const optionDiv = button.closest('.student-option');
+    toggleStudentSelection(optionDiv);
+}
+
+function updateDeselectButtons() {
+    document.querySelectorAll('.student-option').forEach(opt => {
+        const btn = opt.querySelector('.deselect-btn');
+        if (opt.classList.contains('selected')) {
+            btn.classList.remove('hidden');
+        } else {
+            btn.classList.add('hidden');
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('id_is_group_order').addEventListener('change', toggleStudentSection);
+    
+    const realSelect = document.getElementById('id_students');
+    Array.from(realSelect.selectedOptions).forEach(opt => {
+        const optionDiv = document.querySelector(`.student-option[data-value="${opt.value}"]`);
+        if (optionDiv) optionDiv.classList.add('selected');
+    });
+    
+    updateDeselectButtons();
+    
+    document.querySelectorAll('.student-option').forEach(opt => {
+        opt.addEventListener('mouseenter', function() {
+            const btn = this.querySelector('.deselect-btn');
+            if (this.classList.contains('selected')) {
+                btn.classList.remove('hidden');
+            }
+        });
+        
+        opt.addEventListener('mouseleave', function() {
+            const btn = this.querySelector('.deselect-btn');
+            if (!this.classList.contains('selected')) {
+                btn.classList.add('hidden');
+            }
+        });
+    });
+});
+</script>
+
 {% endblock %}
