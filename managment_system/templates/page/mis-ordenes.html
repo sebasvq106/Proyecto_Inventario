@@ -5,23 +5,38 @@
 
 
     <ul class="divide-y divide-gray-200">
-        <!-- Iterate over object_list -->
-        {% for object in page_obj %}
-        <!-- Display Objects -->
+        {% for order in page_obj %}
         <li class="py-4">
-            <a href="{% url 'orden' object.pk %}" class="flex justify-between items-center  ">
-                <div  class="text-gray-700 w-1/4">{{ object.group.class_id.name }} - Grupo {{ object.group.number }} - {{ object.group.semester }} </div>
-                <ul class=" w-1/4">
-                    {% for member in object.student.all %}
-                    <li  class="text-gray-700">{{ member.name }}</li>
-                    {% endfor %}
-                </ul>
-                <div  class="text-gray-700"></div>
-                <div  class="text-gray-700"></div>
+            <a href="{% url 'orden' order.pk %}" class="flex justify-between items-center">
+                <!-- Group Information -->
+                <div class="text-gray-700 w-2/5">
+                    {{ order.group.class_id.name }} - Grupo {{ order.group.number }}
+                </div>
+                
+                <!-- Semester -->
+                <div class="text-gray-700 w-3/5">
+                    {{ order.group.semester }}
+                </div>
+                
+                <!-- Student -->
+                {% if request.user.role == "teacher" %}
+                <div class="text-gray-700 w-1/5">
+                    {% with order.userorder_set.all|first as user_order %}
+                        {% if user_order %}
+                            {{ user_order.user.name }}
+                            {% if user_order.user.student_id %}
+                                ({{ user_order.user.student_id }})
+                            {% endif %}
+                        {% else %}
+                            -
+                        {% endif %}
+                    {% endwith %}
+                </div>
+                {% endif %}
             </a>
         </li>
         {% empty %}
-        <li class="py-4 text-center text-gray-500">No objects yet.</li>
+        <li class="py-4 text-center text-gray-500">No tienes órdenes registradas</li>
         {% endfor %}
     </ul>
 

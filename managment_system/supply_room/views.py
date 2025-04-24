@@ -14,7 +14,7 @@ from django.views.generic.list import ListView
 
 from .forms import (GroupForm, ItemForm, OrderForm, StudentGroupForm,
                     UpdateOrderItemForm, ItemCreateForm, CustomPasswordChangeForm)
-from .models import Class, ClassGroups, Item, ItemOrder, Order, Users
+from .models import Class, ClassGroups, Item, ItemOrder, Order, UserOrder, Users
 from .utils import (AdminOrTeacherRoleCheck, AdminRoleCheck,
                     TeacherOrStudentRoleCheck, TeacherRoleCheck)
 from collections import defaultdict
@@ -497,11 +497,11 @@ class OrderCreate(TeacherOrStudentRoleCheck, CreateView):
 
     def dispatch(self, request, *args, **kwargs):
         group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
-        
-        if not (request.user == group.professor or 
+
+        if not (request.user == group.professor or
                 request.user in group.student.all()):
             raise PermissionDenied()
-            
+
         return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
@@ -554,29 +554,40 @@ class OrderCreate(TeacherOrStudentRoleCheck, CreateView):
 
 class OrderList(TeacherOrStudentRoleCheck, View):
     """
-    Basic View for showing the Orders related with the current User
+    OrderList for Order model
 
     Requests Methods:
-    Get: Renders list of all orders form the current User
+    Get: List of all requests from a user (student) or a group (teacher).
     """
 
     def get(self, request, *args, **kwargs):
-        """
-        Gather the data, performs pagination and renders the template
+        # Students
+        if request.user.role == "student":
+            user_orders = UserOrder.objects.filter(
+                user=request.user
+            ).select_related(
+                'order__group',
+                'order__group__class_id'
+            ).order_by("-order__group__year", "-order__group__term")
 
-        Context Data
-        :page_obj: pagination object that contain the list of user's Orders
-        """
-        querySet = request.user.orders.order_by("-group__year", "-group__term")
-        if self.request.user.role == "teacher":
+            orders_list = [uo.order for uo in user_orders]
+            querySet = orders_list
+
+        # Teachers
+        elif request.user.role == "teacher":
             querySet = Order.objects.filter(
-                group__professor=self.request.user, student=None
+                group__professor=request.user
+            ).select_related(
+                'group',
+                'group__class_id'
+            ).prefetch_related(
+                'userorder_set__user'
             ).order_by("-group__year", "-group__term")
 
         paginator = Paginator(querySet, 10)
-
         page = request.GET.get("page")
         page_obj = paginator.get_page(page)
+
         return render(
             request,
             "page/mis-ordenes.html",

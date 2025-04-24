@@ -118,7 +118,7 @@ class Class(models.Model):
 
 
 class ClassGroups(models.Model):
-    number = models.PositiveIntegerField(verbose_name="Numero de Curso:" , default=1)
+    number = models.PositiveIntegerField(verbose_name="Numero de Curso:", default=1)
     year = models.PositiveIntegerField(verbose_name="Año", default=2025)
     term = models.CharField(
         max_length=3, choices=TERM_CHOICES, default="I", verbose_name="Semestre"
