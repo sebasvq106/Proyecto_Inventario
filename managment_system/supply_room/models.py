@@ -156,13 +156,6 @@ class Order(models.Model):
         on_delete=models.CASCADE,
         verbose_name="Grupo",
     )
-    student = models.ManyToManyField(
-        Users,
-        related_name="Order_student",
-        through=Users.orders.through,  # allow to sync up using the same many-many table
-        blank=True,
-        verbose_name="Estudiantes",
-    )
 
     def __str__(self):
         return f"{self.group.id}"
@@ -178,6 +171,32 @@ class Order(models.Model):
         if any([item.status == "Prestado" for item in order_items]):
             return "prestado"
         return "completado"
+
+    @property
+    def students(self):
+        """
+        Gets all the students linked to this order
+        """
+        return Users.objects.filter(userorder__order=self)
+
+    def add_students(self, users):
+        """
+        Add multiple students to the order
+        """
+        if not hasattr(users, '__iter__') or isinstance(users, str):
+            users = [users]
+
+        UserOrder.objects.bulk_create([
+            UserOrder(user=user, order=self)
+            for user in users
+            if not UserOrder.objects.filter(user=user, order=self).exists()
+        ])
+
+    def remove_students(self, users):
+        """
+        Eliminates multiple students from the order
+        """
+        UserOrder.objects.filter(user__in=users, order=self).delete()
 
 
 class ItemOrder(models.Model):
@@ -201,6 +220,11 @@ class ItemOrder(models.Model):
 class UserOrder(models.Model):
     user = models.ForeignKey(Users, on_delete=models.RESTRICT)
     order = models.ForeignKey(Order, on_delete=models.RESTRICT)
+
+    class Meta:
+        unique_together = [['user', 'order']]
+        verbose_name = 'Relación Usuario-Orden'
+        verbose_name_plural = 'Relaciones Usuario-Orden'
 
     def __str__(self):
         return f"{self.user.name}, {self.order.id}"

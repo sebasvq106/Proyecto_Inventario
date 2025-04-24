@@ -20,6 +20,7 @@ from .utils import (AdminOrTeacherRoleCheck, AdminRoleCheck,
 from collections import defaultdict
 from django.contrib.auth.views import PasswordChangeView
 from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import PermissionDenied
 
 
 class ItemList(ListView):
@@ -437,58 +438,44 @@ class CustomPasswordChangeView(PasswordChangeView):
     title = _("Password change")
 
     def dispatch(self, *args, **kwargs):
-        # Se maneja el inicio de sesión y protección CSRF como en la vista original
         return super().dispatch(*args, **kwargs)
 
     def form_valid(self, form):
-        # Lógica cuando el formulario es válido, se guarda la nueva contraseña
         form.save()
-        # Actualizar la sesión para que no se cierre después de cambiar la contraseña
         update_session_auth_hash(self.request, form.user)
-        # Mensaje de éxito
-        messages.success(self.request, _("Your password was successfully updated."))
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        # Verificar si hay errores en el formulario
         if form.errors:
-            # Obtener el primer error de los errores
             first_error = next(iter(form.errors.values()))[0]
             print("Primer error:", first_error)
             messages.error(self.request, first_error)
         return super().form_invalid(form)
 
 
-class OrderGroupList(TeacherOrStudentRoleCheck, View):
+class OrderGroupList(TeacherOrStudentRoleCheck, ListView):
     """
-    Basic View for showing a list of the current user's groups
+    ListView for showing a list of the current user's groups (teacher or student)
 
-    Requests Methods:
-    Get: Render a list of the current user's groups
+    Request Methods:
+    GET: Render a paginated list of ClassGroups relevant to the user
     """
 
-    def get(self, request, *args, **kwargs):
+    model = ClassGroups
+    template_name = "page/crear-orden-grupos.html"
+    paginate_by = 10
+
+    def get_queryset(self):
         """
-        Gather the data, performs pagination and renders the template
-
-        Context Data
-        :page_obj: pagination object that contain the list of ClassGroups for the user
+        Filters ClassGroups depending on the user's role:
+        - Teacher: groups where the user is the professor
+        - Student: groups where the user is a member
         """
-        querySet = request.user.groups.order_by("-year", "-term")
-        if self.request.user.role == "teacher":
-            querySet = ClassGroups.objects.filter(professor=self.request.user).order_by(
-                "-year", "-term"
-            )
-
-        paginator = Paginator(querySet, 10)
-
-        page = request.GET.get("page")
-        page_obj = paginator.get_page(page)
-        return render(
-            request,
-            "page/crear-orden-grupos.html",
-            {"page_obj": page_obj},
-        )
+        user = self.request.user
+        if user.role == "teacher":
+            return ClassGroups.objects.filter(professor=user).order_by("-year", "-term")
+        else:
+            return user.groups.order_by("-year", "-term")
 
 
 class OrderCreate(TeacherOrStudentRoleCheck, CreateView):
@@ -508,6 +495,15 @@ class OrderCreate(TeacherOrStudentRoleCheck, CreateView):
     # specify the form rendered
     form_class = OrderForm
 
+    def dispatch(self, request, *args, **kwargs):
+        group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
+        
+        if not (request.user == group.professor or 
+                request.user in group.student.all()):
+            raise PermissionDenied()
+            
+        return super().dispatch(request, *args, **kwargs)
+
     def get_form_kwargs(self):
         """
         Passes the kwargs down to the form initializer
@@ -520,14 +516,22 @@ class OrderCreate(TeacherOrStudentRoleCheck, CreateView):
 
     def form_valid(self, form):
         """
-        Parses the form information and saves the Order
-        If the user is a students then adds the current user into the student
+        Processes the form when validation is successful.
         """
         group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
         form.instance.group = group
-        response = super(OrderCreate, self).form_valid(form)
-        if self.request.user.role == "student":
-            self.object.student.add(self.request.user)
+        response = super().form_valid(form)
+
+        is_group_order = form.cleaned_data.get('is_group_order', False)
+        selected_students = form.cleaned_data.get('students', [])
+
+        users_to_add = [self.request.user]
+
+        if is_group_order:
+            users_to_add.extend(selected_students)
+
+        self.object.add_students(users_to_add)
+
         return response
 
     def get_context_data(self, **kwargs):
