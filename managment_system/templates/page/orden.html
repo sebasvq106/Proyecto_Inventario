@@ -1,71 +1,161 @@
-{% extends "base.html" %} {% block content %}
-<div class="max-w-6xl mx-auto px-4 py-8 mt-16">
-    {{ form.media.css }}
-    <style>
-        input, select {width: 100%}
-    </style>
-    <div class="bg-white rounded-lg p-6 shadow-lg backdrop-blur-xl">
+{% extends "base.html" %} 
+{% block content %}
 
-
-
-        <div class="max-w-md mx-auto space-y-6">
-            <!-- Security token -->
-            {% csrf_token %}
-            <h2 class="text-2xl font-bold mb-6 text-center">Detalles de la Orden</h2>
-            <div class="flex justify-between items-center  ">
-                <div class="block text-gray-700 text-l font-bold mb-2 space-y-4 my-6">Curso: {{ order.group.class_id.name}} - Grupo {{ order.group.number}}</div>
-
-                <div class="block text-gray-700 text-l font-bold mb-2 space-y-4 my-6">{{ order.group.semester}}</div>
+<div class="max-w-4xl mx-auto px-4 py-8 mt-8">
+    <div class="bg-white rounded-xl shadow-md overflow-hidden p-6">
+        {{ form.media.css }}
+        
+        <!-- Header Section -->
+        <div class="text-center mb-8">
+            <h2 class="text-2xl font-bold text-gray-800">Detalles de la Orden</h2>
+            <div class="mt-2 flex justify-center space-x-4">
+                <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                    {{ order.group.class_id.code }}
+                </span>
+                {% if order.needs_attention == "pendiente" %}
+                <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">
+                    Pendiente
+                </span>
+                {% elif order.needs_attention == "prestado" %}
+                <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                    Prestado
+                {% else %}
+                <span class="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm font-medium">
+                    Completado
+                </span>
+                {% endif %}
             </div>
-
-            <div class="flex justify-between items-center  ">
-                <div>
-                    <div class="block text-gray-700 text-l font-bold mb-2 space-y-4 my-6">Equipo de Trabajo:</div>
-                    <ul>
-                        {% for member in order.student.all %}
-                        <li  class="text-gray-700"> -   {{ member.student_id }} - {{ member.name }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-
-                <div>
-                     <div class="block text-gray-700 text-l font-bold mb-2 space-y-4 my-6">Profesor a Cargo:</div>
-                     <div class="block text-gray-700 text-l font-bold mb-2 space-y-4 my-6">{{ order.group.professor.name}}</div>
-                </div>
-
-            </div>
-            <a href="{% url 'orden-articulo' pk=order.id %}" class="mt-8 flex justify-center py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-300">Agregar Artículo</a>
-
-            <h3 class="text-xl font-bold mb-6 text-center">Lista de Artículos</h3>
-
-
-
-             <ul class="divide-y divide-gray-400">
-                <!-- Iterate over object_list -->
-                <li></li>
-                 <div class="flex justify-between items-center">
-                        <span class="text-gray-700 w-1/4 text-center font-bold">ARTÍCULO</span>
-                        <span class="text-gray-700 w-1/4 text-center font-bold">CANTIDAD</span>
-                        <span class="text-gray-700 w-1/4 text-center font-bold">CÓDIGO</span>
-                        <span class="text-gray-700 w-1/4 text-center font-bold">ESTADO</span>
-                 </div>
-                {% for object in items %}
-                <!-- Display Objects -->
-                <li class="py-4">
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-700 w-1/4 text-center">{{ object.item.name }}</span>
-                        <span class="text-gray-700 w-1/4 text-center">{{ object.quantity }}</span>
-                        <span class="text-gray-700 w-1/4 text-center">{{ object.code }}</span>
-                        <span class="text-gray-700 w-1/4 text-center">{{ object.status }}</span>
-                    </div>
-                </li>
-                {% empty %}
-                <li class="py-4 text-center text-gray-500">No objects yet.</li>
-                {% endfor %}
-                 <li></li>
-            </ul>
         </div>
 
+        <!-- Course Information Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <p class="text-gray-500 text-sm">Curso</p>
+                <p class="font-medium">{{ order.group.class_id.name }}</p>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <p class="text-gray-500 text-sm">Grupo</p>
+                <p class="font-medium">{{ order.group.number }}</p>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <p class="text-gray-500 text-sm">Semestre</p>
+                <p class="font-medium">{{ order.group.semester }}</p>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <p class="text-gray-500 text-sm">Profesor</p>
+                <p class="font-medium">{{ order.group.professor.name }}</p>
+            </div>
+        </div>
+
+        <!-- Team and Professor Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-blue-50 p-4 rounded-lg">
+                <h3 class="text-lg font-medium text-gray-700 mb-3">Equipo de Trabajo</h3>
+                <ul class="space-y-2">
+                    {% for member in order.students.all %}
+                    <li class="flex items-center space-x-3">
+                        <span class="bg-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-medium text-gray-700 shadow-sm">
+                            {{ forloop.counter }}
+                        </span>
+                        {% if member == order.group.professor %}
+                        <span> {{ member.name }}</span>
+                        {% else %}
+                        <span>{{ member.student_id }} - {{ member.name }}</span>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="bg-green-50 p-4 rounded-lg">
+                <h3 class="text-lg font-medium text-gray-700 mb-3">Profesor a Cargo</h3>
+                <div class="flex items-center space-x-4">
+                    <div class="bg-white rounded-full w-12 h-12 flex items-center justify-center text-lg font-medium text-gray-700 shadow-sm">
+                        {{ order.group.professor.name|first|upper }}
+                    </div>
+                    <div>
+                        <p class="font-medium">{{ order.group.professor.name }}</p>
+                        <p class="text-sm text-gray-500">{{ order.group.professor.email }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if user in order.students.all %}
+        <!-- Add Article Button -->
+        <div class="flex justify-center mb-8">
+            <a href="{% url 'orden-articulo' pk=order.id %}" 
+            class="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-md flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+                <span>Agregar Artículo</span>
+            </a>
+        </div>
+        {% endif %}
+
+        <!-- Articles List -->
+        <div class="border-t pt-6">
+            <h3 class="text-xl font-bold text-gray-800 text-center mb-6">Lista de Artículos</h3>
+            
+            {% if items %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Artículo</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Código</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for item in items %}
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="font-medium text-gray-900">{{ item.item.name }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">
+                                {{ item.quantity }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">
+                                {{ item.code }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if item.status == "Solicitado" %}
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                    Solicitado
+                                </span>
+                                {% elif item.status == "Prestado" %}
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                    Prestado
+                                </span>
+                                {% elif item.status == "Devuelto" %}
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                    Devuelto
+                                </span>
+                                {% else %}
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                                    {{ item.status }}
+                                </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-12 bg-gray-50 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+                <h4 class="mt-4 text-lg font-medium text-gray-700">No hay artículos en esta orden</h4>
+                <p class="mt-1 text-gray-500">Agrega artículos usando el botón superior</p>
+            </div>
+            {% endif %}
+        </div>
     </div>
 </div>
+
 {% endblock %}

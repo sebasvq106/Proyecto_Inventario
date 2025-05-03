@@ -6,7 +6,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from .models import ClassGroups, ItemOrder, Order, Users, Item
+from .models import ClassGroups, ItemOrder, Order, StudentGroups, Users, Item
 
 
 class ItemCreateForm(forms.ModelForm):
@@ -95,38 +95,46 @@ class GroupForm(forms.ModelForm):
 
     class Meta:
         model = ClassGroups
-        fields = ["year", "term", "number", "professor", "student"]
-        widgets = {"student": StudentWidget}  # use custom widget for students
+        fields = ["year", "term", "number", "professor"]
 
     def __init__(self, *args, **kwargs):
         super(GroupForm, self).__init__(*args, **kwargs)
         # update form choices with only students or teachers in each field
-        self.fields["student"].queryset = Users.objects.filter(role="student")
         self.fields["professor"].queryset = Users.objects.filter(role="teacher")
 
 
-class StudentGroupForm(forms.ModelForm):
-    """
-    Form to modify the students in a GlassGroup
-    """
+class StudentGroupForm(forms.Form):
+    student = forms.ModelMultipleChoiceField(
+        queryset=Users.objects.filter(role='student'),
+        widget=StudentWidget,
+        required=False,
+        label="Agregar Estudiantes"
+    )
 
-    class Meta:
-        model = ClassGroups
-        fields = ["year", "term", "number", "professor", "student"]
-        widgets = {
-            "student": StudentWidget,  # use custom widget for students
-            # fields with hidden inputs so the data is in the form but the user does not update it
-            "number": forms.HiddenInput(),
-            "year": forms.HiddenInput(),
-            "term": forms.HiddenInput(),
-            "professor": forms.HiddenInput(),
-        }
-        labels: {"student": "Agregar Estudiantes"}
+    def __init__(self, *args, group=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.group = group
 
-    def __init__(self, *args, **kwargs):
-        super(StudentGroupForm, self).__init__(*args, **kwargs)
-        # update form choices with only students in the field
-        self.fields["student"].queryset = Users.objects.filter(role="student")
+        if group:
+            self.fields['student'].initial = group.students.all()
+
+    def save(self):
+        if not self.group:
+            raise ValueError("El grupo no está definido")
+
+        students = self.cleaned_data.get('student', [])
+
+        StudentGroups.objects.filter(group=self.group).delete()
+
+        created = []
+        for student in students:
+            rel = StudentGroups.objects.create(
+                student=student,
+                group=self.group
+            )
+            created.append(rel)
+
+        return created
 
 
 class OrderForm(forms.ModelForm):
@@ -163,7 +171,7 @@ class OrderForm(forms.ModelForm):
 
         self.fields['students'].queryset = Users.objects.filter(
             role='student',
-            groups__in=[group_pk]
+            studentgroups__group_id=group_pk
         ).exclude(pk=user_pk).order_by('last_name')
 
         if self.data.get('is_group_order') == 'on':

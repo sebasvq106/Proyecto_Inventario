@@ -52,7 +52,7 @@ urlpatterns = [
         name="editar-grupo",
     ),
     path(
-        "cursos/<str:code>/estudiantes/<pk>",
+        "cursos/<str:code>/estudiantes/<int:pk>",
         ClassGroupStudentList.as_view(),
         name="estudiantes-grupo",
     ),

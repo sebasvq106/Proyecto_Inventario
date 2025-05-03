@@ -1,60 +1,171 @@
-{% extends "base.html" %} {% block content %}
-<div class="max-w-6xl mx-auto px-4 py-8 bg-white rounded-lg shadow-md mt-16">
+{% extends "base.html" %}
+{% block content %}
 
-    <h2 class="text-2xl font-bold mb-6 text-center">Administrar Órdenes</h2>
+<div class="max-w-6xl mx-auto px-4 py-8 mt-8">
+    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+        <div class="p-6">
+            <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">Administrar Órdenes</h2>
+            
+            <!-- Search -->
+            <form method="get" class="mb-6">
+                <div class="flex flex-col md:flex-row gap-4 items-stretch">
+                    <div class="flex-1 flex">
+                        <input 
+                            type="text" 
+                            name="search" 
+                            placeholder="Buscar órdenes..." 
+                            value="{{ request.GET.search }}"
+                            class="flex-grow px-4 py-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
+                        >
+                        <button 
+                            type="submit"
+                            class="px-4 py-2 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                        >
+                            Buscar
+                        </button>
+                    </div>
+                    
+                    <!-- Select Status -->
+                    <div class="w-full md:w-64 flex">
+                        <select 
+                            name="status" 
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 ml-auto"
+                            onchange="this.form.submit()"
+                        >
+                            <option value="">Todas las órdenes</option>
+                            <option value="pendiente" {% if request.GET.status == 'pendiente' %}selected{% endif %}>Pendientes</option>
+                            <option value="prestado" {% if request.GET.status == 'prestado' %}selected{% endif %}>Prestadas</option>
+                            <option value="completado" {% if request.GET.status == 'completado' %}selected{% endif %}>Completadas</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
 
+            <!-- Order List -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Curso</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grupo</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estudiantes</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for order in object_list %}
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="font-medium text-gray-900">{{ order.group.class_id.name }}</div>
+                                <div class="text-sm text-gray-500">{{ order.group.class_id.code }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-gray-900">Grupo {{ order.group.number }}</div>
+                                <div class="text-sm text-gray-500">{{ order.group.semester }}</div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex flex-wrap gap-2">
+                                    {% for member in order.students.all %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        {{ member.name }}
+                                    </span>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if order.needs_attention == "pendiente" %}
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                    Pendiente
+                                </span>
+                                {% elif order.needs_attention == "prestado" %}
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                    Prestado
+                                </span>
+                                {% elif order.needs_attention == "completado" %}
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                                    Completado
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                                <a href="{% url 'admin-orden' order.pk %}" class="text-blue-600 hover:text-blue-900">Ver</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                                No hay órdenes registradas
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-    <ul class="divide-y divide-gray-200">
-        <!-- Iterate over object_list -->
-        {% for object in object_list %}
-        <!-- Display Objects -->
-        <li class="py-4">
-            <a href="{% url 'admin-orden' object.pk %}" class="flex justify-between items-center  ">
-                <div  class="text-gray-700 w-1/3">{{ object.group.class_id.name }} - Grupo {{ object.group.number }} - {{ object.group.semester }} </div>
-                <ul class=" w-1/3">
-                    {% for member in object.student.all %}
-                    <li  class="text-gray-700">{{ member.name }}</li>
-                    {% endfor %}
-                </ul>
-                {% if object.needs_attention|slugify == 'pendiente' %}
-                    <div class="py-2 px-3 bg-green-500 text-white">Pendiente</div>
-                {% endif %}
-                {% if object.needs_attention|slugify == 'prestado' %}
-                    <div class="py-2 px-3 bg-yellow-500 text-white">Prestado</div>
-                {% endif %}
-                {% if object.needs_attention|slugify == 'completado' %}
-                    <div class="py-2 px-3 bg-gray-500 text-white">Completo</div>
-                {% endif %}
-                <div></div>
-            </a>
-        </li>
-        {% empty %}
-        <li class="py-4 text-center text-gray-500">No objects yet.</li>
-        {% endfor %}
-    </ul>
+        <!-- Pagination -->
+        <div class="bg-gray-50 px-6 py-4 border-t">
+            <div class="flex items-center justify-between">
+                <div class="flex-1 flex justify-between sm:hidden">
+                    {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" 
+                       class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        Anterior
+                    </a>
+                    {% endif %}
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" 
+                       class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        Siguiente
+                    </a>
+                    {% endif %}
+                </div>
+                <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                    <div>
+                        <p class="text-sm text-gray-700">
+                            Mostrando <span class="font-medium">{{ page_obj.start_index }}</span> a <span class="font-medium">{{ page_obj.end_index }}</span> de <span class="font-medium">{{ page_obj.paginator.count }}</span> resultados
+                        </p>
+                    </div>
+                    <div>
+                        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                            {% if page_obj.has_previous %}
+                            <a href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" 
+                               class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                <span class="sr-only">Primera</span>
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </a>
+                            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" 
+                               class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                {{ page_obj.previous_page_number }}
+                            </a>
+                            {% endif %}
 
-    <div class="pagination ">
-    <div class="step-links flex w-full justify-between items-center p-2">
-        {% if page_obj.has_previous %}
-        <a href="?page=1" class="mx-2">Primero</a>
-        <a href="?page={{ page_obj.previous_page_number }}" class="mx-2">Previo</a>
-        {% else %}
-        <div></div>
-        <div></div>
-        {% endif %}
+                            <a href="#" aria-current="page" class="z-10 bg-indigo-50 border-indigo-500 text-indigo-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                                {{ page_obj.number }}
+                            </a>
 
-        <span class="current font-bold mx-4">
-            Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
-        </span>
-
-        {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}" class="mx-2">Siguiente</a>
-        <a href="?page={{ page_obj.paginator.num_pages }}" class="mx-2">Última</a>
-        {% else %}
-        <div></div>
-        <div></div>
-        {% endif %}
+                            {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" 
+                               class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                {{ page_obj.next_page_number }}
+                            </a>
+                            <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" 
+                               class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                <span class="sr-only">Última</span>
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </a>
+                            {% endif %}
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-</div>
+
 {% endblock %}

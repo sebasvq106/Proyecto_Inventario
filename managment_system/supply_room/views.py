@@ -14,13 +14,14 @@ from django.views.generic.list import ListView
 
 from .forms import (GroupForm, ItemForm, OrderForm, StudentGroupForm,
                     UpdateOrderItemForm, ItemCreateForm, CustomPasswordChangeForm)
-from .models import Class, ClassGroups, Item, ItemOrder, Order, UserOrder, Users
+from .models import Class, ClassGroups, Item, ItemOrder, Order, StudentGroups, UserOrder, Users
 from .utils import (AdminOrTeacherRoleCheck, AdminRoleCheck,
                     TeacherOrStudentRoleCheck, TeacherRoleCheck)
 from collections import defaultdict
 from django.contrib.auth.views import PasswordChangeView
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import PermissionDenied
+from django.db.models import Q, Exists, OuterRef
 
 
 class ItemList(ListView):
@@ -372,39 +373,46 @@ class ClassGroupStudentList(AdminOrTeacherRoleCheck, View):
         Renderiza el formulario con lista paginada de estudiantes
         """
         group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
-        class1 = group.class_id
 
-        student_list = group.student.all().order_by('name')
+        current_students = group.students.all()
+
+        form = StudentGroupForm(group=group)
+
+        student_list = current_students.order_by('name')
         paginator = Paginator(student_list, self.paginate_by)
-        page_number = request.GET.get('page')
-        page_obj = paginator.get_page(page_number)
+        page_obj = paginator.get_page(request.GET.get('page'))
 
-        form = StudentGroupForm(instance=group)
-
-        return render(
-            request,
-            "page/grupos/estudiantes.html",
-            {
-                "page_obj": page_obj,
-                "form": form,
-                "group": group,
-                "class1": class1,
-            },
-        )
+        return render(request, "page/grupos/estudiantes.html", {
+            'form': form,
+            'group': group,
+            'class1': group.class_id,
+            'page_obj': page_obj,
+            'current_students': current_students
+        })
 
     def post(self, request, *args, **kwargs):
-        """
-        Parses the form information and updates the students
-        """
         group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
-        form = StudentGroupForm(request.POST, instance=group)
+        form = StudentGroupForm(request.POST, group=group)
 
         if form.is_valid():
-            students = form.cleaned_data["student"]
-            group.student.set(students)
-            return HttpResponseRedirect(reverse("estudiantes-grupo", kwargs=kwargs))
+            try:
+                form.save()
+                return redirect("estudiantes-grupo", code=group.class_id.code, pk=group.pk)
+            except Exception as e:
+                messages.error(request, f"Error al guardar: {str(e)}")
+        else:
+            messages.error(request, "Error en el formulario")
 
-        return render(request, "page/grupos/estudiantes.html", {"form": form, "group": group})
+        student_list = group.students.order_by('name')
+        paginator = Paginator(student_list, self.paginate_by)
+        page_obj = paginator.get_page(request.GET.get('page'))
+
+        return render(request, "page/grupos/estudiantes.html", {
+            'form': form,
+            'group': group,
+            'class1': group.class_id,
+            'page_obj': page_obj
+        })
 
 
 class StudentList(AdminOrTeacherRoleCheck, ListView):
@@ -472,10 +480,20 @@ class OrderGroupList(TeacherOrStudentRoleCheck, ListView):
         - Student: groups where the user is a member
         """
         user = self.request.user
+
         if user.role == "teacher":
-            return ClassGroups.objects.filter(professor=user).order_by("-year", "-term")
+            return ClassGroups.objects.filter(
+                professor=user
+            ).select_related(
+                'class_id', 'professor'
+            ).order_by("-year", "-term")
         else:
-            return user.groups.order_by("-year", "-term")
+
+            return ClassGroups.objects.filter(
+                studentgroups__student=user
+            ).select_related(
+                'class_id', 'professor'
+            ).distinct().order_by("-year", "-term")
 
 
 class OrderCreate(TeacherOrStudentRoleCheck, CreateView):
@@ -499,7 +517,7 @@ class OrderCreate(TeacherOrStudentRoleCheck, CreateView):
         group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
 
         if not (request.user == group.professor or
-                request.user in group.student.all()):
+                StudentGroups.objects.filter(group=group, student=request.user).exists()):
             raise PermissionDenied()
 
         return super().dispatch(request, *args, **kwargs)
@@ -597,23 +615,74 @@ class OrderList(TeacherOrStudentRoleCheck, View):
 
 class AdminOrderList(AdminRoleCheck, ListView):
     """
-    ListView for Order model
-
-    Requests Methods:
-    Get: Renders list of all Orders
+    View for listing orders with filtering by status,
+    search and filtering by user
     """
 
-    # specify the model for list view
     model = Order
     paginate_by = 10
 
-    def get_queryset(self, *args, **kwargs):
-        """
-        Overrides internal queryset to add ordering by semester
-        """
-        qs = super(AdminOrderList, self).get_queryset(*args, **kwargs)
-        qs = qs.order_by("-group__year", "-group__term")
-        return qs
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        # Base ordering
+        queryset = queryset.order_by("-group__year", "-group__term")
+
+        # Filter by status
+        status = self.request.GET.get('status')
+        if status in ['pendiente', 'prestado', 'completado']:
+            queryset = queryset.annotate(
+                has_pendiente=Exists(
+                    ItemOrder.objects.filter(
+                        order=OuterRef('pk'),
+                        status="Solicitado"
+                    )
+                ),
+                has_prestado=Exists(
+                    ItemOrder.objects.filter(
+                        order=OuterRef('pk'),
+                        status="Prestado"
+                    )
+                )
+            )
+
+            if status == 'pendiente':
+                queryset = queryset.filter(has_pendiente=True)
+            elif status == 'prestado':
+                queryset = queryset.filter(has_prestado=True)
+            elif status == 'completado':
+                queryset = queryset.filter(has_pendiente=False, has_prestado=False)
+
+        # Text search
+        search = self.request.GET.get('search')
+        if search:
+            queryset = queryset.filter(
+                Q(group__class_id__name__icontains=search) |
+                Q(group__class_id__code__icontains=search) |
+                Q(userorder__user__name__icontains=search) |
+                Q(userorder__user__email__icontains=search) |
+                Q(userorder__user__student_id__icontains=search)
+            ).distinct()
+
+        # Query optimization
+        queryset = queryset.select_related(
+            'group',
+            'group__class_id',
+            'group__professor'
+        ).prefetch_related(
+            'userorder_set__user'
+        )
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'current_search': self.request.GET.get('search', ''),
+            'current_status': self.request.GET.get('status', ''),
+            'current_user': self.request.GET.get('user', ''),
+        })
+        return context
 
 
 class OrderDetails(TeacherOrStudentRoleCheck, View):
