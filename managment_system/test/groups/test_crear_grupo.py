@@ -17,14 +17,6 @@ def test_crear_grupo(client):
     )
     client.force_login(user)
 
-    # Create student user
-    user2 = Users.objects.create_user(
-        username="user",
-        email="user@example.com",
-        password="user",
-        role="student"
-    )
-
     # Create class
     class1 = Class.objects.create(name="Lab Maquinas", code="IE001")
 
@@ -38,7 +30,6 @@ def test_crear_grupo(client):
         "term": "I",
         "professor": user.id,
         "class_id": class1.id,
-        "student": [user2.id],
     }
 
     # Make the POST request
@@ -60,10 +51,6 @@ def test_crear_grupo(client):
     assert grupo.term == "I"
     assert grupo.professor == user
     assert grupo.class_id == class1
-
-    # Verify that the student is in the group
-    student_ids = list(grupo.student.values_list("id", flat=True))
-    assert user2.id in student_ids
 
 
 @pytest.mark.django_db

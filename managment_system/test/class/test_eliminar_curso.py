@@ -49,7 +49,7 @@ def test_eliminar_curso_grupo_activo(client):
         class_id=curso
     )
 
-    group1.student.set([user2])
+    group1.add_students([user2])
 
     url = reverse("eliminar-curso", args=[curso.id])
 

@@ -35,7 +35,7 @@ def test_orders_student(client):
         professor=teacher,
         class_id=class1
     )
-    group.student.set([user])
+    group.add_students([user])
 
     # Create order
     order = Order.objects.create(group=group)
@@ -104,7 +104,7 @@ def test_orders_with_two_stundets(client):
         professor=teacher,
         class_id=class1
     )
-    group.student.set([user, user2])
+    group.add_students([user, user2])
 
     # Create order
     order = Order.objects.create(group=group)
@@ -177,7 +177,7 @@ def test_orders_teacher(client):
         professor=teacher,
         class_id=class1
     )
-    group.student.set([user, user2])
+    group.add_students([user, user2])
 
     # Create two orders
     order1 = Order.objects.create(group=group)
@@ -260,7 +260,7 @@ def test_teacher_sees_only_own_group_orders(client):
         professor=main_teacher,
         class_id=class1
     )
-    main_group.student.add(student)
+    main_group.add_students(student)
 
     # 2. Other teacher group
     other_group = ClassGroups.objects.create(
@@ -270,7 +270,7 @@ def test_teacher_sees_only_own_group_orders(client):
         professor=other_teacher,
         class_id=class1
     )
-    other_group.student.add(student)
+    other_group.add_students(student)
 
     # Create orders
     # Order that main teacher can see

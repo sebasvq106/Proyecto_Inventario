@@ -44,7 +44,7 @@ def test_crear_orden_individual(client):
         professor=teacher,
         class_id=class1
     )
-    group.student.set([user, user2])  # Both students in the group
+    group.add_students([user, user2])  # Both students in the group
 
     # Data
     data = {
@@ -119,7 +119,7 @@ def test_crear_orden_grupal(client):
         professor=teacher,
         class_id=class1
     )
-    group.student.set([user, user2])
+    group.add_students([user, user2])
 
     # Data
     data = {
@@ -191,7 +191,7 @@ def test_no_crear_orden_en_grupo_ajeno(client):
         professor=group_teacher,
         class_id=course
     )
-    group.student.set([group_student])  # Only group_student belongs to
+    group.add_students([group_student])  # Only group_student belongs to
 
     # Data
     order_data = {
@@ -249,7 +249,7 @@ def test_crear_orden_individual_profesor(client):
         professor=teacher,
         class_id=class1
     )
-    group.student.set([user2])
+    group.add_students([user2])
 
     # Data
     data = {
@@ -317,7 +317,7 @@ def test_crear_orden_grupal_profesor(client):
         professor=teacher,
         class_id=class1
     )
-    group.student.set([user2])
+    group.add_students([user2])
 
     # Data
     data = {
@@ -389,7 +389,7 @@ def test_crear_orden_grupal_sin_estudiantes(client):
         professor=teacher,
         class_id=class1
     )
-    group.student.set([user, user2])
+    group.add_students([user, user2])
 
     # Data
     data = {

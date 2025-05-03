@@ -33,7 +33,7 @@ def test_groups_teacher(client):
         class_id=class1
     )
 
-    group1.student.set([user2])
+    group1.add_students([user2])
 
     # Make GET request
     url = reverse("grupos", kwargs={"code": class1.code})
@@ -59,7 +59,7 @@ def test_groups_teacher(client):
     assert group.class_id.code == 'IE001'
 
     # Verify that the student is in the group
-    student_names = [student.username for student in group.student.all()]
+    student_names = [student.username for student in group.students.all()]
     assert 'user' in student_names
 
 
@@ -99,7 +99,7 @@ def test_groups_admin(client):
         class_id=class1
     )
 
-    group1.student.set([user3])
+    group1.add_students([user3])
 
     # Make GET request
     url = reverse("grupos", kwargs={"code": class1.code})
@@ -125,7 +125,7 @@ def test_groups_admin(client):
     assert group.class_id.code == 'IE001'
 
     # Verify that the student is in the group
-    student_names = [student.username for student in group.student.all()]
+    student_names = [student.username for student in group.students.all()]
     assert 'user' in student_names
 
 
@@ -164,7 +164,7 @@ def test_groups_student(client):
         class_id=class1
     )
 
-    group1.student.set([user3])
+    group1.add_students([user3])
 
     # Make GET request
     url = reverse("grupos", kwargs={"code": class1.code})

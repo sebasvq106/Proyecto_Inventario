@@ -38,7 +38,7 @@ def test_order_groups_teacher(client):
         professor=user,
         class_id=class1
     )
-    group1.student.set([user2])
+    group1.add_students([user2])
 
     group2 = ClassGroups.objects.create(
         number=1,
@@ -47,7 +47,7 @@ def test_order_groups_teacher(client):
         professor=user3,
         class_id=class1
     )
-    group2.student.set([user2])
+    group2.add_students([user2])
 
     # Make GET request
     url = reverse("orden-grupos")
@@ -108,7 +108,7 @@ def test_order_groups_student(client):
         professor=user,
         class_id=class1
     )
-    group1.student.set([user2])
+    group1.add_students([user2])
 
     group2 = ClassGroups.objects.create(
         number=1,
@@ -117,7 +117,7 @@ def test_order_groups_student(client):
         professor=user3,
         class_id=class1
     )
-    group2.student.set([user2])
+    group2.add_students([user2])
 
     # Make GET request
     url = reverse("orden-grupos")

@@ -36,7 +36,7 @@ def test_actualizar_grupo(client):
         professor=user,
         class_id=class1
     )
-    group.student.set([user2])
+    group.add_students([user2])
 
     # Create a second professor
     user3 = Users.objects.create_user(
@@ -74,7 +74,7 @@ def test_actualizar_grupo(client):
     assert group.class_id == class1
 
     # Verify that the student is in the group
-    student_ids = list(group.student.values_list("id", flat=True))
+    student_ids = list(group.students.values_list("id", flat=True))
     assert user2.id in student_ids
 
 
@@ -119,7 +119,7 @@ def test_actualizar_grupo_estudiante(client):
         professor=user2,
         class_id=class1
     )
-    group.student.set([user3])
+    group.add_students([user3])
 
     # Create a second professor
     user4 = Users.objects.create_user(
