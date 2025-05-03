@@ -130,13 +130,6 @@ class ClassGroups(models.Model):
         verbose_name="Profesor",
     )
     class_id = models.ForeignKey(Class, on_delete=models.PROTECT, verbose_name="Clase")
-    student = models.ManyToManyField(
-        Users,
-        related_name="group_student",
-        through=Users.groups.through,  # allow to sync up using the same many-many table
-        blank=True,
-        verbose_name="Estudiantes",
-    )
 
     @property
     def semester(self):
@@ -147,6 +140,32 @@ class ClassGroups(models.Model):
 
     def __str__(self):
         return f"{self.class_id} ({self.number}, {self.semester})"
+
+    @property
+    def students(self):
+        """
+        Gets all the students linked to this group
+        """
+        return Users.objects.filter(studentgroups__group=self)
+
+    def add_students(self, users):
+        """
+        Add multiple students to the group
+        """
+        if not hasattr(users, '__iter__') or isinstance(users, str):
+            users = [users]
+
+        StudentGroups.objects.bulk_create([
+            StudentGroups(student=user, group=self)
+            for user in users
+            if not StudentGroups.objects.filter(student=user, group=self).exists()
+        ])
+
+    def remove_students(self, users):
+        """
+        Eliminates multiple students from the order
+        """
+        StudentGroups.objects.filter(student__in=users, group=self).delete()
 
 
 class Order(models.Model):
