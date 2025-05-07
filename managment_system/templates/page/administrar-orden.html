@@ -1,84 +1,146 @@
-{% extends "base.html" %} {% block content %}
-<div class="max-w-6xl mx-auto px-4 py-8 mt-16">
-    {{ form.media.css }}
-    <style>
-        input, select {width: 100%}
-    </style>
-    <div class="bg-white rounded-lg p-6 shadow-lg backdrop-blur-xl">
+{% extends "base.html" %} 
+{% block content %}
 
-
-
-        <div class="max-w-md mx-auto space-y-6">
-            <!-- Security token -->
-            {% csrf_token %}
-            <h2 class="text-2xl font-bold mb-6 text-center">Detalles de la Orden</h2>
-            <div class="flex justify-between items-center  ">
-                <div class="block text-gray-700 text-l font-bold mb-2 space-y-4 my-6">Curso: {{ order.group.class_id.name}} - Grupo {{ order.group.number}}</div>
-
-                <div class="block text-gray-700 text-l font-bold mb-2 space-y-4 my-6">{{ order.group.semester}}</div>
+<div class="max-w-4xl mx-auto px-4 py-8 mt-8">
+    <div class="bg-white rounded-xl shadow-md overflow-hidden p-6">
+        {{ form.media.css }}
+        <style>
+            input, select {width: 100%}
+        </style>
+        
+        <!-- Header Section -->
+        <div class="text-center mb-8">
+            <h2 class="text-2xl font-bold text-gray-800">Detalles de la Orden</h2>
+            <div class="mt-2 flex justify-center space-x-4">
+                <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                    {{ order.group.class_id.code }}
+                </span>
+                {% if order.needs_attention == "pendiente" %}
+                <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">
+                    Pendiente
+                </span>
+                {% elif order.needs_attention == "prestado" %}
+                <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                    Prestado
+                {% else %}
+                <span class="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm font-medium">
+                    Completado
+                </span>
+                {% endif %}
             </div>
-
-            <div class="flex justify-between items-center  ">
-                <div>
-                    <div class="block text-gray-700 text-l font-bold mb-2 space-y-4 my-6">Equipo de Trabajo:</div>
-                    <ul>
-                        {% for member in order.student.all %}
-                        <li  class="text-gray-700"> -   {{ member.student_id }} - {{ member.name }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-
-                <div>
-                     <div class="block text-gray-700 text-l font-bold mb-2 space-y-4 my-6">Profesor a Cargo:</div>
-                     <div class="block text-gray-700 text-l font-bold mb-2 space-y-4 my-6">{{ order.group.professor.name}}</div>
-                </div>
-
-            </div>
-
-            <h3 class="text-xl font-bold mb-6 text-center">Lista de Articulos</h3>
-
-
-            <form method="post" enctype="multipart/form-data">
-                <!-- Security token -->
-                {% csrf_token %}
-                {{ forms.management_form }}
-             <ul class="divide-y divide-gray-400">
-                <!-- Iterate over object_list -->
-                <li></li>
-                 <div class="flex justify-between items-center">
-                        <span class="text-gray-700 w-1/4 text-center font-bold">ARTICULO</span>
-                        <span class="text-gray-700 w-1/4 text-center font-bold">CANTIDAD</span>
-                        <span class="text-gray-700 w-1/4 text-center font-bold">CODIGO</span>
-                        <span class="text-gray-700 w-1/4 text-center font-bold">ESTADO</span>
-                 </div>
-                 <li></li>
-
-                 {% for data in data %}
-                    <li class="py-4">
-                        <div class="flex justify-between items-center">
-                            <div class="text-gray-700 w-1/4 text-center">{{ data.name }}</div>
-
-                        {% for field in data.form.visible_fields %}
-                              <div class="text-gray-700 w-1/4 text-center">{{ field }}</div>
-                        {% endfor %}
-
-                        {% for hidden in data.form.hidden_fields %}
-                            {{ hidden }}
-                        {% endfor %}
-
-                         </div>
-                     </li>
-                 {% endfor %}
-
-                 <li></li>
-            </ul>
-
-                 <div class="flex justify-center mt-8">
-                      <input type="submit" value="Guardar Cambios" class="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                 </div>
-            </form>
         </div>
 
+        <!-- Course Information Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <p class="text-gray-500 text-sm">Curso</p>
+                <p class="font-medium">{{ order.group.class_id.name }}</p>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <p class="text-gray-500 text-sm">Grupo</p>
+                <p class="font-medium">{{ order.group.number }}</p>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <p class="text-gray-500 text-sm">Semestre</p>
+                <p class="font-medium">{{ order.group.semester }}</p>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <p class="text-gray-500 text-sm">Profesor</p>
+                <p class="font-medium">{{ order.group.professor.name }}</p>
+            </div>
+        </div>
+
+        <!-- Team and Professor Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-blue-50 p-4 rounded-lg">
+                <h3 class="text-lg font-medium text-gray-700 mb-3">Equipo de Trabajo</h3>
+                <ul class="space-y-2">
+                    {% for member in order.students.all %}
+                    <li class="flex items-center space-x-3">
+                        <span class="bg-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-medium text-gray-700 shadow-sm">
+                            {{ forloop.counter }}
+                        </span>
+                        <span>{{ member.student_id }} - {{ member.name }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="bg-green-50 p-4 rounded-lg">
+                <h3 class="text-lg font-medium text-gray-700 mb-3">Profesor a Cargo</h3>
+                <div class="flex items-center space-x-4">
+                    <div class="bg-white rounded-full w-12 h-12 flex items-center justify-center text-lg font-medium text-gray-700 shadow-sm">
+                        {{ order.group.professor.name|first|upper }}
+                    </div>
+                    <div>
+                        <p class="font-medium">{{ order.group.professor.name }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Articles List -->
+        <div class="border-t pt-6">
+            <h3 class="text-xl font-bold mb-6 text-center">Lista de Artículos</h3>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ forms.management_form }}
+                
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead>
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Artículo</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cantidad</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Código</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for form in forms %}
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {{ form.instance.item.name }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {{ form.instance.quantity }}
+                                    {{ form.quantity.as_hidden }}  <!-- Campo oculto para el valor real -->
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-500">
+                                    {# Mostramos el código correctamente según tu modelo #}
+                                    {% if form.instance.item.code %}
+                                        {{ form.instance.item.code }}
+                                    {% elif form.instance.code %}
+                                        {{ form.instance.code }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                    {{ form.code.as_hidden }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {% for field in form.visible_fields %}
+                                        {% if field.name == 'status' %}
+                                            {{ field }}
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% for hidden in form.hidden_fields %}
+                                        {% if hidden.name != 'quantity' and hidden.name != 'code' %}
+                                            {{ hidden }}
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex justify-center mt-8">
+                    <input type="submit" value="Guardar Cambios" class="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-400">
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 {% endblock %}

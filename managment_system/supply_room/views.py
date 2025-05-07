@@ -762,7 +762,7 @@ class AdminOrderDetails(AdminRoleCheck, View):
         formset = OrderItemFormSet(request.POST, request.FILES)
         if formset.is_valid():
             formset.save()
-        return HttpResponseRedirect(reverse("admin-orden", kwargs=kwargs))
+        return HttpResponseRedirect(reverse("administrar-ordenes"))
 
 
 class ItemOrderCreate(TeacherOrStudentRoleCheck, CreateView):
