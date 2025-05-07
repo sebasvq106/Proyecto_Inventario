@@ -705,6 +705,11 @@ class OrderDetails(TeacherOrStudentRoleCheck, View):
         :items: items from the order
         """
         order = get_object_or_404(Order, pk=kwargs["pk"])
+
+        if request.user.role == 'student':
+            if not UserOrder.objects.filter(order=order, user=request.user).exists():
+                raise PermissionDenied("No tienes permiso para ver esta orden")
+
         items = ItemOrder.objects.filter(order=order)
         return render(
             request,
