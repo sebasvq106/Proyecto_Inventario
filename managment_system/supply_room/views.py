@@ -3,8 +3,8 @@ from django.db.models import ProtectedError
 from django.core.paginator import Paginator
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
-from django.forms import modelformset_factory
-from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.forms import ValidationError, modelformset_factory
+from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views import View
@@ -22,6 +22,9 @@ from django.contrib.auth.views import PasswordChangeView
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q, Exists, OuterRef
+from django.http import JsonResponse
+from django.db import transaction
+from django.utils import timezone
 
 
 class ItemList(ListView):
@@ -755,31 +758,31 @@ class AdminOrderDetails(AdminRoleCheck, View):
         )
 
     def post(self, request, *args, **kwargs):
-        """
-        Parses the formset information and updates the items in Order
-        """
-        OrderItemFormSet = modelformset_factory(ItemOrder, form=UpdateOrderItemForm)
-        formset = OrderItemFormSet(request.POST, request.FILES)
+        order = get_object_or_404(Order, pk=kwargs["pk"])
+        OrderItemFormSet = modelformset_factory(
+            ItemOrder,
+            form=UpdateOrderItemForm,
+            extra=0
+        )
+        formset = OrderItemFormSet(request.POST, queryset=ItemOrder.objects.filter(order=order))
+
         if formset.is_valid():
-            formset.save()
-        return HttpResponseRedirect(reverse("administrar-ordenes"))
+            try:
+                with transaction.atomic():
+                    formset.save()
+            except ValidationError as e:
+                messages.error(request, str(e))
+        else:
+            messages.error(request, "Error en el formulario")
+
+        return redirect("administrar-ordenes")
 
 
 class ItemOrderCreate(TeacherOrStudentRoleCheck, CreateView):
     """
-    CreateView for ItemOrder model
-
-    Requests Methods:
-    Get: Render the form for ItemOrder Creation
-    Post: Validates the form and saves the ItemOrder
-
-    Params (kwargs)
-    :pk: code of the specific Order for which the ItemOrder is being created
+    CreateView for ItemOrder model with improved error handling
     """
-
-    # specify the model for create view
     model = ItemOrder
-    # specify the form rendered
     form_class = ItemForm
 
     def form_valid(self, form):
@@ -788,16 +791,34 @@ class ItemOrderCreate(TeacherOrStudentRoleCheck, CreateView):
         """
         order = get_object_or_404(Order, pk=self.kwargs["pk"])
         form.instance.order = order
-        return super(ItemOrderCreate, self).form_valid(form)
+        form.instance.request_date = timezone.now()
+        try:
+            return super().form_valid(form)
+        except ValidationError as e:
+            messages.error(self.request, str(e))
+            return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        """
+        Handles invalid form submission with proper error messages
+        """
+
+        if '__all__' in form.errors:
+            for error in form.errors['__all__']:
+                messages.error(self.request, error)
+
+        for field, errors in form.errors.items():
+            if field != '__all__':
+                for error in errors:
+                    messages.error(self.request, f"{form.fields[field].label}: {error}")
+
+        return super().form_invalid(form)
 
     def get_context_data(self, **kwargs):
         """
-        Expands data send to the template
-
-        Extra Context Data
-        :order: specific Order
+        Expands data sent to the template
         """
-        ctx = super(ItemOrderCreate, self).get_context_data(**kwargs)
+        ctx = super().get_context_data(**kwargs)
         ctx["order"] = get_object_or_404(Order, pk=self.kwargs["pk"])
         return ctx
 
@@ -832,3 +853,28 @@ class MyProfileView(View):
                 "grupos": request.user.groups.order_by("-year", "-term").all(),
             },
         )
+
+
+class ItemSearchView(View):
+    '''
+    Search filter items by letters and return a jason
+    '''
+    def get(self, request, *args, **kwargs):
+        query = request.GET.get('q', '')
+
+        items = (
+            Item.objects
+            .filter(name__icontains=query, is_available=True)
+            .order_by('name')
+            .distinct('name')
+        )[:20]
+
+        results = [{
+            'id': item.id,
+            'text': item.name
+        } for item in items]
+
+        return JsonResponse({
+            'results': results,
+            'pagination': {'more': False}
+        })

@@ -5,6 +5,8 @@ from django_select2 import forms as s2forms
 from django.contrib.auth.forms import PasswordChangeForm
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from django.db import transaction
+from django.utils import timezone
 
 from .models import ClassGroups, ItemOrder, Order, StudentGroups, Users, Item
 
@@ -190,22 +192,93 @@ class OrderForm(forms.ModelForm):
 
 
 class ItemForm(forms.ModelForm):
-    """
-    Form to add an Item to an Order
-    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['item'].queryset = Item.objects.filter(is_available=True)
+
+        # Configuration to Select2
+        self.fields['item'].widget.attrs.update({
+            'class': 'item-search w-full',
+            'data-placeholder': 'Escribe para buscar...',
+            'data-minimum-input-length': '2',
+            'data-ajax--url': '/items/search/',
+        })
+
+    def clean(self):
+        cleaned_data = super().clean()
+        item = cleaned_data.get('item')
+        quantity = cleaned_data.get('quantity')
+
+        if item and quantity:
+            # Verify that the item is available
+            if not item.is_available:
+                raise forms.ValidationError(
+                    "El artículo seleccionado ya no está disponible"
+                )
+
+            total_items = Item.objects.filter(
+                name=item.name,
+                is_available=True
+            ).count()
+
+            available = total_items
+
+            if quantity > available:
+                raise forms.ValidationError(
+                    f"¡Stock insuficiente! Solo hay {available} unidad(es) disponible(s) de {item.name}"
+                )
+
+        return cleaned_data
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        item_name = instance.item.name
+        quantity = instance.quantity
+
+        with transaction.atomic():
+            # Reserve items
+            items_to_reserve = list(
+                Item.objects.select_for_update().filter(
+                    name=item_name,
+                    is_available=True
+                )[:quantity]
+            )
+
+            if len(items_to_reserve) < quantity:
+                raise ValidationError(
+                    f"Reserva fallida. Solo {len(items_to_reserve)} de {quantity} unidades disponibles ahora"
+                )
+
+            # Mark as unavailable
+            for item in items_to_reserve:
+                item.is_available = False
+                item.save()
+
+            if commit:
+                instance.save()
+
+        return instance
 
     class Meta:
         model = ItemOrder
-        fields = ["item", "quantity", "code"]
-        widgets = {"item": ItemWidget}  # use custom widget for students
+        fields = ['item', 'quantity', 'code']
+        widgets = {
+            'quantity': forms.NumberInput(attrs={
+                'class': 'w-full px-3 py-2 border rounded-lg',
+                'min': 1
+            }),
+            'code': forms.TextInput(attrs={
+                'class': 'w-full px-3 py-2 border rounded-lg',
+                'placeholder': 'Opcional'
+            })
+        }
 
 
 class UpdateOrderItemForm(forms.ModelForm):
     """
-    Form to update a specific Item in an Order
+    Form to update a specific Item in an Order with availability management
     """
 
-    # Restrictions of items status. See Docs/item_after_request_diagram.png in this repository.
     RESTRICTED_CHOICES = {
         "Solicitado": (
             ("Solicitado", "Solicitado"),
@@ -213,33 +286,69 @@ class UpdateOrderItemForm(forms.ModelForm):
             ("Denegado", "Denegado"),
         ),
         "Prestado": (
-            ("Solicitado", "Solicitado"),
             ("Prestado", "Prestado"),
             ("Devuelto", "Devuelto"),
         ),
         "Devuelto": (
-            ("Prestado", "Prestado"),
             ("Devuelto", "Devuelto"),
         ),
         "Denegado": (
-            ("Solicitado", "Solicitado"),
             ("Denegado", "Denegado"),
         ),
     }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.original_status = getattr(self.instance, 'status', None)
+
+        if self.instance and self.instance.pk:
+            self.fields["status"].choices = self.RESTRICTED_CHOICES.get(
+                self.instance.status,
+                [(self.instance.status, self.instance.status)]
+            )
 
     class Meta:
         model = ItemOrder
         fields = ["item", "quantity", "code", "status"]
         widgets = {
-            "item": forms.HiddenInput(),  # keep the information but don't show it to user
+            "item": forms.HiddenInput(),
             "quantity": forms.NumberInput(attrs={"style": "text-align: center"}),
             "code": forms.TextInput(attrs={"style": "text-align: center"}),
         }
 
-    def __init__(self, *args, **kwargs):
-        super(UpdateOrderItemForm, self).__init__(*args, **kwargs)
-        # Apply the restriction over the order status modifications
-        self.fields["status"].choices = self.RESTRICTED_CHOICES[self.instance.status]
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+
+        if self.instance and self.instance.pk:
+            if self.original_status != "Devuelto" and instance.status == "Devuelto":
+                instance.return_date = timezone.now()
+                self._mark_items_as_available(instance)
+            elif instance.status == "Denegado":
+                self._mark_items_as_available(instance)
+
+        if commit:
+            instance.save()
+        return instance
+
+    def _mark_items_as_available(self, item_order):
+        """
+        Mark the corresponding items as available
+        """
+        items_to_update = Item.objects.filter(
+            name=item_order.item.name,
+            is_available=False
+        )[:item_order.quantity]
+
+        updated_count = 0
+        for item in items_to_update:
+            item.is_available = True
+            item.save()
+            updated_count += 1
+
+        if updated_count < item_order.quantity:
+            raise ValidationError(
+                f"No se pudieron reactivar todos los ítems. Reactivados: {updated_count}/{item_order.quantity}"
+            )
 
 
 class CustomPasswordChangeForm(PasswordChangeForm):

@@ -5,7 +5,7 @@ from django.views.generic.base import TemplateView
 from .views import (AdminOrderDetails, AdminOrderList, ClassCreate, ClassDelete,
                     ClassGroupsCreate, ClassGroupsDelete, ClassGroupsList,
                     ClassGroupStudentList, ClassGroupsUpdate, ClassList,
-                    ItemCreate, ItemDelete, ItemList, AvailableItemList, ItemOrderCreate,
+                    ItemCreate, ItemDelete, ItemList, AvailableItemList, ItemOrderCreate, ItemSearchView,
                     MyProfileView, OrderCreate, OrderDetails, OrderGroupList,
                     OrderList, StudentList, CustomPasswordChangeView)
 
@@ -112,6 +112,7 @@ urlpatterns = [
         ItemOrderCreate.as_view(template_name="page/crear-orden-articulo.html"),
         name="orden-articulo",
     ),
+    path('items/search/', ItemSearchView.as_view(), name='item_search'),
     # ------------- Administrar Ordenes -----------
     path(
         "administrar-ordenes",

@@ -231,6 +231,12 @@ class ItemOrder(models.Model):
     code = models.CharField(max_length=200, blank=True, verbose_name="Código")
     order = models.ForeignKey(Order, on_delete=models.RESTRICT, verbose_name="Orden")
     item = models.ForeignKey(Item, on_delete=models.RESTRICT, verbose_name="Artículo")
+    request_date = models.DateTimeField(
+        null=True, blank=True, verbose_name="Fecha de solicitud"
+    )
+    return_date = models.DateTimeField(
+        null=True, blank=True, verbose_name="Fecha de devolución"
+    )
 
     def __str__(self):
         return f"{self.order.id}, {self.item.id}"

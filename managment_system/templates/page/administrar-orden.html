@@ -94,6 +94,8 @@
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Artículo</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cantidad</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Código</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Sol.</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Dev.</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
                             </tr>
                         </thead>
@@ -117,6 +119,12 @@
                                         -
                                     {% endif %}
                                     {{ form.code.as_hidden }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-500">
+                                    {{ form.instance.request_date|date:"F j, Y" }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-500">
+                                    {{ form.instance.return_date|date:"F j, Y" }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     {% for field in form.visible_fields %}
