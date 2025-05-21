@@ -4,7 +4,7 @@ from django.views.generic.base import TemplateView
 
 from .views import (AdminOrderDetails, AdminOrderList, ClassCreate, ClassDelete,
                     ClassGroupsCreate, ClassGroupsDelete, ClassGroupsList,
-                    ClassGroupStudentList, ClassGroupsUpdate, ClassList,
+                    ClassGroupStudentList, ClassGroupsUpdate, ClassList, GenerateLetter,
                     ItemCreate, ItemDelete, ItemList, AvailableItemList, ItemOrderCreate, ItemSearchView,
                     MyProfileView, OrderCreate, OrderDetails, OrderGroupList,
                     OrderList, StudentList, CustomPasswordChangeView)
@@ -135,5 +135,11 @@ urlpatterns = [
         "contacto",
         TemplateView.as_view(template_name="page/contacto.html"),
         name="contacto",
+    ),
+    # ------------- Carta ---------
+    path(
+        "generar-carta",
+        GenerateLetter.as_view(template_name="page/generar-carta.html"),
+        name="generar-carta",
     ),
 ]

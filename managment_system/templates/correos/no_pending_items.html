@@ -1,0 +1,63 @@
+<!-- templates/emails/no_pending_items.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmación de devolución completa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .content {
+            padding: 20px;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Confirmación de devolución completa</h2>
+    </div>
+    
+    <div class="content">
+        <p>Hola {{ student.name }},</p>
+        
+        <div class="success">
+            <p>¡Gracias! No tienes artículos pendientes de devolver en la bodega.</p>
+        </div>
+        
+        <p>Este correo confirma que has devuelto todos los artículos que tenías prestados.</p>
+        
+        <p>Atentamente,</p>
+        <p>El equipo de la bodega.<br>
+    </div>
+    
+    <div class="footer">
+        <p>Este es un mensaje automático, por favor no respondas a este correo.</p>
+    </div>
+</body>
+</html>

@@ -25,6 +25,9 @@ from django.db.models import Q, Exists, OuterRef
 from django.http import JsonResponse
 from django.db import transaction
 from django.utils import timezone
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.views.generic import TemplateView
 
 
 class ItemList(ListView):
@@ -878,3 +881,106 @@ class ItemSearchView(View):
             'results': results,
             'pagination': {'more': False}
         })
+
+
+class GenerateLetter(TemplateView):
+    """
+    View to generate a letter with information of items borrowed by a student.
+    GET: Displays the student's data and outstanding items if the code is valid.
+    POST: Sends an email to the student (and an additional recipient) with their loan status.
+    """
+
+    def get(self, request, *args, **kwargs):
+        """
+        Handles GET requests to search for a student by their code and list their pending items.
+        """
+        # The student's code is extracted from the GET parameters.
+        student_code = request.GET.get('student_code')
+        context = {}
+
+        if student_code:
+            try:
+                # Search for the student by their unique code
+                student = Users.objects.get(student_id=student_code)
+
+                # Get backordered items (status = 'Prestado')
+                pending_items = ItemOrder.objects.filter(
+                    order__userorder__user=student,
+                    status='Prestado'
+                ).select_related(
+                    'order__group__class_id',
+                    'item',
+                    'order__group__professor'
+                ).order_by(
+                    'order__group__class_id__name',
+                    'item__name'
+                )
+
+                # The context for rendering the information in the template is updated.
+                context.update({
+                    'student': student,
+                    'pending_items': pending_items,
+                    'search_performed': True,
+                    'error': None
+                })
+            except Users.DoesNotExist:
+                # If the code does not correspond to any student
+                context.update({
+                    'error': "Estudiante no encontrado. Verifica el código de estudiante.",
+                    'search_performed': True
+                })
+            except Exception as e:
+                context.update({
+                    'error': f"Error en la búsqueda: {str(e)}",
+                    'search_performed': True
+                })
+
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        """
+        Handles POST requests to send an email to the student.
+        Determines which template to use in the mail depending on whether or not you have outstanding items.
+        """
+        try:
+            # A JSON is expected in the body of the POST.
+            data = json.loads(request.body)
+
+            student_id = data.get('student_id')
+            extra_email = data.get('extra_email')
+
+            student = Users.objects.get(id=student_id)
+
+            pending_items = ItemOrder.objects.filter(
+                order__userorder__user=student,
+                status='Prestado'
+            ).select_related('item')
+
+            # Choose the template and subject of the mail according to whether there are pending articles
+            if pending_items.exists():
+                subject = "Recordatorio de artículos pendientes"
+                template = "correos/pending_items.html"
+            else:
+                subject = "Confirmación de devolución completa"
+                template = "correos/no_pending_items.html"
+
+            message = render_to_string(template, {
+                'student': student,
+                'pending_items': pending_items,
+            })
+
+            # The administrator's email that you are sending
+            from_email = request.user.email
+            recipient_list = [student.email]
+            if extra_email:
+                recipient_list.append(extra_email)
+
+            # Send mail
+            send_mail(subject, '', from_email, recipient_list, html_message=message)
+
+            return JsonResponse({'status': 'success'})
+
+        except Users.DoesNotExist:
+            return JsonResponse({'error': 'Estudiante no encontrado'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)

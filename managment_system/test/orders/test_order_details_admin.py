@@ -165,7 +165,7 @@ def test_order_details_admin_devuelto(setup_test_data):
         'form-0-status': 'Devuelto'
     }
 
-    url = reverse("admin-orden", kwargs={"pk": order1.pk})
+    url = reverse("admin-orden", kwargs={"pk": order2.pk})
     response = client.post(url, data)
 
     assert response.status_code == 302
