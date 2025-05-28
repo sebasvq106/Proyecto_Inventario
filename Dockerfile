@@ -7,7 +7,7 @@ COPY requirements.txt /managment_system/
 
 RUN python -m pip install --upgrade pip
 RUN python -m pip install -r requirements.txt
-RUN apt-get update && apt-get install -y postgresql-client
+RUN apt-get update && apt-get install -y postgresql-client cron
 
 
 COPY . /managment_system/

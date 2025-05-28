@@ -10,7 +10,8 @@
             "name": "Cables tipo jumper"
         },
         {
-            "name": "Protoboard"
+            "name": "Protoboard",
+            "is_available": "False"
         },
         {
             "name": "Cables tipo lagarto"
@@ -438,35 +439,36 @@
     "classgroups": [
         {
             "number": 1,
-            "year": 2024,
+            "year": 2025,
             "term": "I",
-            "professor_id": 4,
-            "class_id_id": 7
-        },
-        {
-            "number": 2,
-            "year": 2024,
-            "term": "I",
-            "professor_id": 4,
-            "class_id_id": 7
-        },
-        {
-            "number": 1,
-            "year": 2024,
-            "term": "II",
-            "professor_id": 4,
-            "class_id_id": 8
-        },
-        {
-            "number": 1,
-            "year": 2024,
-            "term": "III",
-            "professor_id": 9,
-            "class_id_id": 8
+            "professor_id":20,
+            "class_id_id": 3
         }
     ],
-    "order": [],
-    "itemorder": [],
-    "userorder": [],
-    "studentgroups": []
+    "studentgroups": [
+        {
+            "student_id": 18,
+            "group_id": 1
+        }
+    ],
+    "order": [
+        {
+            "group_id": 1
+        }
+    ],
+    "userorder": [
+        {
+            "user_id": 18,
+            "order_id": 1
+        }
+    ],
+    "itemorder": [
+        {
+            "status": "Solicitado",
+            "quantity": 1,
+            "order_id": 1,
+            "item_id": 4,
+            "request_date": "2025-05-20T00:00:00"
+        }
+    ]
 }
