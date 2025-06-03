@@ -86,6 +86,7 @@ INSTALLED_APPS = [
     # other 3rd party apps…
     "django_select2",
     "django_crontab",
+    "widget_tweaks",
 ]
 
 # django_project/settings.py

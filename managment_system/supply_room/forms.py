@@ -439,3 +439,16 @@ class CustomPasswordChangeForm(PasswordChangeForm):
             raise ValidationError(_("Las contraseñas nuevas no coinciden."))
 
         return new_password2
+
+
+class UsersRegistrationForm(UserCreationForm):
+    class Meta:
+        model = Users
+        fields = ("email", "name")  # sin rol, sin username
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Elimina username si aparece
+        if "username" in self.fields:
+            del self.fields["username"]
+        # Poner clases Tailwind con widget_tweaks solo en template

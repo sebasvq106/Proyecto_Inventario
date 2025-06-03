@@ -7,7 +7,7 @@ from .views import (AdminOrderDetails, AdminOrderList, ClassCreate, ClassDelete,
                     ClassGroupStudentList, ClassGroupsUpdate, ClassList, GenerateLetter,
                     ItemCreate, ItemDelete, ItemList, AvailableItemList, ItemOrderCreate, ItemSearchView,
                     MyProfileView, OrderCreate, OrderDetails, OrderGroupList,
-                    OrderList, StudentList, CustomPasswordChangeView)
+                    OrderList, StudentList, CustomPasswordChangeView, RegisterView)
 
 urlpatterns = [
     # ------------- Articles -----------
@@ -142,4 +142,10 @@ urlpatterns = [
         GenerateLetter.as_view(template_name="page/generar-carta.html"),
         name="generar-carta",
     ),
+    path(
+        "accounts/register/",
+        RegisterView.as_view(template_name="registration/register.html"),
+        name="register"
+    ),
+
 ]

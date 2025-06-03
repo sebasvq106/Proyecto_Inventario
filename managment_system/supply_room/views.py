@@ -13,7 +13,8 @@ from django.views.generic import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 
 from .forms import (GroupForm, ItemForm, OrderForm, StudentGroupForm,
-                    UpdateOrderItemForm, ItemCreateForm, CustomPasswordChangeForm)
+                    UpdateOrderItemForm, ItemCreateForm, CustomPasswordChangeForm,
+                    UsersRegistrationForm)
 from .models import Class, ClassGroups, Item, ItemOrder, Order, StudentGroups, UserOrder, Users
 from .utils import (AdminOrTeacherRoleCheck, AdminRoleCheck,
                     TeacherOrStudentRoleCheck, TeacherRoleCheck)
@@ -996,3 +997,9 @@ class GenerateLetter(TemplateView):
             return JsonResponse({'error': 'Estudiante no encontrado'}, status=404)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
+
+
+class RegisterView(CreateView):
+    template_name = "registration/register.html"
+    form_class = UsersRegistrationForm
+    success_url = reverse_lazy("login")
