@@ -277,22 +277,23 @@ class ItemForm(forms.ModelForm):
                 specific_item.is_available = False
                 specific_item.save()
                 instance.item = specific_item
+                instance.code = specific_item.code
             else:
                 items_to_reserve = list(
                     Item.objects.select_for_update().filter(
                         name=item_name,
                         is_available=True
-                    )[:quantity]
+                    ).order_by('code')[:quantity]
                 )
                 if len(items_to_reserve) < quantity:
                     raise ValidationError(
                         f"Reserva fallida. Solo {len(items_to_reserve)} de {quantity} unidades disponibles ahora"
                     )
-                # Reservar el primero (puedes modificar si manejas varios en una sola orden)
                 selected_item = items_to_reserve[0]
                 selected_item.is_available = False
                 selected_item.save()
                 instance.item = selected_item
+                instance.code = selected_item.code
 
             if commit:
                 instance.save()
