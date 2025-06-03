@@ -54,6 +54,7 @@ class ItemList(ListView):
             item_counts[item.name]["count"] += 1
             item_counts[item.name]["detalles"].append({
                 "id": item.id,
+                "code": item.code,
                 "is_available": item.is_available
             })
 
@@ -94,21 +95,32 @@ class AvailableItemList(ListView):
 class ItemCreate(AdminRoleCheck, CreateView):
     model = Item
     form_class = ItemCreateForm
-    template_name = "tu_template.html"
+    success_url = reverse_lazy("articulos")
 
     def form_valid(self, form):
         quantity = form.cleaned_data.get('quantity', 1)
+        has_code = form.cleaned_data.get('has_code')
+        start_code = form.cleaned_data.get('start_code')
+        name = form.cleaned_data.get('name')
 
         self.object = form.save()
 
-        # Creamos los items adicionales
-        if quantity > 1:
-            for _ in range(quantity - 1):
-                Item.objects.create(
-                    name=form.cleaned_data['name'],
-                )
+        for i in range(1, quantity):
+            item_data = {'name': name}
+            if has_code:
+                item_data['code'] = start_code + i
+            Item.objects.create(**item_data)
 
-        return redirect(self.get_success_url())
+        if has_code:
+            self.object.code = start_code
+            self.object.save()
+
+        return redirect(self.success_url)
+
+    def form_invalid(self, form):
+        for error in form.non_field_errors():
+            messages.error(self.request, error)
+        return super().form_invalid(form)
 
 
 class ItemDelete(AdminRoleCheck, DeleteView):

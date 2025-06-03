@@ -20,6 +20,35 @@ class ItemCreateForm(forms.ModelForm):
             'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
         })
     )
+    has_code = forms.BooleanField(
+        required=False,
+        label="¿El artículo posee código?",
+        widget=forms.CheckboxInput(attrs={'id': 'id_has_code'})
+    )
+    start_code = forms.IntegerField(
+        required=False,
+        label="Código inicial",
+        widget=forms.NumberInput(attrs={
+            'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline',
+            'id': 'id_start_code'
+        })
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        has_code = cleaned_data.get('has_code')
+        start_code = cleaned_data.get('start_code')
+        quantity = cleaned_data.get('quantity')
+        name = cleaned_data.get('name')
+
+        if has_code:
+            if start_code is None:
+                self.add_error('start_code', 'Debe ingresar un código inicial.')
+            elif quantity and name:
+                codes_to_create = [start_code + i for i in range(quantity)]
+                existing = Item.objects.filter(name=name, code__in=codes_to_create)
+                if existing.exists():
+                    self.add_error('start_code', 'Ya existen artículos con uno o más de los códigos especificados.')
 
     class Meta:
         model = Item
@@ -208,25 +237,31 @@ class ItemForm(forms.ModelForm):
         cleaned_data = super().clean()
         item = cleaned_data.get('item')
         quantity = cleaned_data.get('quantity')
+        code = cleaned_data.get('code')
 
         if item and quantity:
-            # Verify that the item is available
-            if not item.is_available:
-                raise forms.ValidationError(
-                    "El artículo seleccionado ya no está disponible"
-                )
-
-            total_items = Item.objects.filter(
-                name=item.name,
-                is_available=True
-            ).count()
-
-            available = total_items
-
-            if quantity > available:
-                raise forms.ValidationError(
-                    f"¡Stock insuficiente! Solo hay {available} unidad(es) disponible(s) de {item.name}"
-                )
+            if code:
+                # Verifica si existe un artículo con ese código
+                try:
+                    specific_item = Item.objects.get(name=item.name, code=code)
+                    if not specific_item.is_available:
+                        raise forms.ValidationError(
+                            f"El artículo con código {code} ya fue prestado."
+                        )
+                    if quantity > 1:
+                        raise forms.ValidationError(
+                            "No puede solicitar más de una unidad si especifica un código."
+                        )
+                except Item.DoesNotExist:
+                    raise forms.ValidationError(
+                        f"No se encontró un artículo con el código {code} para {item.name}."
+                    )
+            else:
+                available = Item.objects.filter(name=item.name, is_available=True).count()
+                if quantity > available:
+                    raise forms.ValidationError(
+                        f"¡Stock insuficiente! Solo hay {available} unidad(es) disponible(s) de {item.name}"
+                    )
 
         return cleaned_data
 
@@ -234,25 +269,30 @@ class ItemForm(forms.ModelForm):
         instance = super().save(commit=False)
         item_name = instance.item.name
         quantity = instance.quantity
+        code = self.cleaned_data.get("code")
 
         with transaction.atomic():
-            # Reserve items
-            items_to_reserve = list(
-                Item.objects.select_for_update().filter(
-                    name=item_name,
-                    is_available=True
-                )[:quantity]
-            )
-
-            if len(items_to_reserve) < quantity:
-                raise ValidationError(
-                    f"Reserva fallida. Solo {len(items_to_reserve)} de {quantity} unidades disponibles ahora"
+            if code:
+                specific_item = Item.objects.select_for_update().get(name=item_name, code=code, is_available=True)
+                specific_item.is_available = False
+                specific_item.save()
+                instance.item = specific_item
+            else:
+                items_to_reserve = list(
+                    Item.objects.select_for_update().filter(
+                        name=item_name,
+                        is_available=True
+                    )[:quantity]
                 )
-
-            # Mark as unavailable
-            for item in items_to_reserve:
-                item.is_available = False
-                item.save()
+                if len(items_to_reserve) < quantity:
+                    raise ValidationError(
+                        f"Reserva fallida. Solo {len(items_to_reserve)} de {quantity} unidades disponibles ahora"
+                    )
+                # Reservar el primero (puedes modificar si manejas varios en una sola orden)
+                selected_item = items_to_reserve[0]
+                selected_item.is_available = False
+                selected_item.save()
+                instance.item = selected_item
 
             if commit:
                 instance.save()

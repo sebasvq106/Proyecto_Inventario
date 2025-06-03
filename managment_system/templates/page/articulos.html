@@ -123,7 +123,7 @@ function renderModalContent() {
             let state = detalle.is_available ? "Disponible" : "Prestado";
             content += `
                 <div class="flex justify-between items-center mb-2">
-                    <span>ID: ${detalle.id} - Estado: ${state}</span>
+                    <span>${detalle.code ? `Código: ${detalle.code}` : `ID: ${detalle.id}`} - Estado: ${state}</span>
                     ${detalle.is_available ? `
                         <a href="/eliminar-articulo/${detalle.id}" class="py-2 px-3 bg-red-500 text-white rounded hover:bg-red-400">
                             Eliminar
