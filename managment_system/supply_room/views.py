@@ -32,21 +32,15 @@ from django.views.generic import TemplateView
 
 
 class ItemList(ListView):
-    """
-    ListView for Item model
-
-    Requests Methods:
-    Get: Renders list of all items
-    """
     model = Item
     paginate_by = 10
 
     def get_queryset(self, *args, **kwargs):
-        """
-        Overrides internal queryset to return unique items
-        with their count, availability status list, and IDs.
-        """
         queryset = super().get_queryset(*args, **kwargs).order_by("name")
+
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(name__icontains=query)
 
         item_counts = defaultdict(lambda: {"name": "", "count": 0, "detalles": []})
 
@@ -83,6 +77,10 @@ class AvailableItemList(ListView):
         with their count.
         """
         queryset = super().get_queryset(*args, **kwargs).filter(is_available=True).order_by("name")
+
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(name__icontains=query)
 
         item_counts = defaultdict(lambda: {"name": "", "count": 0})
 
