@@ -321,29 +321,22 @@ class ClassGroupsDelete(TeacherRoleCheck, DeleteView):
     :code: code of the class associated to the ClassGroup that is being deleted
     :pk: primary key of the ClassGroup to be deleted
     """
-
-    # specify the model for delete view
     model = ClassGroups
     template_name = "page/grupos/confirm_delete_grupos.html"
-    # Internal variable for class code
     code = ""
 
     def get_success_url(self):
-        """
-        Calculates the successful url for redirection
-
-        Here the information of the deleted object is no longer accessible,
-        thus the need for preserving the class code in an internal variable
-        """
         return reverse("grupos", kwargs={"code": self.code})
 
-    def form_valid(self, form):
-        """
-        Preserves the class code before deletion
-        """
-        group = get_object_or_404(ClassGroups, pk=self.kwargs["pk"])
+    def post(self, request, *args, **kwargs):
+        group = self.get_object()
         self.code = group.class_id.code
-        return super(ClassGroupsDelete, self).form_valid(form)
+
+        if StudentGroups.objects.filter(group=group).exists():
+            messages.error(request, "No se puede eliminar el grupo porque tiene estudiantes asociados.")
+            return render(request, self.template_name, {"object": group})
+
+        return super().post(request, *args, **kwargs)
 
 
 class ClassGroupsUpdate(TeacherRoleCheck, UpdateView):
