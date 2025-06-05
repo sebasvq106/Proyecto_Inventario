@@ -257,6 +257,10 @@ class ItemForm(forms.ModelForm):
                         f"No se encontró un artículo con el código {code} para {item.name}."
                     )
             else:
+                if quantity > 1:
+                    raise forms.ValidationError(
+                        "No puede solicitar más de una unidad de artículos que tienen código único."
+                    )
                 available = Item.objects.filter(name=item.name, is_available=True).count()
                 if quantity > available:
                     raise forms.ValidationError(
@@ -289,9 +293,14 @@ class ItemForm(forms.ModelForm):
                     raise ValidationError(
                         f"Reserva fallida. Solo {len(items_to_reserve)} de {quantity} unidades disponibles ahora"
                     )
+
+                # Reservar todos los items solicitados
+                for i in items_to_reserve:
+                    i.is_available = False
+                    i.save()
+
+                # Guardar solo uno como referencia
                 selected_item = items_to_reserve[0]
-                selected_item.is_available = False
-                selected_item.save()
                 instance.item = selected_item
                 instance.code = selected_item.code
 
