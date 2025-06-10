@@ -238,6 +238,9 @@ class ItemOrder(models.Model):
     return_date = models.DateTimeField(
         null=True, blank=True, verbose_name="Fecha de devolución"
     )
+    loan_date = models.DateTimeField(
+        null=True, blank=True, verbose_name="Fecha de préstamo"
+    )
 
     def __str__(self):
         return f"{self.order.id}, {self.item.id}"

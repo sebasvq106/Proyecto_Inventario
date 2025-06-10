@@ -373,6 +373,8 @@ class UpdateOrderItemForm(forms.ModelForm):
             if self.original_status != "Devuelto" and instance.status == "Devuelto":
                 instance.return_date = timezone.now()
                 self._mark_items_as_available(instance)
+            elif self.original_status == "Solicitado" and instance.status == "Prestado":
+                instance.loan_date = timezone.now()
             elif instance.status == "Denegado":
                 self._mark_items_as_available(instance)
 
@@ -453,11 +455,9 @@ class CustomPasswordChangeForm(PasswordChangeForm):
 class UsersRegistrationForm(UserCreationForm):
     class Meta:
         model = Users
-        fields = ("email", "name")  # sin rol, sin username
+        fields = ("email", "name")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Elimina username si aparece
         if "username" in self.fields:
             del self.fields["username"]
-        # Poner clases Tailwind con widget_tweaks solo en template
