@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.db import transaction
 from django.utils import timezone
+from django.db.models import Q
 
 from .models import ClassGroups, ItemOrder, Order, StudentGroups, Users, Item
 
@@ -121,16 +122,29 @@ class ItemWidget(s2forms.Select2Widget):
 
 class GroupForm(forms.ModelForm):
     """
-    From to create ClassGroups
+    Form to create ClassGroups
     """
 
     class Meta:
         model = ClassGroups
         fields = ["year", "term", "number", "professor"]
+        widgets = {
+            "year": forms.NumberInput(attrs={
+                "class": "w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            }),
+            "term": forms.Select(attrs={
+                "class": "w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            }),
+            "number": forms.NumberInput(attrs={
+                "class": "w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            }),
+            "professor": forms.Select(attrs={
+                "class": "w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            }),
+        }
 
     def __init__(self, *args, **kwargs):
         super(GroupForm, self).__init__(*args, **kwargs)
-        # update form choices with only students or teachers in each field
         self.fields["professor"].queryset = Users.objects.filter(role="teacher")
 
 
@@ -241,7 +255,6 @@ class ItemForm(forms.ModelForm):
 
         if item and quantity:
             if code:
-                # Verifica si existe un artículo con ese código
                 try:
                     specific_item = Item.objects.get(name=item.name, code=code)
                     if not specific_item.is_available:
@@ -257,15 +270,22 @@ class ItemForm(forms.ModelForm):
                         f"No se encontró un artículo con el código {code} para {item.name}."
                     )
             else:
-                if quantity > 1:
-                    raise forms.ValidationError(
-                        "No puede solicitar más de una unidad de artículos que tienen código único."
-                    )
-                available = Item.objects.filter(name=item.name, is_available=True).count()
-                if quantity > available:
-                    raise forms.ValidationError(
-                        f"¡Stock insuficiente! Solo hay {available} unidad(es) disponible(s) de {item.name}"
-                    )
+                items_with_code = Item.objects.filter(
+                    name=item.name
+                ).exclude(
+                    Q(code__isnull=True) | Q(code__exact='')
+                ).exists()
+                if items_with_code:
+                    if quantity > 1:
+                        raise forms.ValidationError(
+                            "No puede solicitar más de una unidad de artículos que tienen código único."
+                        )
+                else:
+                    available = Item.objects.filter(name=item.name, is_available=True).count()
+                    if quantity > available:
+                        raise forms.ValidationError(
+                            f"¡Stock insuficiente! Solo hay {available} unidad(es) disponible(s) de {item.name}"
+                        )
 
         return cleaned_data
 

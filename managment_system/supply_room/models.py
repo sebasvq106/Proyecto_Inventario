@@ -3,6 +3,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.core.validators import MinValueValidator
 from django.db import models
+from datetime import datetime
 
 # ALL CHOICES DEFINITIONS
 STATUS_CHOICES = (
@@ -118,9 +119,13 @@ class Class(models.Model):
         return f"{self.name} ({self.code})"
 
 
+def get_current_year():
+    return datetime.now().year
+
+
 class ClassGroups(models.Model):
     number = models.PositiveIntegerField(verbose_name="Numero de Curso:", default=1)
-    year = models.PositiveIntegerField(verbose_name="Año", default=2025)
+    year = models.PositiveIntegerField(verbose_name="Año", default=get_current_year)
     term = models.CharField(
         max_length=3, choices=TERM_CHOICES, default="I", verbose_name="Semestre"
     )
