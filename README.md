@@ -59,13 +59,15 @@ Ensure you have Docker and Docker Compose installed.
 docker-compose up --build
 ```
 
-This will run the following services:
+#### 2. Stop the Containers
 
-* **Web App** (Django)
-* **PostgreSQL** database
-* **pgAdmin** (optional for DB inspection)
+To stop the running containers:
 
-#### 2. Apply Migrations & Create Superuser
+```bash
+docker-compose down
+```
+
+#### 3. Apply Migrations & Create Superuser
 
 Once the containers are up:
 
@@ -73,7 +75,7 @@ Once the containers are up:
 docker-compose exec web python manage.py migrate
 ```
 
-#### 3. Load Seed Data
+#### 4. Load Seed Data
 
 The file `seeds.json` has the initial data to use the page. Use the following command:
 
