@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from django.db import transaction
 from django.utils import timezone
 from django.db.models import Q
+from django.core.validators import RegexValidator
 
 from .models import ClassGroups, ItemOrder, Order, StudentGroups, Users, Item
 
@@ -473,6 +474,16 @@ class CustomPasswordChangeForm(PasswordChangeForm):
 
 
 class UsersRegistrationForm(UserCreationForm):
+    email = forms.EmailField(
+        validators=[
+            RegexValidator(
+                regex=r'^[\w\.-]+@ucr\.ac\.cr$',
+                message='El correo debe ser institucional y terminar en @ucr.ac.cr',
+                code='invalid_email'
+            )
+        ]
+    )
+
     class Meta:
         model = Users
         fields = ("email", "name")

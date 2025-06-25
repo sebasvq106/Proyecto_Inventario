@@ -994,3 +994,31 @@ class RegisterView(CreateView):
     template_name = "registration/register.html"
     form_class = UsersRegistrationForm
     success_url = reverse_lazy("login")
+
+
+class UserListView(ListView):
+    model = Users
+    template_name = "page/usuarios.html"
+    context_object_name = "users"
+    paginate_by = 10
+
+
+class UserDetailView(View):
+    template_name = "page/usuario_detalle.html"
+
+    def get(self, request, pk):
+        user = get_object_or_404(Users, pk=pk)
+        return render(request, self.template_name, {"user_obj": user})
+
+    def post(self, request, pk):
+        user = get_object_or_404(Users, pk=pk)
+        new_role = request.POST.get("role")
+
+        if new_role in ["student", "admin"]:
+            user.role = new_role
+            user.save()
+            messages.success(request, f'Rol actualizado a "{new_role}" para {user.email}')
+        else:
+            messages.error(request, "Rol no válido seleccionado.")
+
+        return redirect("usuario_detalle", pk=user.id)

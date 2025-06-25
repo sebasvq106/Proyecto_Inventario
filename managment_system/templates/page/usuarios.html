@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-4xl mx-auto py-8">
+    <h2 class="text-2xl font-bold mb-4">Lista de Usuarios</h2>
+
+    <ul class="divide-y divide-gray-200">
+        {% for user in users %}
+        <li class="py-4 flex justify-between items-center">
+            <div>
+                <p class="text-lg font-semibold">{{ user.get_full_name|default:user.email }}</p>
+                <p class="text-sm text-gray-600">{{ user.email }}</p>
+                <p class="text-sm text-gray-600">Rol: {{ user.role }}</p>
+            </div>
+            <a href="{% url 'usuario_detalle' user.id %}" class="text-blue-500 hover:underline">Ver detalles</a>
+        </li>
+        {% empty %}
+        <li class="py-4 text-gray-500">No hay usuarios registrados.</li>
+        {% endfor %}
+    </ul>
+
+    {% if is_paginated %}
+    <div class="mt-4 flex justify-between">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" class="text-blue-600 hover:underline">Anterior</a>
+        {% endif %}
+
+        <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="text-blue-600 hover:underline">Siguiente</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

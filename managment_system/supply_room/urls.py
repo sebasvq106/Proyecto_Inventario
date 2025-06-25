@@ -7,7 +7,8 @@ from .views import (AdminOrderDetails, AdminOrderList, ClassCreate, ClassDelete,
                     ClassGroupStudentList, ClassGroupsUpdate, ClassList, GenerateLetter,
                     ItemCreate, ItemDelete, ItemList, AvailableItemList, ItemOrderCreate, ItemSearchView,
                     MyProfileView, OrderCreate, OrderDetails, OrderGroupList,
-                    OrderList, StudentList, CustomPasswordChangeView, RegisterView)
+                    OrderList, StudentList, CustomPasswordChangeView, RegisterView, UserDetailView,
+                    UserListView)
 
 urlpatterns = [
     # ------------- Articles -----------
@@ -147,5 +148,14 @@ urlpatterns = [
         RegisterView.as_view(template_name="registration/register.html"),
         name="register"
     ),
-
+    path(
+        "usuarios/",
+        UserListView.as_view(),
+        name="usuarios"
+    ),
+    path(
+        "usuarios/<int:pk>/",
+        UserDetailView.as_view(),
+        name="usuario_detalle"
+    ),
 ]
