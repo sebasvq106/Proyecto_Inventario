@@ -1,29 +1,91 @@
-{% extends "base.html" %} {% block content %}
-<div class="max-w-6xl mx-auto px-4 py-8 mt-16">
-    {{ form.media.css }}
-    <style>
-        input, select {width: 100%}
-    </style>
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-8 mt-16">
     <div class="bg-white rounded-lg p-6 shadow-lg backdrop-blur-xl">
-
-
-
-        <form class="max-w-md mx-auto space-y-6" method="POST" enctype="multipart/form-data">
-            <!-- Security token -->
+        <h2 class="text-2xl font-bold text-center mb-6">Agregar Artículo</h2>
+        <form method="POST" class="space-y-4">
             {% csrf_token %}
-            <h2 class="text-2xl font-bold mb-6 text-center">Agregar Artículo a Orden</h2>
-
-
-            <!-- Name field -->
-            {{ form.as_p }}
-
-
-            <div class="flex justify-center mt-8">
-                <input type="submit" value="Agregar" class="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-300">
+            
+            <!-- Item Seach -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Artículo</label>
+                {{ form.item }}
+            </div>
+            
+            <!-- Quantity -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Cantidad</label>
+                {{ form.quantity }}
+            </div>
+            
+            <!-- Code -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Código</label>
+                {{ form.code }}
+            </div>
+            
+            {% for message in messages %}
+                <div class="flex justify-center mb-4">
+                    <div class="flex items-center p-4 border-2 border-red-500 rounded-lg shadow-md bg-white text-center w-full">
+                        <p class="text-black font-semibold">
+                            {{ message }}
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
+            
+            <!-- Button -->
+            <div class="pt-4">
+                <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    Agregar
+                </button>
             </div>
         </form>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        {{ form.media.js }}
     </div>
 </div>
+
+<!-- Includes -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('.item-search').select2({
+        placeholder: "Escribe para buscar...",
+        minimumInputLength: 2,
+        ajax: {
+            url: $('.item-search').data('ajax--url'),
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term,
+                    page: params.page
+                };
+            },
+            processResults: function (data, params) {
+                return {
+                    results: data.results,
+                    pagination: {
+                        more: data.pagination.more
+                    }
+                };
+            },
+            cache: true
+        },
+        language: {
+            inputTooShort: function() {
+                return "Escribe al menos 2 caracteres";
+            },
+            noResults: function() {
+                return "No se encontraron resultados";
+            },
+            searching: function() {
+                return "Buscando...";
+            }
+        }
+    });
+});
+</script>
 {% endblock %}

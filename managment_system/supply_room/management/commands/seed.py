@@ -4,6 +4,7 @@ import json
 from django.utils.dateparse import parse_datetime
 from django.db import IntegrityError
 from django.utils import timezone
+from datetime import timezone as dt_timezone
 import warnings
 
 class Command(BaseCommand):
@@ -48,7 +49,7 @@ class Command(BaseCommand):
                             parsed_date = parse_datetime(value)
                             if parsed_date:
                                 # Convertir la fecha naive a aware (en UTC)
-                                record[key] = timezone.make_aware(parsed_date, timezone.utc)
+                                record[key] = timezone.make_aware(parsed_date, dt_timezone.utc)
                     
                     try:
                         # Crear el objeto con todos los campos disponibles en record

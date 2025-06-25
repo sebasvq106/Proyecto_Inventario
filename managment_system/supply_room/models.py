@@ -3,6 +3,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.core.validators import MinValueValidator
 from django.db import models
+from datetime import datetime
 
 # ALL CHOICES DEFINITIONS
 STATUS_CHOICES = (
@@ -67,6 +68,8 @@ class CustomUserManager(UserManager):
 
 class Item(models.Model):
     name = models.CharField(max_length=200)
+    is_available = models.BooleanField(default=True)
+    code = models.CharField(max_length=200, blank=True, verbose_name="Código")
 
     def __str__(self):
         return f"{self.name}"
@@ -116,9 +119,13 @@ class Class(models.Model):
         return f"{self.name} ({self.code})"
 
 
+def get_current_year():
+    return datetime.now().year
+
+
 class ClassGroups(models.Model):
-    number = models.PositiveIntegerField(verbose_name="Numero de Curso:")
-    year = models.PositiveIntegerField(verbose_name="Año", default=2024)
+    number = models.PositiveIntegerField(verbose_name="Numero de Curso:", default=1)
+    year = models.PositiveIntegerField(verbose_name="Año", default=get_current_year)
     term = models.CharField(
         max_length=3, choices=TERM_CHOICES, default="I", verbose_name="Semestre"
     )
@@ -129,13 +136,6 @@ class ClassGroups(models.Model):
         verbose_name="Profesor",
     )
     class_id = models.ForeignKey(Class, on_delete=models.PROTECT, verbose_name="Clase")
-    student = models.ManyToManyField(
-        Users,
-        related_name="group_student",
-        through=Users.groups.through,  # allow to sync up using the same many-many table
-        blank=True,
-        verbose_name="Estudiantes",
-    )
 
     @property
     def semester(self):
@@ -147,6 +147,32 @@ class ClassGroups(models.Model):
     def __str__(self):
         return f"{self.class_id} ({self.number}, {self.semester})"
 
+    @property
+    def students(self):
+        """
+        Gets all the students linked to this group
+        """
+        return Users.objects.filter(studentgroups__group=self)
+
+    def add_students(self, users):
+        """
+        Add multiple students to the group
+        """
+        if not hasattr(users, '__iter__') or isinstance(users, str):
+            users = [users]
+
+        StudentGroups.objects.bulk_create([
+            StudentGroups(student=user, group=self)
+            for user in users
+            if not StudentGroups.objects.filter(student=user, group=self).exists()
+        ])
+
+    def remove_students(self, users):
+        """
+        Eliminates multiple students from the order
+        """
+        StudentGroups.objects.filter(student__in=users, group=self).delete()
+
 
 class Order(models.Model):
     group = models.ForeignKey(
@@ -154,13 +180,6 @@ class Order(models.Model):
         related_name="order_group",
         on_delete=models.CASCADE,
         verbose_name="Grupo",
-    )
-    student = models.ManyToManyField(
-        Users,
-        related_name="Order_student",
-        through=Users.orders.through,  # allow to sync up using the same many-many table
-        blank=True,
-        verbose_name="Estudiantes",
     )
 
     def __str__(self):
@@ -178,6 +197,32 @@ class Order(models.Model):
             return "prestado"
         return "completado"
 
+    @property
+    def students(self):
+        """
+        Gets all the students linked to this order
+        """
+        return Users.objects.filter(userorder__order=self)
+
+    def add_students(self, users):
+        """
+        Add multiple students to the order
+        """
+        if not hasattr(users, '__iter__') or isinstance(users, str):
+            users = [users]
+
+        UserOrder.objects.bulk_create([
+            UserOrder(user=user, order=self)
+            for user in users
+            if not UserOrder.objects.filter(user=user, order=self).exists()
+        ])
+
+    def remove_students(self, users):
+        """
+        Eliminates multiple students from the order
+        """
+        UserOrder.objects.filter(user__in=users, order=self).delete()
+
 
 class ItemOrder(models.Model):
     status = models.CharField(
@@ -192,6 +237,15 @@ class ItemOrder(models.Model):
     code = models.CharField(max_length=200, blank=True, verbose_name="Código")
     order = models.ForeignKey(Order, on_delete=models.RESTRICT, verbose_name="Orden")
     item = models.ForeignKey(Item, on_delete=models.RESTRICT, verbose_name="Artículo")
+    request_date = models.DateTimeField(
+        null=True, blank=True, verbose_name="Fecha de solicitud"
+    )
+    return_date = models.DateTimeField(
+        null=True, blank=True, verbose_name="Fecha de devolución"
+    )
+    loan_date = models.DateTimeField(
+        null=True, blank=True, verbose_name="Fecha de préstamo"
+    )
 
     def __str__(self):
         return f"{self.order.id}, {self.item.id}"
@@ -200,6 +254,11 @@ class ItemOrder(models.Model):
 class UserOrder(models.Model):
     user = models.ForeignKey(Users, on_delete=models.RESTRICT)
     order = models.ForeignKey(Order, on_delete=models.RESTRICT)
+
+    class Meta:
+        unique_together = [['user', 'order']]
+        verbose_name = 'Relación Usuario-Orden'
+        verbose_name_plural = 'Relaciones Usuario-Orden'
 
     def __str__(self):
         return f"{self.user.name}, {self.order.id}"

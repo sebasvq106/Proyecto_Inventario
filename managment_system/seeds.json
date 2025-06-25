@@ -10,13 +10,15 @@
             "name": "Cables tipo jumper"
         },
         {
-            "name": "Protoboard"
+            "name": "Protoboard",
+            "is_available": "False"
         },
         {
             "name": "Cables tipo lagarto"
         },
         {
-            "name": "Cables tipo lagarto"
+            "name": "Cables tipo lagarto",
+            "is_available": "False"
         },
         {
             "name": "Capacitor"
@@ -345,6 +347,21 @@
             "password": "pbkdf2_sha256$720000$dnO63I9bjH5oWIXiuAXOoc$wecvtRDdnkjFJSifEYUmmtiufaWBxXC01w8hGah6BEU=",
             "last_login": null,
             "is_superuser": false,
+            "first_name": "user2",
+            "last_name": "user2",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-07-01 03:24:01",
+            "name": "user2",
+            "email": "user2@user.com",
+            "role": "student",
+            "student_id": null,
+            "username": "user2"
+        },
+        {
+            "password": "pbkdf2_sha256$720000$dnO63I9bjH5oWIXiuAXOoc$wecvtRDdnkjFJSifEYUmmtiufaWBxXC01w8hGah6BEU=",
+            "last_login": null,
+            "is_superuser": false,
             "first_name": "profe",
             "last_name": "profe",
             "is_staff": false,
@@ -422,216 +439,36 @@
     "classgroups": [
         {
             "number": 1,
-            "year": 2024,
+            "year": 2025,
             "term": "I",
-            "professor_id": 4,
-            "class_id_id": 7
-        },
+            "professor_id":20,
+            "class_id_id": 3
+        }
+    ],
+    "studentgroups": [
         {
-            "number": 2,
-            "year": 2024,
-            "term": "I",
-            "professor_id": 4,
-            "class_id_id": 7
-        },
-        {
-            "number": 1,
-            "year": 2024,
-            "term": "II",
-            "professor_id": 4,
-            "class_id_id": 8
-        },
-        {
-            "number": 1,
-            "year": 2024,
-            "term": "III",
-            "professor_id": 9,
-            "class_id_id": 8
+            "student_id": 18,
+            "group_id": 1
         }
     ],
     "order": [
         {
-            "id": 1,
             "group_id": 1
-        },
+        }
+    ],
+    "userorder": [
         {
-            "id": 2,
-            "group_id": 1
-        },
-        {
-            "id": 3,
-            "group_id": 3
-        },
-        {
-            "id": 4,
-            "group_id": 3
-        },
-        {
-            "id": 5,
-            "group_id": 2
-        },
-        {
-            "id": 6,
-            "group_id": 1
-        },
-        {
-            "id": 7,
-            "group_id": 1
-        },
-        {
-            "id": 8,
-            "group_id": 3
+            "user_id": 18,
+            "order_id": 1
         }
     ],
     "itemorder": [
         {
-            "status": "Devuelto",
+            "status": "Solicitado",
             "quantity": 1,
-            "code": "",
-            "order_id": 2,
-            "item_id": 1
-        },
-        {
-            "status": "Devuelto",
-            "quantity": 29,
-            "code": "",
-            "order_id": 2,
-            "item_id": 2
-        },
-        {
-            "status": "Devuelto",
-            "quantity": 1,
-            "code": "",
-            "order_id": 2,
-            "item_id": 3
-        },
-        {
-            "status": "Denegado",
-            "quantity": 1,
-            "code": "",
-            "order_id": 2,
-            "item_id": 4
-        },
-        {
-            "status": "Denegado",
-            "quantity": 1,
-            "code": "",
-            "order_id": 2,
-            "item_id": 1
-        },
-        {
-            "status": "Devuelto",
-            "quantity": 1,
-            "code": "",
-            "order_id": 3,
-            "item_id": 8
-        },
-        {
-            "status": "Denegado",
-            "quantity": 4,
-            "code": "",
-            "order_id": 3,
-            "item_id": 15
-        },
-        {
-            "status": "Devuelto",
-            "quantity": 5,
-            "code": "",
-            "order_id": 3,
-            "item_id": 13
-        },
-        {
-            "status": "Denegado",
-            "quantity": 1,
-            "code": "",
             "order_id": 1,
-            "item_id": 1
-        },
-        {
-            "status": "Denegado",
-            "quantity": 1,
-            "code": "",
-            "order_id": 1,
-            "item_id": 5
-        },
-        {
-            "status": "Denegado",
-            "quantity": 1,
-            "code": "",
-            "order_id": 1,
-            "item_id": 10
-        },
-        {
-            "status": "Prestado",
-            "quantity": 1,
-            "code": "",
-            "order_id": 4,
-            "item_id": 1
-        },
-        {
-            "status": "Denegado",
-            "quantity": 1,
-            "code": "",
-            "order_id": 4,
-            "item_id": 3
-        },
-        {
-            "status": "Solicitado",
-            "quantity": 20,
-            "code": "",
-            "order_id": 5,
-            "item_id": 2
-        },
-        {
-            "status": "Solicitado",
-            "quantity": 1,
-            "code": "",
-            "order_id": 5,
-            "item_id": 1
-        },
-        {
-            "status": "Solicitado",
-            "quantity": 1,
-            "code": "",
-            "order_id": 6,
-            "item_id": 4
-        },
-        {
-            "status": "Solicitado",
-            "quantity": 3,
-            "code": "123456",
-            "order_id": 6,
-            "item_id": 1
-        },
-        {
-            "status": "Solicitado",
-            "quantity": 1,
-            "code": "",
-            "order_id": 7,
-            "item_id": 2
-        },
-        {
-            "status": "Solicitado",
-            "quantity": 1,
-            "code": "",
-            "order_id": 8,
-            "item_id": 1
-        },
-        {
-            "status": "Solicitado",
-            "quantity": 2,
-            "code": "",
-            "order_id": 2,
-            "item_id": 2
-        },
-        {
-            "status": "Solicitado",
-            "quantity": 3,
-            "code": "",
-            "order_id": 2,
-            "item_id": 14
+            "item_id": 4,
+            "request_date": "2025-05-20T00:00:00"
         }
-    ],
-    "userorder": [],
-    "studentgroups": []
+    ]
 }

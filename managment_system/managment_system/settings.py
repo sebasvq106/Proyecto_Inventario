@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import environ
+import os
+import logging
 
 env = environ.Env()
 environ.Env.read_env()
@@ -32,6 +34,45 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": "/var/log/django_cron.log",  # Ruta del archivo de log
+            "formatter": "verbose",
+        },
+    },
+    "root": {
+        "handlers": ["console", "file"],  # Envía logs a CONSOLA y ARCHIVO
+        "level": "INFO",  # Nivel mínimo: INFO (captura INFO, WARNING, ERROR, CRITICAL)
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "tu_app": {  # Reemplaza "tu_app" con el nombre de tu aplicación (ej: "supply_room")
+            "handlers": ["console", "file"],
+            "level": "DEBUG",  # Nivel más detallado para tu app
+            "propagate": False,
+        },
+    },
+}
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -44,6 +85,8 @@ INSTALLED_APPS = [
     "supply_room.apps.SupplyRoomConfig",
     # other 3rd party apps…
     "django_select2",
+    "django_crontab",
+    "widget_tweaks",
 ]
 
 # django_project/settings.py
@@ -141,7 +184,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "America/Costa_Rica"
 
 USE_I18N = True
 
@@ -168,3 +211,19 @@ STATIC_ROOT = BASE_DIR.parent / "static"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "supply_room.Users"
+
+
+CRONJOBS = [
+    ('0 6-22 * * 1-5', 'supply_room.cron.clear_expired_requests', '>> /tmp/cron_stdout.log 2>&1'),
+]
+
+CRONTAB_COMMAND_PREFIX = 'SHELL=/bin/bash'
+
+# For email sending through SMTP
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = 'smtp.ucr.ac.cr'
+EMAIL_HOST_USER = 'sebastian.vargasquesada@ucr.ac.cr'
+EMAIL_HOST_PASSWORD = '****'
+EMAIL_SUBJECT_PREFIX = '[EIEInfo]'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True

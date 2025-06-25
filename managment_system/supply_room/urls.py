@@ -2,12 +2,13 @@ from django.contrib.auth import views as auth_views
 from django.urls import path
 from django.views.generic.base import TemplateView
 
-from .views import (AdminOrderDetails, AdminOrderList, ClassCreate,
+from .views import (AdminOrderDetails, AdminOrderList, ClassCreate, ClassDelete,
                     ClassGroupsCreate, ClassGroupsDelete, ClassGroupsList,
-                    ClassGroupStudentList, ClassGroupsUpdate, ClassList,
-                    ItemCreate, ItemDelete, ItemList, ItemOrderCreate,
+                    ClassGroupStudentList, ClassGroupsUpdate, ClassList, GenerateLetter,
+                    ItemCreate, ItemDelete, ItemList, AvailableItemList, ItemOrderCreate, ItemSearchView,
                     MyProfileView, OrderCreate, OrderDetails, OrderGroupList,
-                    OrderList, StudentList)
+                    OrderList, StudentList, CustomPasswordChangeView, RegisterView, UserDetailView,
+                    UserListView)
 
 urlpatterns = [
     # ------------- Articles -----------
@@ -15,6 +16,11 @@ urlpatterns = [
         "articulos",
         ItemList.as_view(template_name="page/articulos.html"),
         name="articulos",
+    ),
+    path(
+        "articulos-disponibles",
+        AvailableItemList.as_view(template_name="page/articulos-disponibles.html"),
+        name="articulos-disponibles",
     ),
     path(
         "crear-articulo",
@@ -38,6 +44,7 @@ urlpatterns = [
         ),
         name="crear-grupo",
     ),
+    path("eliminar-curso/<int:pk>", ClassDelete.as_view(), name="eliminar-curso"),
     path(
         "cursos/<str:code>/editar/<pk>",
         ClassGroupsUpdate.as_view(
@@ -46,7 +53,7 @@ urlpatterns = [
         name="editar-grupo",
     ),
     path(
-        "cursos/<str:code>/estudiantes/<pk>",
+        "cursos/<str:code>/estudiantes/<int:pk>",
         ClassGroupStudentList.as_view(),
         name="estudiantes-grupo",
     ),
@@ -67,7 +74,7 @@ urlpatterns = [
     # ------------- Profile -----------
     path(
         "cambiar-contrasena/",
-        auth_views.PasswordChangeView.as_view(
+        CustomPasswordChangeView.as_view(
             template_name="registration/password_change_form.html"
         ),
         name="password_change",
@@ -82,7 +89,7 @@ urlpatterns = [
     # ------------- Crear Orden -----------
     path(
         "orden/grupos",
-        OrderGroupList.as_view(),
+        OrderGroupList.as_view(template_name="page/crear-orden-grupos.html"),
         name="orden-grupos",
     ),
     path(
@@ -106,6 +113,7 @@ urlpatterns = [
         ItemOrderCreate.as_view(template_name="page/crear-orden-articulo.html"),
         name="orden-articulo",
     ),
+    path('items/search/', ItemSearchView.as_view(), name='item_search'),
     # ------------- Administrar Ordenes -----------
     path(
         "administrar-ordenes",
@@ -128,5 +136,26 @@ urlpatterns = [
         "contacto",
         TemplateView.as_view(template_name="page/contacto.html"),
         name="contacto",
+    ),
+    # ------------- Carta ---------
+    path(
+        "generar-carta",
+        GenerateLetter.as_view(template_name="page/generar-carta.html"),
+        name="generar-carta",
+    ),
+    path(
+        "accounts/register/",
+        RegisterView.as_view(template_name="registration/register.html"),
+        name="register"
+    ),
+    path(
+        "usuarios/",
+        UserListView.as_view(),
+        name="usuarios"
+    ),
+    path(
+        "usuarios/<int:pk>/",
+        UserDetailView.as_view(),
+        name="usuario_detalle"
     ),
 ]

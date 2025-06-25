@@ -16,6 +16,7 @@ class LoginRequiredMiddleware:
         # List of URL names that don't require authentication
         exempt_urls = [
             reverse("login"),
+            reverse("register")
             # Add other URLs that should be accessible without login
         ]
 
